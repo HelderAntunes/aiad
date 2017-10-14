@@ -3,7 +3,6 @@
 /* Initial beliefs and rules */
 
 time(0,day).
-players([]).
 
 players_range(15, 20).
 werewolfs_range(2, 5).
@@ -40,16 +39,32 @@ diviners_range(1, 2).
 	?players_range(Vi, Vf);
 	?werewolfs_number(W);
 	?diviners_number(D);
-	+villagers_number(math.max(math.floor(math.random(Vf - Vi + 1) + Vi) - W - D, 0)).
+	+total_players(math.floor(math.random(Vf - Vi + 1) + Vi));
+	?total_players(T);
+	+villagers_number(math.max(T - W - D, 0)).
 	
 /* 
 	Phase 2 
 	Invite players
 */
-+!invite_players <-	
++!invite_players : not players(_)<-
+	+players([]);
 	!invite_werewolfs;
 	!invite_diviners;
-	!invite_villagers.
+	!invite_villagers;
+	.wait(1000);
+	!invite_players.
+	
++!invite_players : players(_) & not waiting_players(0) <-
+	.print("Agents failed to connect. Shutting off...");
+	.stopMas.
+	
++!invite_players : players(_) & waiting_players(0) <-
+	.print("All players joined!");
+	.print("Game starting in 5 seconds...");
+	.wait(5000);
+	.print("Game Start!!!");
+	!start_game.
 	
 	
 +!invite_werewolfs : werewolfs_number(N) <-
@@ -79,13 +94,29 @@ diviners_range(1, 2).
 	}
 	-temp(_).
 	
-+join(Id, Name, Role): time(0,_) <-
-	-players(List);
-	.concat(List, [[Id, Name, Role]], NewList);
++players(List) <-
+	.length(List, L);
+	?total_players(T);
+	-+waiting_players(T-L).	
+	
+@processOrder[atomic]
++join(Id, Name, Role): time(0,_) & not waiting_players(0) <-
+	-players(OldList);
+	.concat(OldList, [[Id, Name, Role]], NewList);
 	+players(NewList);
 	.print(Name, " has joined the game.").
+	
+
+	
+
+	
 	
 /* 
 	Phase 3
 	TODO
 */
+
++!start_game <-
+	.wait(0).
+	
+
