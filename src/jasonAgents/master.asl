@@ -64,12 +64,11 @@ diviners_range(1, 2).
 	.print("Game Start!!!");
 	!start_game.
 	
-	
 +!invite_werewolfs : werewolfs_number(N) <-
 	+temp(1);
 	while(temp(I) & I <= N) {
 		.concat("werewolf", I, Name);
-		.create_agent(Name, "werewolf.asl");
+		.create_agent(Name, "werewolf_random.asl");
 		-+temp(I+1);
 	}
 	-temp(_).
@@ -143,11 +142,6 @@ diviners_range(1, 2).
 	!sayPhase;
 	!endVote(day);
 	!endPhase(day, vote).
-
-+!endPhase(day, vote) <-
-	.broadcast(untell, time(_,_));
-	.broadcast(tell, time(day,discussion));
-	-+time(day,discussion).
 	
 +!endVote(day) <-
 	.wait(1000);
@@ -165,7 +159,6 @@ diviners_range(1, 2).
 			}
 		}
 		.findall([Count, Name],voteCount(Name,Count), CountList);
-		.abolish(voteCount(_,_));
 		.sort(CountList, ReversedSortedCountList);
 		.reverse(ReversedSortedCountList, SortedCountList);
 		
@@ -185,6 +178,73 @@ diviners_range(1, 2).
 		.print("Not enough votes... needed ", Alive/2);
 	}
 	!clean_votes.
+	
++!endPhase(day, vote) <-
+	.broadcast(untell, time(_,_));
+	.broadcast(tell, time(night,discussion));
+	-+time(night, discussion).
+
+/* 
+	Phase 5
+	Night Discussion
+*/
+	
++time(night, discussion) <-
+	!sayNight;
+	!sayPhase;
+	!endPhase(night, discussion).
+		
++!endPhase(night, discussion) <-
+	.wait(5000);
+	.broadcast(untell, time(_,_));
+	.broadcast(tell, time(night, vote));
+	-+time(night, vote).
+	
+/* 
+	Phase 6
+	Night Vote
+*/
+	
++time(night, vote) <-
+	!sayPhase;
+	!endVote(night);
+	!endPhase(night, vote).
+	
++!endVote(night) <-
+	.wait(1000);
+	
+	// get votes
+	.findall([Voter, Voted], vote(Voted)[source(Voter)], VoteList);
+	.length(VoteList, TotalVotes);
+	.print("Total Votes: ",TotalVotes);
+	
+	// count votes
+	for(.member([_,Name],VoteList)) {
+		if(voteCount(Name, W)){
+			-+voteCount(Name,W+1);
+		}else{
+			+voteCount(Name,1);
+		}
+	}
+	.findall([Count, Name],voteCount(Name,Count), CountList);
+	.sort(CountList, ReversedSortedCountList);
+	.reverse(ReversedSortedCountList, SortedCountList);
+
+	// get and kill the victim
+	?players(PlayerList);
+	for(.member([Count,Name],SortedCountList)) {
+		.member([Name, TrueName, _], PlayerList);
+		.print("->", TrueName," - ", Count, " vote(s)");
+	}
+	.nth(0, SortedCountList, [_, Chosen]);
+	!kill(Chosen);
+	
+	!clean_votes.
+	
++!endPhase(night, vote) <-
+	.broadcast(untell, time(_,_));
+	.broadcast(tell, time(day,discussion));
+	-+time(day,discussion).
 
 /* 
 	Other
@@ -193,6 +253,10 @@ diviners_range(1, 2).
 +!sayDay : day(X) <-
 	.print("-----------------------------");
 	.print("Current day: ", X).
+
++!sayNight : day(X) <-
+	.print("-----------------------------");
+	.print("Current night: ", X).
 	
 +!sayPhase : time(Time, Event) <-
 	.print("-----------------------------");
@@ -200,7 +264,8 @@ diviners_range(1, 2).
 	
 		
 +!clean_votes <-
-	.abolish(vote(_)).
+	.abolish(vote(_));
+	.abolish(voteCount(_,_)).
 	
 +!kill(ThatGuy) <- 
 	?players(PlayerList);
@@ -213,3 +278,4 @@ diviners_range(1, 2).
 +!tellWhoAreWerewolfs: true <- 
 	.findall(Name, join(Name,_,werewolf) , WerewolfList);
 	.send(WerewolfList, tell, werewolf(WerewolfList)).
+
