@@ -98,12 +98,12 @@ diviners_range(1, 2).
 	-+waiting_players(T-L).	
 	
 @processOrder[atomic]
-+join(Id, Name, Role): day(0) & not waiting_players(0) <-
++join(Id, Role): day(0) & not waiting_players(0) <-
 	-players(OldList);
+	mylib.randomName(Name);
 	.concat(OldList, [[Id, Name, Role]], NewList);
 	+players(NewList);
 	.print(Name, " has joined the game.").
-	
 
 	
 	
@@ -210,5 +210,6 @@ diviners_range(1, 2).
 	-+players_alive(A-1);
 	.broadcast(tell, dead(ThatGuy)).
 
-+!tellWhoAreWerewolfs: true <- .findall(Name, join(Name,_,werewolf) , WerewolfList);
-								.send(WerewolfList, tell, werewolf(WerewolfList)).
++!tellWhoAreWerewolfs: true <- 
+	.findall(Name, join(Name,_,werewolf) , WerewolfList);
+	.send(WerewolfList, tell, werewolf(WerewolfList)).

@@ -4,34 +4,10 @@
 
 /* Initial beliefs and rules */
 
-
-first_names([
-	"Robert",
-	"Bob",
-	"Just",
-	"Elizabeth",
-	"Sophie",
-	"Mitty"	
-]).
-
-last_names([
-	"Nicholas",
-	"the Woodcutter",
-	"Werewolf",
-	"Battory",
-	"Mitty"	
-]).
-
 /* Initial goals */
-
-
-
 !start.
 
-
-
 /* Plans */
-
 
 /* 
 	Phase 1 
@@ -49,20 +25,14 @@ last_names([
 +!start <- 
 	.my_name(Id);
 	+role(Id, werewolf);
-	?first_names(FirstNames);
-		.length(FirstNames, LFN);
-		.nth(math.floor(math.random(LFN)), FirstNames, FirstName);
-	?last_names(LastNames);
-		.length(LastNames, LLN);
-		.nth(math.floor(math.random(LLN)), LastNames, LastName);
-	.concat(FirstName, " ", LastName, Name);
-	.send(master, tell, join(Id, Name, werewolf)).
+	.send(master, tell, join(Id, werewolf)).
 
 
-+werewolf(List) <- for(.member(Name,List)){
-							+role(Name,werewolf);
-					}
-					-werewolf(List).
++werewolf(List) <- 
+	for(.member(Name,List)){
+		+role(Name,werewolf);
+	}
+	-werewolf(List).
 
 /* 
 	Phase 3
@@ -80,11 +50,40 @@ last_names([
 +time(day, vote) : .my_name(Self) & not dead(Self) <-
 	!vote(day).
 	
+/* 
+	Phase 5
+	Night Discussion
+*/
+
++time(night, discussion) : .my_name(Self) & not dead(Self) <-
+	!discuss(night).
+	
+/* 
+	Phase 6
+	Night Vote
+*/
+
++time(night, vote) : .my_name(Self) & not dead(Self) <-
+	!vote(night).
+	
+/*
+	Change here
+*/
+	
 //Change for discussion
 +!discuss(day) <- .wait(0).
 	
 //Change for vote selection
 +!vote(day) : .all_names(All) & .findall(A, .member(A, All) & not A == master & not .my_name(A) & not dead(A) & not role(A,werewolf), L ) <-
+			.length(L, ListSize);
+			.nth(math.floor(math.random(ListSize)), L, Chosen);
+			.broadcast(tell, vote(Chosen)).
+			
+//Change for discussion
++!discuss(night) <- .wait(0).
+	
+//Change for vote selection
++!vote(night) : .all_names(All) & .findall(A, .member(A, All) & not A == master & not .my_name(A) & not dead(A) & not role(A,werewolf), L ) <-
 			.length(L, ListSize);
 			.nth(math.floor(math.random(ListSize)), L, Chosen);
 			.broadcast(tell, vote(Chosen)).

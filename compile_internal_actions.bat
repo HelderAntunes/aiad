@@ -1,0 +1,1 @@
+javac -classpath C:\Users\Utilizador\Downloads\jason-2.2a\libs\jason-2.2.jar mylib/randomName.java
