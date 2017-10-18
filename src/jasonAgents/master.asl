@@ -151,7 +151,8 @@ diviners_range(1, 2).
 	
 +!endVote(day) <-
 	.wait(1000);
-	?players_alive(Alive)
+	?players_alive(Alive);
+	?players(PlayerList);
 	.findall([Voter, Voted], vote(Voted)[source(Voter)], VoteList);
 	.length(VoteList, TotalVotes);
 	.print("Total Votes: ",TotalVotes);
@@ -167,8 +168,10 @@ diviners_range(1, 2).
 		.abolish(voteCount(_,_));
 		.sort(CountList, ReversedSortedCountList);
 		.reverse(ReversedSortedCountList, SortedCountList);
+		
 		for(.member([Count,Name],SortedCountList)){
-			.print("->", Name," - ", Count, " vote(s)");
+			.member([Name, TrueName, _], PlayerList);
+			.print("->", TrueName," - ", Count, " vote(s)");
 		}
 		.nth(0, SortedCountList, [N0, Chosen]);
 		if((.length(SortedCountList, L) & L == 1) | (.nth(1, SortedCountList, [N1,_]) & N0 > N1)){
@@ -200,7 +203,9 @@ diviners_range(1, 2).
 	.abolish(vote(_)).
 	
 +!kill(ThatGuy) <- 
-	.print(ThatGuy, " died");
+	?players(PlayerList);
+	.member([ThatGuy, ThatGuyName, _], PlayerList);
+	.print(ThatGuyName, " died");
 	?players_alive(A);
 	-+players_alive(A-1);
 	.broadcast(tell, dead(ThatGuy)).
