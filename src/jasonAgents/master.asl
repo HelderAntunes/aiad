@@ -61,8 +61,6 @@ diviners_range(1, 2).
 	
 +!invite_players : players(_) & waiting_players(0) <-
 	.print("All players joined!");
-	.print("Game starting in 5 seconds...");
-	.wait(0000);
 	.print("Game Start!!!");
 	!start_game.
 	
@@ -151,11 +149,11 @@ diviners_range(1, 2).
 	-+time(day,discussion).
 	
 +!endVote(day) <-
-	.wait(5000);
+	.wait(1000);
 	?players_alive(Alive)
 	.findall([Voter, Voted], vote(Voted)[source(Voter)], VoteList);
 	.length(VoteList, TotalVotes);
-	.print(TotalVotes);
+	.print("Total Votes: ",TotalVotes);
 	if(TotalVotes >= Alive/2){
 		for(.member([_,Name],VoteList)){
 			if(voteCount(Name, W)){
@@ -166,35 +164,34 @@ diviners_range(1, 2).
 		}
 		.findall([Count, Name],voteCount(Name,Count), CountList);
 		.abolish(voteCount(_,_));
-		if(.length(SortedCountList, L) & L == 1){
-			.nth(0, CountList, [N0, Chosen]);
+		.sort(CountList, ReversedSortedCountList);
+		.reverse(ReversedSortedCountList, SortedCountList);
+		for(.member([Count,Name],SortedCountList)){
+			.print("->", Name," - ", Count, " vote(s)");
+		}
+		.nth(0, SortedCountList, [N0, Chosen]);
+		if((.length(SortedCountList, L) & L == 1) | (.nth(1, SortedCountList, [N1,_]) & N0 > N1)){
 			!kill(Chosen);
 		} else {
-			.sort(CountList, ReversedSortedCountList);
-			.reverse(ReversedSortedCountList, SortedCountList);
-			if(.nth(0, SortedCountList, [N0, Chosen]) & .nth(1, SortedCountList, [N1,_]) & N0 > N1){
-				!kill(Chosen);
-			} else {
-				.print("First place tie...");
-			}
+			.print("First place tie...");
 		}
+		
 		//.print(SortedCountList);
 	}else{
-		.print("Not enough votes...");
+		.print("Not enough votes... needed ", Alive/2);
 	}
-	.print("test");
 	!clean_votes.
 
-	
-	
 /* 
 	Other
 */
 
 +!sayDay : day(X) <-
+	.print("-----------------------------");
 	.print("Current day: ", X).
 	
 +!sayPhase : time(Time, Event) <-
+	.print("-----------------------------");
 	.print("Starting ", Time, " ", Event).
 	
 		
@@ -202,5 +199,7 @@ diviners_range(1, 2).
 	.abolish(vote(_)).
 	
 +!kill(ThatGuy) <- 
-	.print(ThatGuy, " died")
+	.print(ThatGuy, " died");
+	?players_alive(A);
+	-+players_alive(A-1);
 	.broadcast(tell, dead(ThatGuy)).
