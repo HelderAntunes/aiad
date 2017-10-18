@@ -1,5 +1,7 @@
-// Agent villager in project WereTest.mas2j
-/* Initial beliefs and rules */
+// Agent villager in project WereTest.mas2j
+
+/* Initial beliefs and rules */
+
 first_names([
 	"Robert",
 	"Bob",
@@ -17,9 +19,12 @@ last_names([
 	"Mitty"	
 ]).
 
-/* Initial goals */
-!start.
-/* Plans */
+/* Initial goals */
+
+!start.
+
+/* Plans */
+
 /* 
 	Phase 1 
 	Generate random distribution of players
@@ -42,5 +47,26 @@ last_names([
 		.length(LastNames, LLN);
 		.nth(math.floor(math.random(LLN)), LastNames, LastName);
 	.concat(FirstName, " ", LastName, Name);
-	.send(master, tell, join(Id, Name, villager)).
+	.send(master, tell, join(Id, Name, villager)).
+
+/* 
+	Phase 3
+	Day Discussion
+*/
+
++time(day_discussion) : .my_name(Self) & not dead(Self) <-
+	!discuss.
+	
++!discuss <- .wait(0).
+
+/* 
+	Phase 4
+	Day Vote
+*/
+
++time(day_vote) : .my_name(Self) & not dead(Self) <-
+	!vote.
+	
++!discuss <- .wait(0).
+
 
