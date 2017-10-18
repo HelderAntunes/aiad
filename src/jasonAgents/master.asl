@@ -4,9 +4,9 @@
 
 day(0).
 
-players_range(15, 20).
-werewolfs_range(2, 5).
-diviners_range(1, 2).
+players_range(2, 3).
+werewolfs_range(1, 2).
+diviners_range(0, 1).
 
 /* Initial goals */
 
@@ -269,13 +269,49 @@ diviners_range(1, 2).
 	
 +!kill(ThatGuy) <- 
 	?players(PlayerList);
-	.member([ThatGuy, ThatGuyName, _], PlayerList);
+	.member([ThatGuy, ThatGuyName, Role], PlayerList);
 	.print(ThatGuyName, " died");
+	
 	?players_alive(A);
 	-+players_alive(A-1);
-	.broadcast(tell, dead(ThatGuy)).
+	if (Role == werewolf) {
+		?werewolfs_number(W);
+		-+werewolfs_number(W-1);
+		.print(W-1);
+	}
+	if (Role == villager) {
+		?villagers_number(V);
+		-+villagers_number(V-1);
+		.print(V-1);
+	}
+	if (Role == diviner) {
+		?diviners_number(D);
+		-+diviners_number(D-1);
+		.print(D-1);
+	}
+
+	.broadcast(tell, dead(ThatGuy))
+	!checkWin.
 
 +!tellWhoAreWerewolfs: true <- 
 	.findall(Name, join(Name,_,werewolf) , WerewolfList);
 	.send(WerewolfList, tell, werewolf(WerewolfList)).
+	
++!checkWin <-
+	?werewolfs_number(W);
+	?villagers_number(V);
+	?diviners_number(D);
+	if (W == 0) {
+		.print("-----------------------------");
+		.print("Villagers win!");
+		.suspend;
+	}
+	if (V + D = 0) {
+		.print("-----------------------------");
+		.print("Werewolfs win!");
+		.suspend;
+	}
+	.
 
+
+	
