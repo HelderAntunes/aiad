@@ -116,6 +116,7 @@ diviners_range(1, 2).
 	?total_players(N);
 	+players_alive(N);
 	.broadcast(tell, time(day, discussion));
+	!tellWhoAreWerewolfs;
 	-+time(day, discussion).
 	
 	
@@ -203,3 +204,6 @@ diviners_range(1, 2).
 	?players_alive(A);
 	-+players_alive(A-1);
 	.broadcast(tell, dead(ThatGuy)).
+
++!tellWhoAreWerewolfs: true <- .findall(Name, join(Name,_,werewolf) , WerewolfList);
+								.send(WerewolfList, tell, werewolf(WerewolfList)).
