@@ -4,9 +4,9 @@
 
 day(0).
 
-players_range(2, 3).
-werewolfs_range(1, 2).
-diviners_range(0, 1).
+players_range(15, 20).
+werewolfs_range(2, 4).
+diviners_range(1, 2).
 
 /* Initial goals */
 
@@ -236,8 +236,13 @@ diviners_range(0, 1).
 		.member([Name, TrueName, _], PlayerList);
 		.print("->", TrueName," - ", Count, " vote(s)");
 	}
-	.nth(0, SortedCountList, [_, Chosen]);
-	!kill(Chosen);
+	.nth(0, SortedCountList, [N0, Chosen]);
+	if((.length(SortedCountList, L) & L == 1) | (.nth(1, SortedCountList, [N1,_]) & N0 > N1)){
+		.print(SortedCountList, " ", N0, " ", N1);
+		!kill(Chosen);
+	} else {
+		.print("First place tie...");
+	}
 	
 	!clean_votes.
 	
@@ -277,7 +282,6 @@ diviners_range(0, 1).
 	if (Role == werewolf) {
 		?werewolfs_number(W);
 		-+werewolfs_number(W-1);
-		.print(W-1);
 	}
 	if (Role == villager) {
 		?villagers_number(V);
@@ -306,7 +310,7 @@ diviners_range(0, 1).
 		.print("Villagers win!");
 		.suspend;
 	}
-	if (V + D = 0) {
+	if (V + D == 0) {
 		.print("-----------------------------");
 		.print("Werewolfs win!");
 		.suspend;
