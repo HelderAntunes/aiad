@@ -43,12 +43,14 @@
 	!vote(day).
 	
 /* 
-	Phase 6
-	Night Vote
+	Phase 5
+	Night Discussion
 */
 
-+time(night, vote) : .my_name(Self) & not dead(Self) <-
++time(night, discussion) : .my_name(Self) & not dead(Self) <-
 	!divine.
+	
++join(Name, Role) <- +role(Name,Role); -join(Name,Role).
 
 /*
 	Change here
@@ -58,10 +60,19 @@
 +!discuss(day) <- .wait(0).
 	
 //Change for vote selection
++!vote(day) : .findall(A, role(A,werewolf) & not dead(A), L ) & not .length(L, 0)<-
+	.length(L, ListSize);
+	.nth(math.floor(math.random(ListSize)), L, Chosen);
+	.broadcast(tell, vote(Chosen)).
+	
 +!vote(day) : .all_names(All) & .findall(A, .member(A, All) & not A == master & not .my_name(A) & not dead(A), L )<-
 	.length(L, ListSize);
 	.nth(math.floor(math.random(ListSize)), L, Chosen);
 	.broadcast(tell, vote(Chosen)).
 	
-+!divine <-
-	.wait(0).
+//Random divination
++!divine: .all_names(All) & .findall(A, .member(A, All) & not A == master & not .my_name(A) & not dead(A) & not role(A,_) , L )<-
+	.print("GOT HERE");
+	.length(L, ListSize);
+	.nth(math.floor(math.random(ListSize)), L, Chosen);
+	.send(master, askOne, join(Chosen,Role)).
