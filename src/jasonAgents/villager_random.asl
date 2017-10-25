@@ -47,7 +47,7 @@
 */
 	
 //Change for discussion
-+!discuss(day) <- .wait(0).
++!discuss(day).
 	
 //Change for vote selection
 +!vote(day) : .all_names(All) & .findall(A, .member(A, All) & not A == master & not .my_name(A) & not dead(A), L )<-

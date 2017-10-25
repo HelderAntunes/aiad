@@ -19,7 +19,6 @@ diviners_range(1, 2).
 	Phase 1 
 	Generate random distribution of players
 */
-
 +!generate_player_distribution <- 
 	!generate_werewolfs;
 	!generate_diviners;
@@ -238,7 +237,7 @@ diviners_range(1, 2).
 	}
 	.nth(0, SortedCountList, [N0, Chosen]);
 	if((.length(SortedCountList, L) & L == 1) | (.nth(1, SortedCountList, [N1,_]) & N0 > N1)){
-		.print(SortedCountList, " ", N0, " ", N1);
+		//.print(SortedCountList, " ", N0, " ", N1);
 		!kill(Chosen);
 	} else {
 		.print("First place tie...");
@@ -286,12 +285,12 @@ diviners_range(1, 2).
 	if (Role == villager) {
 		?villagers_number(V);
 		-+villagers_number(V-1);
-		.print(V-1);
+		//.print(V-1);
 	}
 	if (Role == diviner) {
 		?diviners_number(D);
 		-+diviners_number(D-1);
-		.print(D-1);
+		//.print(D-1);
 	}
 
 	.broadcast(tell, dead(ThatGuy))
@@ -302,6 +301,7 @@ diviners_range(1, 2).
 	.send(WerewolfList, tell, werewolf(WerewolfList)).
 	
 +!checkWin <-
+	?total_players(T);
 	?werewolfs_number(W);
 	?villagers_number(V);
 	?diviners_number(D);
@@ -310,7 +310,7 @@ diviners_range(1, 2).
 		.print("Villagers win!");
 		.suspend;
 	}
-	if (V + D == 0) {
+	if (T == 0) {
 		.print("-----------------------------");
 		.print("Werewolfs win!");
 		.suspend;
