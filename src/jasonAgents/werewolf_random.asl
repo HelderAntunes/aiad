@@ -66,7 +66,7 @@
 +time(night, discussion) : .my_name(Self) & not dead(Self) <-
 	!discuss(night).
 	
-+!discuss(night) <- .wait(0).
++!discuss(night).
 	
 /* 
 	Phase 6

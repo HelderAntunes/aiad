@@ -57,7 +57,7 @@
 */
 
 //Change for discussion
-+!discuss(day) <- .wait(0).
++!discuss(day).
 	
 //Change for vote selection
 +!vote(day) : .findall(A, role(A,werewolf) & not dead(A), L ) & not .length(L, 0)<-
@@ -75,3 +75,4 @@
 	.length(L, ListSize);
 	.nth(math.floor(math.random(ListSize)), L, Chosen);
 	.send(master, askOne, join(Chosen,Role)).
++!divine.
