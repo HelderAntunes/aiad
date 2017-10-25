@@ -47,7 +47,7 @@
 	Night Discussion
 */
 
-+time(night, discussion) : .my_name(Self) & not dead(Self) <-
++time(night, vote) : .my_name(Self) & not dead(Self) <-
 	!divine.
 	
 +join(Name, Role) <- +role(Name,Role); -join(Name,Role).
@@ -72,7 +72,6 @@
 	
 //Random divination
 +!divine: .all_names(All) & .findall(A, .member(A, All) & not A == master & not .my_name(A) & not dead(A) & not role(A,_) , L )<-
-	.print("GOT HERE");
 	.length(L, ListSize);
 	.nth(math.floor(math.random(ListSize)), L, Chosen);
 	.send(master, askOne, join(Chosen,Role)).
