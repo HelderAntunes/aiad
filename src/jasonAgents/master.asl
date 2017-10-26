@@ -11,7 +11,17 @@ diviners_range(1, 2).
 /* Initial goals */
 
 //!start.
-!generate_player_distribution.
+// !generate_player_distribution.
+	
++createRandomVillager(NumAgents) <- 
+	.print("Random villager... ", NumAgents).
+	
++createRandomWerewolf(NumAgents) <- 
+	.print("Random werewolf... ", NumAgents).
+	
++createRandomDiviner(NumAgents) <- 
+	.print("Random diviner... ", NumAgents).
+
 
 /* Plans */
 
