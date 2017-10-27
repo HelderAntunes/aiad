@@ -44,7 +44,7 @@
 	
 /* 
 	Phase 5
-	Night Discussion
+	Night Vote
 */
 
 +time(night, vote) : .my_name(Self) & not dead(Self) <-

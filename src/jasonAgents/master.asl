@@ -11,16 +11,16 @@ diviners_range(1, 2).
 /* Initial goals */
 
 //!start.
-// !generate_player_distribution.
+!generate_player_distribution.
 	
-+createRandomVillager(NumAgents) <- 
+/*+createRandomVillager(NumAgents) <- 
 	.print("Random villager... ", NumAgents).
 	
 +createRandomWerewolf(NumAgents) <- 
 	.print("Random werewolf... ", NumAgents).
 	
 +createRandomDiviner(NumAgents) <- 
-	.print("Random diviner... ", NumAgents).
+	.print("Random diviner... ", NumAgents).*/
 
 
 /* Plans */
@@ -190,31 +190,16 @@ diviners_range(1, 2).
 	
 +!endPhase(day, vote) <-
 	.broadcast(untell, time(_,_));
-	.broadcast(tell, time(night,discussion));
-	-+time(night, discussion).
-
-/* 
-	Phase 5
-	Night Discussion
-*/
-	
-+time(night, discussion) <-
-	!sayNight;
-	!sayPhase;
-	!endPhase(night, discussion).
-		
-+!endPhase(night, discussion) <-
-	.wait(5000);
-	.broadcast(untell, time(_,_));
-	.broadcast(tell, time(night, vote));
+	.broadcast(tell, time(night,vote));
 	-+time(night, vote).
 	
 /* 
-	Phase 6
+	Phase 5
 	Night Vote
 */
 	
 +time(night, vote) <-
+	!sayNight;
 	!sayPhase;
 	!endVote(night);
 	!endPhase(night, vote).
