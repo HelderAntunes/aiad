@@ -1,15 +1,7 @@
 // Agent master in project WereTest.mas2j
 
 /* Initial beliefs and rules */
-
 day(0).
-
-/* Initial goals */
-
-//!start.
-// !generate_player_distribution.
-
-/* Plans */
 
 /* 
 	Phase 1 
@@ -30,8 +22,7 @@ day(0).
 	+diviners_number(RDi + SDi + BDi);
 	+doctors_number(RDo + SDo + BDo);
 	+total_players(RV + SV + BV + RW + SW + BW + RDi + SDi + BDi + RDo + SDo + BDo);
-	!invite_players;
-	.
+	!invite_players.
 	
 /* 
 	Phase 2 
@@ -42,6 +33,7 @@ day(0).
 	!invite_villagers;
 	!invite_werewolfs;
 	!invite_diviners;
+	!invite_doctors;
 	.wait(1000);
 	!invite_players.
 	
@@ -81,7 +73,16 @@ day(0).
 		.concat("diviner", I, Name);
 		.create_agent(Name, "diviner_random.asl");
 		-+temp(I+1);
-		
+	}
+	-temp(_).
+	
++!invite_doctors : doctors_number(N) <-
+	?createAgents(_, _, _, _, _, _, _, _, _, RDo, SDo, BDo);
+	+temp(1);
+	while(temp(I) & I <= RDo) {
+		.concat("doctor", I, Name);
+		.create_agent(Name, "doctor_random.asl");
+		-+temp(I+1);
 	}
 	-temp(_).
 	
@@ -175,31 +176,16 @@ day(0).
 	
 +!endPhase(day, vote) <-
 	.broadcast(untell, time(_,_));
-	.broadcast(tell, time(night,discussion));
-	-+time(night, discussion).
-
-/* 
-	Phase 5
-	Night Discussion
-*/
-	
-+time(night, discussion) <-
-	!sayNight;
-	!sayPhase;
-	!endPhase(night, discussion).
-		
-+!endPhase(night, discussion) <-
-	.wait(5000);
-	.broadcast(untell, time(_,_));
-	.broadcast(tell, time(night, vote));
+	.broadcast(tell, time(night,vote));
 	-+time(night, vote).
 	
 /* 
-	Phase 6
+	Phase 5
 	Night Vote
 */
 	
 +time(night, vote) <-
+	!sayNight;
 	!sayPhase;
 	!endVote(night);
 	!endPhase(night, vote).
@@ -232,12 +218,17 @@ day(0).
 	}
 	.nth(0, SortedCountList, [N0, Chosen]);
 	if((.length(SortedCountList, L) & L == 1) | (.nth(1, SortedCountList, [N1,_]) & N0 > N1)){
-		//.print(SortedCountList, " ", N0, " ", N1);
-		!kill(Chosen);
+		if(cure(Chosen)){
+			.print(Chosen, " is cured and cannot die");
+		}
+		else{
+			//.print(SortedCountList, " ", N0, " ", N1);
+			!kill(Chosen);
+		}
 	} else {
 		.print("First place tie...");
 	}
-	
+	.abolish(cure(_));
 	!clean_votes.
 	
 +!endPhase(night, vote) <-
@@ -287,6 +278,11 @@ day(0).
 		-+diviners_number(D-1);
 		//.print(D-1);
 	}
+	if (Role == doctor) {
+		?doctors_number(D0);
+		-+doctors_number(D0-1);
+		//.print(D0-1);
+	}
 
 	.broadcast(tell, dead(ThatGuy))
 	!checkWin.
@@ -305,7 +301,7 @@ day(0).
 		.print("Villagers win!");
 		.suspend;
 	}
-	if (T == 0) {
+	if (T-W == 0) {
 		.print("-----------------------------");
 		.print("Werewolfs win!");
 		.suspend;

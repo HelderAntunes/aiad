@@ -41,6 +41,7 @@ public class WerewolfsGameEnv extends jason.environment.Environment {
 			if (type.equals("villager_random")) agents[0] = num;
 			else if (type.equals("werewolf_random")) agents[3] = num;
 			else if (type.equals("diviner_random")) agents[6] = num;
+			else if (type.equals("doctor_random")) agents[9] = num;
 		}
 		
 		String literal = "createAgents(" + agents[0];

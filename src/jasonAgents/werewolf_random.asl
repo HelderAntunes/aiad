@@ -60,16 +60,6 @@
 	
 /* 
 	Phase 5
-	Night Discussion
-*/
-
-+time(night, discussion) : .my_name(Self) & not dead(Self) <-
-	!discuss(night).
-	
-+!discuss(night).
-	
-/* 
-	Phase 6
 	Night Vote
 */
 
