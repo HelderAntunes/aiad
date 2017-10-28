@@ -8,6 +8,9 @@ players_range(15, 20).
 werewolfs_range(2, 4).
 diviners_range(1, 2).
 
+//TODO make this readable from file
+doctors_number(1).
+
 /* Initial goals */
 
 //!start.
@@ -48,9 +51,10 @@ diviners_range(1, 2).
 	?players_range(Vi, Vf);
 	?werewolfs_number(W);
 	?diviners_number(D);
+	?doctors_number(D0);
 	+total_players(math.floor(math.random(Vf - Vi + 1) + Vi));
 	?total_players(T);
-	+villagers_number(math.max(T - W - D, 0)).
+	+villagers_number(math.max(T - W - D - D0, 0)).
 	
 /* 
 	Phase 2 
@@ -60,6 +64,7 @@ diviners_range(1, 2).
 	+players([]);
 	!invite_werewolfs;
 	!invite_diviners;
+	!invite_doctors;
 	!invite_villagers;
 	.wait(1000);
 	!invite_players.
@@ -87,6 +92,15 @@ diviners_range(1, 2).
 	while(temp(I) & I <= N) {
 		.concat("diviner", I, Name);
 		.create_agent(Name, "diviner.asl");
+		-+temp(I+1);
+	}
+	-temp(_).
+	
++!invite_doctors : doctors_number(N) <-
+	+temp(1);
+	while(temp(I) & I <= N) {
+		.concat("doctor", I, Name);
+		.create_agent(Name, "doctor_random.asl");
 		-+temp(I+1);
 	}
 	-temp(_).
@@ -232,12 +246,17 @@ diviners_range(1, 2).
 	}
 	.nth(0, SortedCountList, [N0, Chosen]);
 	if((.length(SortedCountList, L) & L == 1) | (.nth(1, SortedCountList, [N1,_]) & N0 > N1)){
-		//.print(SortedCountList, " ", N0, " ", N1);
-		!kill(Chosen);
+		if(cure(Chosen)){
+			.print(Chosen, " is cured and cannot die");
+		}
+		else{
+			//.print(SortedCountList, " ", N0, " ", N1);
+			!kill(Chosen);
+		}
 	} else {
 		.print("First place tie...");
 	}
-	
+	.abolish(cure(_));
 	!clean_votes.
 	
 +!endPhase(night, vote) <-
@@ -287,6 +306,11 @@ diviners_range(1, 2).
 		-+diviners_number(D-1);
 		//.print(D-1);
 	}
+	if (Role == doctor) {
+		?doctors_number(D0);
+		-+doctors_number(D0-1);
+		//.print(D0-1);
+	}
 
 	.broadcast(tell, dead(ThatGuy))
 	!checkWin.
@@ -305,7 +329,7 @@ diviners_range(1, 2).
 		.print("Villagers win!");
 		.suspend;
 	}
-	if (T == 0) {
+	if (T-W == 0) {
 		.print("-----------------------------");
 		.print("Werewolfs win!");
 		.suspend;
