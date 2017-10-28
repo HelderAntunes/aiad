@@ -4,53 +4,34 @@
 
 day(0).
 
-players_range(15, 20).
-werewolfs_range(2, 4).
-diviners_range(1, 2).
-
 /* Initial goals */
 
 //!start.
 // !generate_player_distribution.
-	
-+createRandomVillager(NumAgents) <- 
-	.print("Random villager... ", NumAgents).
-	
-+createRandomWerewolf(NumAgents) <- 
-	.print("Random werewolf... ", NumAgents).
-	
-+createRandomDiviner(NumAgents) <- 
-	.print("Random diviner... ", NumAgents).
-
 
 /* Plans */
 
 /* 
 	Phase 1 
-	Generate random distribution of players
+	Get options about agents types.
 */
-+!generate_player_distribution <- 
-	!generate_werewolfs;
-	!generate_diviners;
-	//Always Last
-	!generate_villagers;
-	!invite_players.
 
-+!generate_werewolfs <- 
-	?werewolfs_range(Wi, Wf);
-	+werewolfs_number(math.floor(math.random(Wf - Wi + 1) + Wi)).
-	
-+!generate_diviners <- 
-	?diviners_range(Di, Df);
-	+diviners_number(math.floor(math.random(Df - Di + 1) + Di)).
-	
-+!generate_villagers <- 
-	?players_range(Vi, Vf);
-	?werewolfs_number(W);
-	?diviners_number(D);
-	+total_players(math.floor(math.random(Vf - Vi + 1) + Vi));
-	?total_players(T);
-	+villagers_number(math.max(T - W - D, 0)).
+/**
+ * Agent initials:
+ * RV, SV, BV: Random, Strategic, BDI villager 
+ * RW, SW, BW: Random, Strategic, BDI werewolf 
+ * RDi, SDi, BDi: Random, Strategic, BDI diviner 
+ * RDo, SDo, BDo: Random, Strategic, BDI doctor 
+ */
++createAgents(RV, SV, BV, RW, SW, BW, RDi, SDi, BDi, RDo, SDo, BDo) <-
+	.print("Creating agents");
+	+villagers_number(RV + SV + BV);
+	+werewolfs_number(RW + SW + BW);
+	+diviners_number(RDi + SDi + BDi);
+	+doctors_number(RDo + SDo + BDo);
+	+total_players(RV + SV + BV + RW + SW + BW + RDi + SDi + BDi + RDo + SDo + BDo);
+	!invite_players;
+	.
 	
 /* 
 	Phase 2 
@@ -58,9 +39,9 @@ diviners_range(1, 2).
 */
 +!invite_players : not players(_)<-
 	+players([]);
+	!invite_villagers;
 	!invite_werewolfs;
 	!invite_diviners;
-	!invite_villagers;
 	.wait(1000);
 	!invite_players.
 	
@@ -73,9 +54,20 @@ diviners_range(1, 2).
 	.print("Game Start!!!");
 	!start_game.
 	
-+!invite_werewolfs : werewolfs_number(N) <-
++!invite_villagers : villagers_number(N) <-
+	?createAgents(RV, SV, BV, _, _, _, _, _, _, _, _, _);
 	+temp(1);
-	while(temp(I) & I <= N) {
+	while(temp(I) & I <= RV) {
+		.concat("villager", I, Name);
+		.create_agent(Name, "villager_random.asl");
+		-+temp(I+1);
+	}
+	-temp(_).
+	
++!invite_werewolfs : werewolfs_number(N) <-
+	?createAgents(_, _, _, RW, SW, BW, _, _, _, _, _, _);
+	+temp(1);
+	while(temp(I) & I <= RW) {
 		.concat("werewolf", I, Name);
 		.create_agent(Name, "werewolf_random.asl");
 		-+temp(I+1);
@@ -83,20 +75,13 @@ diviners_range(1, 2).
 	-temp(_).
 
 +!invite_diviners : diviners_number(N) <-
+	?createAgents(_, _, _, _, _, _, RDi, SDi, BDi, _, _, _);
 	+temp(1);
-	while(temp(I) & I <= N) {
+	while(temp(I) & I <= RDi) {
 		.concat("diviner", I, Name);
-		.create_agent(Name, "diviner.asl");
+		.create_agent(Name, "diviner_random.asl");
 		-+temp(I+1);
-	}
-	-temp(_).
-	
-+!invite_villagers : villagers_number(N) <-
-	+temp(1);
-	while(temp(I) & I <= N) {
-		.concat("villager", I, Name);
-		.create_agent(Name, "villager_random.asl");
-		-+temp(I+1);
+		
 	}
 	-temp(_).
 	
