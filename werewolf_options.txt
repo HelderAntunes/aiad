@@ -1,5 +1,0 @@
-villager_random 13
-werewolf_random 2
-werewolf_bdi 1
-diviner_random 1
-doctor_random 1

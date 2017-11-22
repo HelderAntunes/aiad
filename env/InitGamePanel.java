@@ -29,6 +29,11 @@ class InitGamePanel extends JPanel {
 	private JComboBox comboBoxVillager;
 	private JComboBox comboBoxDiviner;
 	private JComboBox comboBoxDoctor;
+	
+	private JTextField wereWolfsNumTF;
+    private JTextField villagersNumTF;
+	private JTextField divinersNumTF;
+	private JTextField doctorsNumTF;
 
 	public InitGamePanel(WerewolfsGameEnv env) {
 
@@ -45,6 +50,46 @@ class InitGamePanel extends JPanel {
         startBtn.setBounds(400, 300,size.width, size.height);
         startBtn.addActionListener(new ActionListener() { 
 		  public void actionPerformed(ActionEvent e) { 
+
+            String typeWerewolfs = comboBoxWerewolf.getSelectedItem().toString();
+            String typeVillagers = comboBoxVillager.getSelectedItem().toString();
+            String typeDiviners = comboBoxDiviner.getSelectedItem().toString();
+            String typeDoctors = comboBoxDoctor.getSelectedItem().toString();
+            /**
+            * Agent initials:
+            * RV, SV, BV: Random, Strategic, BDI villager 
+            * RW, SW, BW: Random, Strategic, BDI werewolf 
+            * RDi, SDi, BDi: Random, Strategic, BDI diviner 
+            * RDo, SDo, BDo: Random, Strategic, BDI doctor
+            * 
+            * agents array = [RV, SV, BV, RW, SW, BW, RDi, SDi, BDi, RDo, SDo, BDo]
+            *
+            */
+            int[] agents = new int[12];
+
+            int werewolfNum = Integer.parseInt(wereWolfsNumTF.getText());
+            if (typeWerewolfs.equals("Random")) agents[3] = werewolfNum;
+            if (typeWerewolfs.equals("Strategic")) agents[4] = werewolfNum;
+            if (typeWerewolfs.equals("BDI")) agents[5] = werewolfNum;
+
+            int villagerNum = Integer.parseInt(villagersNumTF.getText());
+            if (typeVillagers.equals("Random")) agents[0] = villagerNum;
+            if (typeVillagers.equals("Strategic")) agents[1] = villagerNum;
+            if (typeVillagers.equals("BDI")) agents[2] = villagerNum;
+
+            int divinerNum = Integer.parseInt(divinersNumTF.getText());
+            if (typeDiviners.equals("Random")) agents[6] = divinerNum;
+            if (typeDiviners.equals("Strategic")) agents[7] = divinerNum;
+            if (typeDiviners.equals("BDI")) agents[8] = divinerNum;
+
+            int doctorNum = Integer.parseInt(doctorsNumTF.getText());
+            if (typeDoctors.equals("Random")) agents[9] = doctorNum;
+            if (typeDoctors.equals("Strategic")) agents[10] = doctorNum;
+            if (typeDoctors.equals("BDI")) agents[11] = doctorNum;
+		
+		    String literal = "createAgents(" + agents[0];
+		    for (int i = 1; i < agents.length; i++) literal += "," + agents[i]; 
+		    env.addPercept(Literal.parseLiteral(literal + ")"));
 		    frame.getContentPane().removeAll();
 		    frame.getContentPane().invalidate();
 			JPanel newPanel = new MidGamePanel(env);
@@ -115,7 +160,7 @@ class InitGamePanel extends JPanel {
         this.add(comboBoxDoctorLbl);
         
         // COMBOS
-        String[] options = { "BDI", "Strategic", "Random" };
+        String[] options = { "Random", "Strategic", "BDI" };
         int yCombos = yComboLabels + size.height + 5;
 
         comboBoxWerewolf = new JComboBox(options);
@@ -163,6 +208,33 @@ class InitGamePanel extends JPanel {
         size = numAgentsDoctorLbl.getPreferredSize();
         numAgentsDoctorLbl.setBounds(w/9*7, yNumAgents, size.width, size.height);
         this.add(numAgentsDoctorLbl);
+
+        // NUMBER AGENTS INPUTS
+        int yNumAgentsTF = yNumAgents + size.height + 5;
+        
+        wereWolfsNumTF = new JTextField(6);
+        wereWolfsNumTF.setText("2");
+        size = wereWolfsNumTF.getPreferredSize();
+        wereWolfsNumTF.setBounds(w/9, yNumAgentsTF, size.width, size.height);
+        this.add(wereWolfsNumTF);
+
+        villagersNumTF = new JTextField(6);
+        villagersNumTF.setText("7");
+        size = villagersNumTF.getPreferredSize();
+        villagersNumTF.setBounds(w/9*3, yNumAgentsTF, size.width, size.height);
+        this.add(villagersNumTF);
+
+        divinersNumTF = new JTextField(6);
+        divinersNumTF.setText("1");
+        size = divinersNumTF.getPreferredSize();
+        divinersNumTF.setBounds(w/9*5, yNumAgentsTF, size.width, size.height);
+        this.add(divinersNumTF);
+
+        doctorsNumTF = new JTextField(6);
+        doctorsNumTF.setText("1");
+        size = doctorsNumTF.getPreferredSize();
+        doctorsNumTF.setBounds(w/9*7, yNumAgentsTF, size.width, size.height);
+        this.add(doctorsNumTF);
         
 	}
 
@@ -170,7 +242,7 @@ class InitGamePanel extends JPanel {
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		//g.drawImage(image, 0, 0, this); 
-		}
+	}
 	
 	public void setInfoTestLbl(String text) {
 		infoTestLbl.setText(text);	

@@ -34,8 +34,6 @@ public class WerewolfsGameEnv extends jason.environment.Environment {
             }
         });
 		
-		try { this.readOptionFile(); }
-		catch (Exception e) {}
     }
     private void initGUI() {
         //Create and set up the window.
