@@ -22,6 +22,7 @@ day(0).
 	+diviners_number(RDi + SDi + BDi);
 	+doctors_number(RDo + SDo + BDo);
 	+total_players(RV + SV + BV + RW + SW + BW + RDi + SDi + BDi + RDo + SDo + BDo);
+	agentsCreated(['teste1', 'teste2']);
 	!invite_players.
 	
 /* 

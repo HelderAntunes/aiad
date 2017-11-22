@@ -3,95 +3,146 @@
 import jason.asSyntax.*;
 import jason.environment.*;
 import java.util.logging.*;
-import java.io.File;
+import java.io.*;
 import java.util.Scanner;
 import java.lang.String;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
+import javax.swing.*;
 
-import java.awt.Container;
-import java.awt.Insets;
-import java.awt.Dimension;
-import javax.swing.JButton;
-import java.awt.Graphics;
+import java.awt.*;
 import java.awt.event.*;
 import javax.imageio.ImageIO;
-import java.io.IOException;
 import java.awt.image.BufferedImage;
 
 public class WerewolfsGameEnv extends jason.environment.Environment {
 
     private Logger logger = Logger.getLogger("WerewolfsGame.mas2j." + WerewolfsGameEnv.class.getName());
-    private static int WIDTH_FRAME = 800;
-    private static int HEIGHT_FRAME = 600;
+    public static int WIDTH_FRAME = 800;
+    public static int HEIGHT_FRAME = 600;
 
-    JFrame frame = new JFrame("The Werewolves of Millers Hollow");
+    JFrame frame;
+	JPanel currPanel;
 
     /** Called before the MAS execution with the args informed in .mas2j */
     @Override
     public void init(String[] args) {
         super.init(args);
-		try { this.readOptionFile(); }
-		catch (Exception e) {}
 	
 		javax.swing.SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 initGUI();
             }
         });
+		
+		try { this.readOptionFile(); }
+		catch (Exception e) {}
     }
     private void initGUI() {
         //Create and set up the window.
-        
+		frame = new JFrame("The Werewolves of Millers Hollow");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        InitGamePanel initGamePanel = new InitGamePanel(frame);
-        frame.getContentPane().add(initGamePanel);
+		currPanel = new InitGamePanel(this);
+        frame.getContentPane().add(currPanel);
 
         //Size and display the window.
         frame.setSize(WIDTH_FRAME, HEIGHT_FRAME);
         frame.setVisible(true);
     }
+	
+	public JPanel getCurrPanel() {
+		return currPanel;
+	}
+	
+	public void setCurrPanel(JPanel newPanel) {
+		currPanel = newPanel;
+	}
+
+    public JFrame getFrame() {
+    	return frame;
+    }
 
     class InitGamePanel extends JPanel {
     	private JFrame frame;
 		private BufferedImage image;
+		private WerewolfsGameEnv env;
+		private JLabel infoTestLbl;
+		
+		private JLabel werewolfTitle;
+		private JLabel villagerTitle;
+		private JLabel divinerTitle;
+		private JLabel doctorTitle;
 
-    	public InitGamePanel(JFrame frame) {
+    	public InitGamePanel(WerewolfsGameEnv env) {
 
     		try {                
 	          image = ImageIO.read(new File("./IMG_0062.jpg"));
 	       	} catch (IOException ex) {
 
 	       	}
-    		this.frame = frame;
+	       	this.env = env;
+    		this.frame = env.getFrame();
     		this.setLayout(null);
     		JButton startBtn = new JButton("START");
 	        Dimension size = startBtn.getPreferredSize();
-	        startBtn.setBounds(150, 15,size.width, size.height);
+	        startBtn.setBounds(400, 300,size.width, size.height);
 	        startBtn.addActionListener(new ActionListener() { 
 			  public void actionPerformed(ActionEvent e) { 
 			    frame.getContentPane().removeAll();
 			    frame.getContentPane().invalidate();
-				frame.getContentPane().add(new MidGamePanel(frame));
+				JPanel newPanel = new MidGamePanel(env);
+				env.setCurrPanel(newPanel);
+				frame.getContentPane().add(newPanel);
 				frame.getContentPane().revalidate();
 			  } 
 			});
 	        this.add(startBtn);
+
+	        infoTestLbl = new JLabel("test label");
+	        //infoTestLbl.setText("test label");
+	        size = infoTestLbl.getPreferredSize();
+	        infoTestLbl.setBounds(390, 295, size.width, size.height);
+	        this.add(infoTestLbl);
+			
+			int w = env.WIDTH_FRAME;
+			werewolfTitle = new JLabel("Werewolfs");
+			werewolfTitle.setText("Werewolfs");
+			werewolfTitle.setBounds(w/9, 20, w/9, 20);
+			this.add(werewolfTitle);
+			
+			villagerTitle = new JLabel("Villagers");
+			villagerTitle.setText("Villagers");
+			villagerTitle.setBounds(w/9*3, 20, w/9, 20); 
+			this.add(villagerTitle);
+
+			divinerTitle = new JLabel("Diviners");
+			divinerTitle.setText("Diviners");
+			divinerTitle.setBounds(w/9*5, 20, w/9, 20); 
+			this.add(divinerTitle);
+			
+			doctorTitle = new JLabel("Doctors");
+			doctorTitle.setText("Doctors");
+			doctorTitle.setBounds(w/9*7, 20, w/9, 20);
+			this.add(doctorTitle);
     	}
 
     	@Override 
     	public void paintComponent(Graphics g) {
     		super.paintComponent(g);
-    		g.drawImage(image, 0, 0, this); 
+    		//g.drawImage(image, 0, 0, this); 
    		}
-
+		
+		public void setInfoTestLbl(String text) {
+			infoTestLbl.setText(text);	
+		}
+		
     }
 
     class MidGamePanel extends JPanel {
     	private JFrame frame;
+    	private WerewolfsGameEnv env;
 
-    	public MidGamePanel(JFrame frame) {
-    		this.frame = frame;
+    	public MidGamePanel(WerewolfsGameEnv env) {
+    		this.env = env;
+    		this.frame = env.getFrame();
     		this.setLayout(null);
     		JButton startBtn = new JButton("MID");
 	        Dimension size = startBtn.getPreferredSize();
@@ -100,7 +151,9 @@ public class WerewolfsGameEnv extends jason.environment.Environment {
 			  public void actionPerformed(ActionEvent e) { 
 			    frame.getContentPane().removeAll();
 			    frame.getContentPane().invalidate();
-				frame.getContentPane().add(new InitGamePanel(frame));
+				JPanel newPanel = new InitGamePanel(env);
+				env.setCurrPanel(newPanel);
+				frame.getContentPane().add(newPanel);
 				frame.getContentPane().revalidate();
 			  } 
 			});
@@ -148,7 +201,15 @@ public class WerewolfsGameEnv extends jason.environment.Environment {
     public boolean executeAction(String agName, Structure action) {
 		if (action.getFunctor().equals("Something")) {
 			return true;
-		} else {
+		} 
+		else if (action.getFunctor().equals("agentsCreated")) {
+			// get arguments of predicate...
+			// http://jason.sourceforge.net/api/jason/asSyntax/Structure.html
+			if (currPanel instanceof InitGamePanel) 
+				((InitGamePanel)currPanel).setInfoTestLbl(action.getTerm(0).toString());
+			return true;
+		}
+		else {
 			logger.info("executing: "+action+", but not implemented!");
 			return false;
 		}

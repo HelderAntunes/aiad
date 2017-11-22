@@ -2,7 +2,7 @@
 MAS werewolfsGame {
     infrastructure: Centralised
 
-    environment: WerewolfsGameEnv
+    environment: env.WerewolfsGameEnv
 
     agents:
 		master;	
