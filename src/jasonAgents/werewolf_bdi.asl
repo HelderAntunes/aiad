@@ -27,6 +27,12 @@
 	+role(Id, werewolf);
 	.send(master, tell, join(Id, werewolf)).
 
++init(List) <- 
+	for(.member([Name, _,_],List)){
+		+suspect(role(Name,villager),0.0);
+		+trust(Name,0,0,1.0);
+	}
+	-init(List).
 
 +werewolf(List) <- 
 	for(.member(Name,List)){
@@ -40,9 +46,6 @@
 */
 +time(day, discussion) : not initialized <-
 	.all_names(All);
-	for(.member(Name,All)){
-		+trust(Name,0,0,1.0);
-	};
 	!discuss(day).
 	
 +time(day, discussion) : .my_name(Self) & not dead(Self) <-
@@ -60,7 +63,7 @@
 	!vote(day).
 	
 +!vote(day) : 
-	.all_names(All) & .findall(A, .member(A, All) & not A == master & not .my_name(A) & not dead(A) & not role(A,werewolf), L ) <-
+	.all_names(All) & .findall(A, .member(A, All) & not A == master & not .my_name(A) & not dead(A) & not role(A,werewolf)[source(master)], L ) <-
 	.length(L, ListSize);
 	.nth(math.floor(math.random(ListSize)), L, Chosen);
 	.broadcast(tell, vote(Chosen)).
@@ -83,56 +86,85 @@
 	Observation Model
 */
 
-/*+role(Name, Werewolf)[source(self | master)] <- .print("Stupid").
-& X\=master*/
 /*
-+role(Y, Werewolf)[source(X)] : .my_name(Self) & X\=Self  & not role(X, werewolf) <-
-	+suspect([role(X, Werewolf)], [role(Y, Werewolf)]).
-	
-+suspect(B1, B2) <- !think(suspect(B1,B2)).
-
-+!think(suspect(B1,B2)) <-
-	for ( member(b1, B1) ) {
-        eval(X, b1);
-		if(X){
-			X
-		}
-    }*/
-
-//X diz que Y é um werewolf.
-+role(Y, werewolf)[source(X)] : .my_name(Self) & not X == Self & trust(X, R, W, T) & suspect(role(X, werewolf), S)<-
-		-+suspect(role(X, werewolf), S+(1-S)*T).
-		
-+role(Y, werewolf)[source(X)] : .my_name(Self) & not X == Self & trust(X, R, W, T)<-
-		-+suspect(role(X, werewolf), T).		
-		
-+role(Y, R)[source(X)] : .my_name(Self) & not X == Self & trust(X, R, W, T) & suspect(role(X, R), S)<-
-		-+suspect(role(Y, werewolf), S+(1-S)*T).
-		
-+role(Y, R)[source(X)] : .my_name(Self) & not X == Self & trust(X, R, W, T) & suspect(role(X, R2), S)<-
-	if(T > S){
-		-suspect(role(Y, R2), _);
-		+suspect(role(Y, R), T-S);
-	}
-	else{
-		-+suspect(role(X, R2), S-T);
-	}.
-		
-+role(Y, R)[source(X)] : .my_name(Self) & not X == Self & trust(X, R, W, T) <-
-	-+suspect(role(X, R), T).	
-//FC1 + (1-FC2)*FC2
-
+	X == master
+*/
 +role(Y, Role)[source(master)] <-
-	.findall(X, role(Y, _)[source(X)] & .my_name(Self) & not X == Self, BeliefList);
-	for(member(role(Y, R)[source(N)], BeliefList)){
-		?trust(X, R, W, T)
-		if(R == Role){
-			-+trust(X, R+1, W, (((R+1)/(R+1+W))-0.5)*2);
+	.findall([X, R], role(Y, R)[source(X)] & .my_name(Self) & not X == Self & not X == master, BeliefList);
+	.print(BeliefList);
+	for(.member([N, RR], BeliefList)){
+		?trust(N, Corrects, Wrongs, Tn);
+		.print(N, " ", Tn);
+		if(RR == Role){
+			-+trust(N, Corrects+1, Wrongs, (((Corrects+1)/(Corrects+1+Wrongs))-0.5)*2);
 		}
 		else{
-			-+trust(X, R, W+1, ((R/(R+1+W))-0.5)*2);
+			-+trust(N, Corrects, Wrongs+1, ((Corrects/(Corrects+1+Wrongs))-0.5)*2);
 		}
-	}.
+		.print(N, " ", Tn);
+	}.	
+
+/*
+	Confirmation role(Y, Rxy)[source(master)]
+	Rxy = Rpy
+*/
++role(Y, Rpy)[source(X)] : 
+	.my_name(Self) & not X == Self &
+	not X == master &
+	role(Y, Rpy)[source(master)] &
+	trust(X, Corrects, Wrongs, Tx)
+	<-
+	-+trust(X, Corrects+1, Wrongs, (((Corrects+1)/(Corrects+1+Wrongs))-0.5)*2).
+
+/*
+	Confirmation role(Y, Rpy)[source(master)]
+	Rxy != Rpy
+*/
++role(Y, Rxy)[source(X)] : 
+	.my_name(Self) & not X == Self &
+	not X == master &
+	role(Y, Rpy)[source(master)] &
+	trust(X, Corrects, Wrongs, Tx)
+	<-
+	-+trust(X, Corrects, Wrongs+1, (((Corrects)/(Corrects+1+Wrongs))-0.5)*2).		
+
+/*
+	No confirmation role(Y, _)[source(master)]
+	Rxy == Rpy
+*/
++role(Y, Rpy)[source(X)] : 
+	.my_name(Self) & not X == Self &
+	not X == master &
+	trust(X, _, _, Tx) &
+	suspect(role(Y, Rpy), SyRpy)
+	<-
+	-+suspect(role(Y, Rpy), SyRpy + (1.0 - SyRpy) * Tx).	
+	
+/*
+	No confirmation role(Y, _)[source(master)]
+	Rxy != Rpy
+	Tx = Sy(Rxy)
+*/
++role(Y, Rxy)[source(X)] : 
+	.my_name(Self) & not X == Self &
+	not X == master &
+	trust(X, _, _, Tx) &
+	suspect(role(Y, Rpy), SyRpy)
+	<-
+	if (Tx > SyRpy) {
+		-suspect(role(Y, Rpy), SyRpy);
+		+suspect(role(Y, Rxy), Tx - SyRpy);
+	}
+	else {
+		if(Tx < 0){
+			-+suspect(role(Y, Rpy), SyRpy - (1.0 - SyRpy) * Tx)
+		}
+		else{
+			-+suspect(role(Y, Rpy), SyRpy - Tx)
+		}
+	}.	
+
+
 
 	
 	

@@ -122,8 +122,10 @@ day(0).
 +!start_game <-
 	?total_players(N);
 	+players_alive(N);
-	.broadcast(tell, time(day, discussion));
+	?players(List);
+	.broadcast(tell, init(List));
 	!tellWhoAreWerewolfs;
+	.broadcast(tell, time(day, discussion));
 	-+time(day, discussion).
 	
 	
@@ -273,8 +275,8 @@ day(0).
 +!kill(ThatGuy) <- 
 	?players(PlayerList);
 	.member([ThatGuy, ThatGuyName, Role], PlayerList);
-	.print(ThatGuyName, " died");
-	
+	//.print(ThatGuyName, " died");
+	.print(ThatGuy, " died");
 	?players_alive(A);
 	-+players_alive(A-1);
 	if (Role == werewolf) {
@@ -321,6 +323,10 @@ day(0).
 		.suspend;
 	}
 	.
+	
++role(Y, Rxy)[source(X)] <-
+	?
+	.print(X, " says that ", Y, " is a ", Rxy).
 
 
 	
