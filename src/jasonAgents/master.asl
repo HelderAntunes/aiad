@@ -70,7 +70,13 @@ day(0).
 		.create_agent(Name, "werewolf_random.asl");
 		-+temp(I+1);
 	}
-	-temp(_).
+	while(temp(I) & I <= RW + SW +BW) {
+		.concat("werewolf", I, Name);
+		.create_agent(Name, "werewolf_bdi.asl");
+		-+temp(I+1);
+	}
+	-temp(_);
+	.
 
 +!invite_diviners : diviners_number(N) <-
 	?createAgents(_, _, _, _, _, _, RDi, SDi, BDi, _, _, _);

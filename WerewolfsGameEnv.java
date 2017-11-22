@@ -6,11 +6,26 @@ import java.util.logging.*;
 import java.io.File;
 import java.util.Scanner;
 import java.lang.String;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
 
+import java.awt.Container;
+import java.awt.Insets;
+import java.awt.Dimension;
+import javax.swing.JButton;
+import java.awt.Graphics;
+import java.awt.event.*;
+import javax.imageio.ImageIO;
+import java.io.IOException;
+import java.awt.image.BufferedImage;
 
 public class WerewolfsGameEnv extends jason.environment.Environment {
 
     private Logger logger = Logger.getLogger("WerewolfsGame.mas2j." + WerewolfsGameEnv.class.getName());
+    private static int WIDTH_FRAME = 800;
+    private static int HEIGHT_FRAME = 600;
+
+    JFrame frame = new JFrame("The Werewolves of Millers Hollow");
 
     /** Called before the MAS execution with the args informed in .mas2j */
     @Override
@@ -18,6 +33,85 @@ public class WerewolfsGameEnv extends jason.environment.Environment {
         super.init(args);
 		try { this.readOptionFile(); }
 		catch (Exception e) {}
+	
+		javax.swing.SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                initGUI();
+            }
+        });
+    }
+    private void initGUI() {
+        //Create and set up the window.
+        
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        InitGamePanel initGamePanel = new InitGamePanel(frame);
+        frame.getContentPane().add(initGamePanel);
+
+        //Size and display the window.
+        frame.setSize(WIDTH_FRAME, HEIGHT_FRAME);
+        frame.setVisible(true);
+    }
+
+    class InitGamePanel extends JPanel {
+    	private JFrame frame;
+		private BufferedImage image;
+
+    	public InitGamePanel(JFrame frame) {
+
+    		try {                
+	          image = ImageIO.read(new File("./IMG_0062.jpg"));
+	       	} catch (IOException ex) {
+
+	       	}
+    		this.frame = frame;
+    		this.setLayout(null);
+    		JButton startBtn = new JButton("START");
+	        Dimension size = startBtn.getPreferredSize();
+	        startBtn.setBounds(150, 15,size.width, size.height);
+	        startBtn.addActionListener(new ActionListener() { 
+			  public void actionPerformed(ActionEvent e) { 
+			    frame.getContentPane().removeAll();
+			    frame.getContentPane().invalidate();
+				frame.getContentPane().add(new MidGamePanel(frame));
+				frame.getContentPane().revalidate();
+			  } 
+			});
+	        this.add(startBtn);
+    	}
+
+    	@Override 
+    	public void paintComponent(Graphics g) {
+    		super.paintComponent(g);
+    		g.drawImage(image, 0, 0, this); 
+   		}
+
+    }
+
+    class MidGamePanel extends JPanel {
+    	private JFrame frame;
+
+    	public MidGamePanel(JFrame frame) {
+    		this.frame = frame;
+    		this.setLayout(null);
+    		JButton startBtn = new JButton("MID");
+	        Dimension size = startBtn.getPreferredSize();
+	        startBtn.setBounds(150, 15,size.width, size.height);
+	        startBtn.addActionListener(new ActionListener() { 
+			  public void actionPerformed(ActionEvent e) { 
+			    frame.getContentPane().removeAll();
+			    frame.getContentPane().invalidate();
+				frame.getContentPane().add(new InitGamePanel(frame));
+				frame.getContentPane().revalidate();
+			  } 
+			});
+	        this.add(startBtn);
+    	}
+
+    	@Override 
+    	public void paintComponent(Graphics g) {
+    		super.paintComponent(g);
+   		}
+
     }
 	
 	/**
@@ -40,6 +134,7 @@ public class WerewolfsGameEnv extends jason.environment.Environment {
 			int num = scanner.nextInt();
 			if (type.equals("villager_random")) agents[0] = num;
 			else if (type.equals("werewolf_random")) agents[3] = num;
+			else if (type.equals("werewolf_bdi")) agents[5] = num;
 			else if (type.equals("diviner_random")) agents[6] = num;
 			else if (type.equals("doctor_random")) agents[9] = num;
 		}
