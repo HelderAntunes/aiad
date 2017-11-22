@@ -54,6 +54,12 @@ day(0).
 		.create_agent(Name, "villager_random.asl");
 		-+temp(I+1);
 	}
+	-+temp(1);
+	while(temp(I) & I <= BV) {
+		.concat("villager", I, Name);
+		.create_agent(Name, "villager_bdi.asl");
+		-+temp(I+1);
+	}
 	-temp(_).
 	
 +!invite_werewolfs : werewolfs_number(N) <-
@@ -284,7 +290,8 @@ day(0).
 		//.print(D0-1);
 	}
 
-	.broadcast(tell, dead(ThatGuy))
+	.broadcast(tell, dead(ThatGuy));
+	.broadcast(tell, role(ThatGuy, Role));
 	!checkWin.
 
 +!tellWhoAreWerewolfs: true <- 
