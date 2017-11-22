@@ -1,4 +1,4 @@
-villager_random 13
+villager_bdi 13
 werewolf_random 2
 werewolf_bdi 1
 diviner_random 1
