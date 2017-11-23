@@ -110,8 +110,8 @@ day(0).
 	mylib.randomName(Name);
 	.concat(OldList, [[Id, Name, Role]], NewList);
 	+players(NewList);
-	.print(Name, " has joined the game.").
-
+	.print(Name, " has joined the game.");
+	playerJoined(Name).
 	
 	
 /* 

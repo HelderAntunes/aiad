@@ -101,6 +101,11 @@ public class WerewolfsGameEnv extends jason.environment.Environment {
 				((InitGamePanel)currPanel).setInfoTestLbl(action.getTerm(0).toString());
 			return true;
 		}
+		else if (action.getFunctor().equals("playerJoined")) {
+			if (currPanel instanceof MidGamePanel)
+				((MidGamePanel)currPanel).setInfoTestLbl(action.getTerm(0).toString());
+			return true;
+		}
 		else {
 			logger.info("executing: "+action+", but not implemented!");
 			return false;
