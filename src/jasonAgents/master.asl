@@ -55,6 +55,12 @@ day(0).
 		-+temp(I+1);
 	}
 	-+temp(1);
+	while(temp(I) & I <= SV) {
+		.concat("villager", I, Name);
+		.create_agent(Name, "villager_strategic.asl");
+		-+temp(I+1);
+	}
+	-+temp(1);
 	while(temp(I) & I <= BV) {
 		.concat("villager", I, Name);
 		.create_agent(Name, "villager_bdi.asl");
