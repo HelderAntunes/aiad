@@ -18,8 +18,7 @@ class InitGamePanel extends JPanel {
 	private JFrame frame;
 	private BufferedImage image;
 	private WerewolfsGameEnv env;
-	private JLabel infoTestLbl;
-	
+
 	private JLabel werewolfTitle;
 	private JLabel villagerTitle;
 	private JLabel divinerTitle;
@@ -29,27 +28,40 @@ class InitGamePanel extends JPanel {
 	private JComboBox comboBoxVillager;
 	private JComboBox comboBoxDiviner;
 	private JComboBox comboBoxDoctor;
-	
+
 	private JTextField wereWolfsNumTF;
-    private JTextField villagersNumTF;
+  	private JTextField villagersNumTF;
 	private JTextField divinersNumTF;
 	private JTextField doctorsNumTF;
 
+	private BufferedImage werewolfImage;
+	private BufferedImage villagerImage;
+	private BufferedImage divinerImage;
+	private BufferedImage doctorImage;
+
 	public InitGamePanel(WerewolfsGameEnv env) {
 
-		try {                
+		int w = env.WIDTH_FRAME;
+		int h = env.HEIGHT_FRAME;
+
+		try {
           image = ImageIO.read(new File("./IMG_0062.jpg"));
+		  werewolfImage = ImageIO.read(new File("./assets/werewolf.png"));
+		  villagerImage = ImageIO.read(new File("./assets/villager.png"));
+		  divinerImage = ImageIO.read(new File("./assets/diviner.png"));
+		  doctorImage = ImageIO.read(new File("./assets/doctor.png"));
        	} catch (IOException ex) {
 
        	}
        	this.env = env;
 		this.frame = env.getFrame();
 		this.setLayout(null);
+
 		JButton startBtn = new JButton("START");
         Dimension size = startBtn.getPreferredSize();
-        startBtn.setBounds(400, 300,size.width, size.height);
-        startBtn.addActionListener(new ActionListener() { 
-		  public void actionPerformed(ActionEvent e) { 
+        startBtn.setBounds(w/2 - size.width/2, h - h/6, size.width, size.height);
+        startBtn.addActionListener(new ActionListener() {
+		  public void actionPerformed(ActionEvent e) {
 
             String typeWerewolfs = comboBoxWerewolf.getSelectedItem().toString();
             String typeVillagers = comboBoxVillager.getSelectedItem().toString();
@@ -57,11 +69,11 @@ class InitGamePanel extends JPanel {
             String typeDoctors = comboBoxDoctor.getSelectedItem().toString();
             /**
             * Agent initials:
-            * RV, SV, BV: Random, Strategic, BDI villager 
-            * RW, SW, BW: Random, Strategic, BDI werewolf 
-            * RDi, SDi, BDi: Random, Strategic, BDI diviner 
+            * RV, SV, BV: Random, Strategic, BDI villager
+            * RW, SW, BW: Random, Strategic, BDI werewolf
+            * RDi, SDi, BDi: Random, Strategic, BDI diviner
             * RDo, SDo, BDo: Random, Strategic, BDI doctor
-            * 
+            *
             * agents array = [RV, SV, BV, RW, SW, BW, RDi, SDi, BDi, RDo, SDo, BDo]
             *
             */
@@ -86,9 +98,9 @@ class InitGamePanel extends JPanel {
             if (typeDoctors.equals("Random")) agents[9] = doctorNum;
             if (typeDoctors.equals("Strategic")) agents[10] = doctorNum;
             if (typeDoctors.equals("BDI")) agents[11] = doctorNum;
-		
+
 		    String literal = "createAgents(" + agents[0];
-		    for (int i = 1; i < agents.length; i++) literal += "," + agents[i]; 
+		    for (int i = 1; i < agents.length; i++) literal += "," + agents[i];
 		    env.addPercept(Literal.parseLiteral(literal + ")"));
 		    frame.getContentPane().removeAll();
 		    frame.getContentPane().invalidate();
@@ -96,44 +108,45 @@ class InitGamePanel extends JPanel {
 			env.setCurrPanel(newPanel);
 			frame.getContentPane().add(newPanel);
 			frame.getContentPane().revalidate();
-		  } 
+		  }
 		});
         this.add(startBtn);
 
-        infoTestLbl = new JLabel("test label");
-        //infoTestLbl.setText("test label");
-        size = infoTestLbl.getPreferredSize();
-        infoTestLbl.setBounds(390, 295, size.width, size.height);
-        this.add(infoTestLbl);
-		
-		int w = env.WIDTH_FRAME;
+		// MAIN TITLE
+		int yMainTitle = 20;
+		JLabel mainTitle = new JLabel("MainTile");
+		mainTitle.setFont(new Font("Serif", Font.PLAIN, 30));
+		mainTitle.setText("Initial configuration");
+		size = mainTitle.getPreferredSize();
+		mainTitle.setBounds(w/2 - size.width/2, yMainTitle, size.width, size.height);
+		this.add(mainTitle);
 
 		// TITLES
-		int yTitles = 20;
+		int yTitles = 100 + yMainTitle + size.height;
 
 		werewolfTitle = new JLabel("Werewolfs");
 		werewolfTitle.setText("Werewolfs");
 		size = werewolfTitle.getPreferredSize();
 		werewolfTitle.setBounds(w/9, yTitles, size.width, size.height);
 		this.add(werewolfTitle);
-		
+
 		villagerTitle = new JLabel("Villagers");
 		villagerTitle.setText("Villagers");
-		villagerTitle.setBounds(w/9*3, yTitles, size.width, size.height); 
+		villagerTitle.setBounds(w/9*3, yTitles, size.width, size.height);
 		this.add(villagerTitle);
 
 		divinerTitle = new JLabel("Diviners");
 		divinerTitle.setText("Diviners");
-		divinerTitle.setBounds(w/9*5, yTitles, size.width, size.height); 
+		divinerTitle.setBounds(w/9*5, yTitles, size.width, size.height);
 		this.add(divinerTitle);
-		
+
 		doctorTitle = new JLabel("Doctors");
 		doctorTitle.setText("Doctors");
 		doctorTitle.setBounds(w/9*7, yTitles, size.width, size.height);
 		this.add(doctorTitle);
-        
+
         // COMBO LABELS
-        int yComboLabels = yTitles + size.height + 20;
+        int yComboLabels = yTitles + size.height + 20 + w/9;
 
         JLabel comboBoxWerewolfLbl = new JLabel();
         comboBoxWerewolfLbl.setText("Agent type");
@@ -158,7 +171,7 @@ class InitGamePanel extends JPanel {
         size = comboBoxDoctorLbl.getPreferredSize();
         comboBoxDoctorLbl.setBounds(w/9*7, yComboLabels, size.width, size.height);
         this.add(comboBoxDoctorLbl);
-        
+
         // COMBOS
         String[] options = { "Random", "Strategic", "BDI" };
         int yCombos = yComboLabels + size.height + 5;
@@ -211,7 +224,7 @@ class InitGamePanel extends JPanel {
 
         // NUMBER AGENTS INPUTS
         int yNumAgentsTF = yNumAgents + size.height + 5;
-        
+
         wereWolfsNumTF = new JTextField(6);
         wereWolfsNumTF.setText("2");
         size = wereWolfsNumTF.getPreferredSize();
@@ -235,17 +248,19 @@ class InitGamePanel extends JPanel {
         size = doctorsNumTF.getPreferredSize();
         doctorsNumTF.setBounds(w/9*7, yNumAgentsTF, size.width, size.height);
         this.add(doctorsNumTF);
-        
+
 	}
 
-	@Override 
+	@Override
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		//g.drawImage(image, 0, 0, this); 
+		int w = this.env.WIDTH_FRAME;
+		int sizeSquare = w/9;
+		int yImages = 180;
+		g.drawImage(werewolfImage, w/9*1, yImages, sizeSquare, sizeSquare, this);
+		g.drawImage(villagerImage, w/9*3, yImages, sizeSquare, sizeSquare, this);
+		g.drawImage(divinerImage, w/9*5, yImages, sizeSquare, sizeSquare, this);
+		g.drawImage(doctorImage, w/9*7, yImages, sizeSquare, sizeSquare, this);
 	}
-	
-	public void setInfoTestLbl(String text) {
-		infoTestLbl.setText(text);	
-	}
-	
+
 }

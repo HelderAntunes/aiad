@@ -111,7 +111,7 @@ day(0).
 	.concat(OldList, [[Id, Name, Role]], NewList);
 	+players(NewList);
 	.print(Name, " has joined the game.");
-	playerJoined(Name).
+	playerJoined(Name, Role).
 	
 	
 /* 

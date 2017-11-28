@@ -21,40 +21,109 @@ class MidGamePanel extends JPanel {
 	private ArrayList<String> diviners = new ArrayList<String>();
 	private ArrayList<String> doctors = new ArrayList<String>();
 	private JTextArea infoTest;
-	
+	private JTextArea werewolfsTA;
+	private JTextArea villagersTA;
+	private JTextArea divinersTA;
+	private JTextArea doctorsTA;
+
 	public MidGamePanel(WerewolfsGameEnv env) {
 		this.env = env;
 		this.frame = env.getFrame();
 		this.setLayout(null);
-		
-		JButton startBtn = new JButton("MID");
+
+		JButton startBtn = new JButton("EXIT");
         Dimension size = startBtn.getPreferredSize();
-        startBtn.setBounds(150, 15,size.width, size.height);
-        startBtn.addActionListener(new ActionListener() { 
-		  public void actionPerformed(ActionEvent e) { 
+        startBtn.setBounds(700, 520,size.width, size.height);
+        startBtn.addActionListener(new ActionListener() {
+		  public void actionPerformed(ActionEvent e) {
 		    frame.getContentPane().removeAll();
 		    frame.getContentPane().invalidate();
 			JPanel newPanel = new InitGamePanel(env);
 			env.setCurrPanel(newPanel);
 			frame.getContentPane().add(newPanel);
 			frame.getContentPane().revalidate();
-		  } 
+		  }
 		});
         this.add(startBtn);
-		
-		infoTest = new JTextArea(100, 100);
+
+		// MAIN DISCUSSION
+		infoTest = new JTextArea(25, 40);
 		infoTest.setText("sfsdfsdfsdf");
 		size = infoTest.getPreferredSize();
-		infoTest.setBounds(350, 200, size.width, size.height);
-		infoTest.setEditable(false); 
+		infoTest.setBounds(270, 100, size.width, size.height);
+		infoTest.setEditable(false);
 		this.add(infoTest);
-	}
-	
-	public void setInfoTestLbl(String text) {
-		infoTest.append("\n" + text);	
+
+		int w = env.WIDTH_FRAME;
+		int h = env.HEIGHT_FRAME;
+
+		// AGENTS INFO LABELS
+        int yAgentsInfo = 20;
+        int xAgentsInfo = w/9-50;
+
+        JLabel wereWolfsLbl = new JLabel();
+        wereWolfsLbl.setText("Werewolfs");
+        size = wereWolfsLbl.getPreferredSize();
+        wereWolfsLbl.setBounds(xAgentsInfo, yAgentsInfo, size.width, size.height);
+        this.add(wereWolfsLbl);
+
+        yAgentsInfo += size.height + 5;
+        werewolfsTA = new JTextArea(12, 15);
+        size = werewolfsTA.getPreferredSize();
+        werewolfsTA.setBounds(xAgentsInfo, yAgentsInfo, size.width, size.height);
+        this.add(werewolfsTA);
+
+        yAgentsInfo += size.height + 10;
+        JLabel villagersLbl = new JLabel();
+        villagersLbl.setText("Villagers");
+        size = villagersLbl.getPreferredSize();
+        villagersLbl.setBounds(xAgentsInfo, yAgentsInfo, size.width, size.height);
+        this.add(villagersLbl);
+
+        yAgentsInfo += size.height + 5;
+        villagersTA = new JTextArea(5, 15);
+        size = villagersTA.getPreferredSize();
+        villagersTA.setBounds(xAgentsInfo, yAgentsInfo, size.width, size.height);
+        this.add(villagersTA);
+
+        yAgentsInfo += size.height + 10;
+        JLabel divinersLbl = new JLabel();
+        divinersLbl.setText("Diviners");
+        size = divinersLbl.getPreferredSize();
+        divinersLbl.setBounds(xAgentsInfo, yAgentsInfo, size.width, size.height);
+        this.add(divinersLbl);
+
+        yAgentsInfo += size.height + 5;
+		divinersTA = new JTextArea(5, 15);
+        size = divinersTA.getPreferredSize();
+        divinersTA.setBounds(xAgentsInfo, yAgentsInfo, size.width, size.height);
+        this.add(divinersTA);
+
+		yAgentsInfo += size.height + 10;
+        JLabel doctorsLbl = new JLabel();
+        doctorsLbl.setText("Doctors");
+        size = doctorsLbl.getPreferredSize();
+        doctorsLbl.setBounds(xAgentsInfo, yAgentsInfo, size.width, size.height);
+        this.add(doctorsLbl);
+
+        yAgentsInfo += size.height + 5;
+		doctorsTA = new JTextArea(5, 15);
+        size = doctorsTA.getPreferredSize();
+        doctorsTA.setBounds(xAgentsInfo, yAgentsInfo, size.width, size.height);
+        this.add(doctorsTA);
+
+
 	}
 
-	@Override 
+	public void setInfoTestLbl(String name, String role) {
+		if (role.equals("werewolf")) werewolfs.add(name);
+		if (role.equals("villager")) villagers.add(name);
+		if (role.equals("diviner")) diviners.add(name);
+		if (role.equals("doctor")) doctors.add(name);
+		infoTest.append("\n" + name + " " + role);
+	}
+
+	@Override
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 	}
