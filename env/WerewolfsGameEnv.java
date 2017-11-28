@@ -21,7 +21,7 @@ public class WerewolfsGameEnv extends jason.environment.Environment {
     public static int HEIGHT_FRAME = 600;
 
     JFrame frame;
-	  JPanel currPanel;
+	JPanel currPanel;
 
     /** Called before the MAS execution with the args informed in .mas2j */
     @Override
@@ -36,15 +36,14 @@ public class WerewolfsGameEnv extends jason.environment.Environment {
 
     }
     private void initGUI() {
-        //Create and set up the window.
 		frame = new JFrame("The Werewolves of Millers Hollow");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		currPanel = new InitGamePanel(this);
-        frame.getContentPane().add(currPanel);
-
-        //Size and display the window.
         frame.setSize(WIDTH_FRAME, HEIGHT_FRAME);
+        frame.setResizable(false);
         frame.setVisible(true);
+
+        currPanel = new InitGamePanel(this);
+        frame.getContentPane().add(currPanel);
     }
 
 	public JPanel getCurrPanel() {
@@ -59,47 +58,15 @@ public class WerewolfsGameEnv extends jason.environment.Environment {
     	return frame;
     }
 
-	/**
-	 * Agent initials:
-	 * RV, SV, BV: Random, Strategic, BDI villager
-	 * RW, SW, BW: Random, Strategic, BDI werewolf
-	 * RDi, SDi, BDi: Random, Strategic, BDI diviner
-	 * RDo, SDo, BDo: Random, Strategic, BDI doctor
-	 *
-	 * agents array = [RV, SV, BV, RW, SW, BW, RDi, SDi, BDi, RDo, SDo, BDo]
-	 *
-	 */
-	public void readOptionFile () throws Exception {
-		File file = new File("werewolf_options.txt");
-		Scanner scanner = new Scanner(file);
-		int[] agents = new int[12];
-
-		while (scanner.hasNext()) {
-			String type = scanner.next();
-			int num = scanner.nextInt();
-			if (type.equals("villager_random")) agents[0] = num;
-			else if (type.equals("werewolf_random")) agents[3] = num;
-			else if (type.equals("werewolf_bdi")) agents[5] = num;
-			else if (type.equals("diviner_random")) agents[6] = num;
-			else if (type.equals("doctor_random")) agents[9] = num;
-		}
-
-		String literal = "createAgents(" + agents[0];
-		for (int i = 1; i < agents.length; i++) literal += "," + agents[i];
-		addPercept(Literal.parseLiteral(literal + ")"));
-	}
-
     @Override
     public boolean executeAction(String agName, Structure action) {
 		if (action.getFunctor().equals("Something")) {
 			return true;
-		}
-		else if (action.getFunctor().equals("playerJoined")) {
+		} else if (action.getFunctor().equals("playerJoined")) {
 			if (currPanel instanceof MidGamePanel)
 				((MidGamePanel)currPanel).playerJoined(action.getTerm(0).toString(), action.getTerm(1).toString());
 			return true;
-		}
-		else {
+		} else {
 			logger.info("executing: "+action+", but not implemented!");
 			return false;
 		}

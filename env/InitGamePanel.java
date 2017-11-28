@@ -16,7 +16,6 @@ import java.awt.image.BufferedImage;
 class InitGamePanel extends JPanel {
 
 	private JFrame frame;
-	private BufferedImage image;
 	private WerewolfsGameEnv env;
 
 	private JLabel werewolfTitle;
@@ -24,15 +23,16 @@ class InitGamePanel extends JPanel {
 	private JLabel divinerTitle;
 	private JLabel doctorTitle;
 
-	private JComboBox comboBoxWerewolf;
-	private JComboBox comboBoxVillager;
-	private JComboBox comboBoxDiviner;
-	private JComboBox comboBoxDoctor;
+	private String[] options = { "Random", "Strategic", "BDI" };
+	private JComboBox comboBoxWerewolf = new JComboBox(options);
+	private JComboBox comboBoxVillager = new JComboBox(options);
+	private JComboBox comboBoxDiviner = new JComboBox(options);
+	private JComboBox comboBoxDoctor = new JComboBox(options);
 
-	private JTextField wereWolfsNumTF;
-  	private JTextField villagersNumTF;
-	private JTextField divinersNumTF;
-	private JTextField doctorsNumTF;
+	private JTextField wereWolfsNumTF = new JTextField();
+  	private JTextField villagersNumTF = new JTextField();
+	private JTextField divinersNumTF = new JTextField();
+	private JTextField doctorsNumTF = new JTextField();
 
 	private BufferedImage werewolfImage;
 	private BufferedImage villagerImage;
@@ -41,74 +41,75 @@ class InitGamePanel extends JPanel {
 
 	public InitGamePanel(WerewolfsGameEnv env) {
 
-		int w = env.WIDTH_FRAME;
-		int h = env.HEIGHT_FRAME;
+		this.env = env;
+		this.frame = env.getFrame();
+		this.setLayout(null);
 
 		try {
-          image = ImageIO.read(new File("./IMG_0062.jpg"));
 		  werewolfImage = ImageIO.read(new File("./assets/werewolf.png"));
 		  villagerImage = ImageIO.read(new File("./assets/villager.png"));
 		  divinerImage = ImageIO.read(new File("./assets/diviner.png"));
 		  doctorImage = ImageIO.read(new File("./assets/doctor.png"));
-       	} catch (IOException ex) {
+       	} catch (IOException ex) {}
 
-       	}
-       	this.env = env;
-		this.frame = env.getFrame();
-		this.setLayout(null);
+		int w = env.WIDTH_FRAME;
+		int h = env.HEIGHT_FRAME;
 
 		JButton startBtn = new JButton("START");
         Dimension size = startBtn.getPreferredSize();
         startBtn.setBounds(w/2 - size.width/2, h - h/6, size.width, size.height);
         startBtn.addActionListener(new ActionListener() {
-		  public void actionPerformed(ActionEvent e) {
 
-            String typeWerewolfs = comboBoxWerewolf.getSelectedItem().toString();
-            String typeVillagers = comboBoxVillager.getSelectedItem().toString();
-            String typeDiviners = comboBoxDiviner.getSelectedItem().toString();
-            String typeDoctors = comboBoxDoctor.getSelectedItem().toString();
-            /**
-            * Agent initials:
-            * RV, SV, BV: Random, Strategic, BDI villager
-            * RW, SW, BW: Random, Strategic, BDI werewolf
-            * RDi, SDi, BDi: Random, Strategic, BDI diviner
-            * RDo, SDo, BDo: Random, Strategic, BDI doctor
-            *
-            * agents array = [RV, SV, BV, RW, SW, BW, RDi, SDi, BDi, RDo, SDo, BDo]
-            *
-            */
-            int[] agents = new int[12];
+			/**
+			* Agent initials:
+			* RV, SV, BV: Random, Strategic, BDI villager
+			* RW, SW, BW: Random, Strategic, BDI werewolf
+			* RDi, SDi, BDi: Random, Strategic, BDI diviner
+			* RDo, SDo, BDo: Random, Strategic, BDI doctor
+			*
+			* agents array = [RV, SV, BV, RW, SW, BW, RDi, SDi, BDi, RDo, SDo, BDo]
+			*
+			*/
+			public void actionPerformed(ActionEvent e) {
 
-            int werewolfNum = Integer.parseInt(wereWolfsNumTF.getText());
-            if (typeWerewolfs.equals("Random")) agents[3] = werewolfNum;
-            if (typeWerewolfs.equals("Strategic")) agents[4] = werewolfNum;
-            if (typeWerewolfs.equals("BDI")) agents[5] = werewolfNum;
+				String typeWerewolfs = comboBoxWerewolf.getSelectedItem().toString();
+				String typeVillagers = comboBoxVillager.getSelectedItem().toString();
+				String typeDiviners = comboBoxDiviner.getSelectedItem().toString();
+				String typeDoctors = comboBoxDoctor.getSelectedItem().toString();
 
-            int villagerNum = Integer.parseInt(villagersNumTF.getText());
-            if (typeVillagers.equals("Random")) agents[0] = villagerNum;
-            if (typeVillagers.equals("Strategic")) agents[1] = villagerNum;
-            if (typeVillagers.equals("BDI")) agents[2] = villagerNum;
+				int[] agents = new int[12];
 
-            int divinerNum = Integer.parseInt(divinersNumTF.getText());
-            if (typeDiviners.equals("Random")) agents[6] = divinerNum;
-            if (typeDiviners.equals("Strategic")) agents[7] = divinerNum;
-            if (typeDiviners.equals("BDI")) agents[8] = divinerNum;
+				int werewolfNum = Integer.parseInt(wereWolfsNumTF.getText());
+				if (typeWerewolfs.equals("Random")) agents[3] = werewolfNum;
+				if (typeWerewolfs.equals("Strategic")) agents[4] = werewolfNum;
+				if (typeWerewolfs.equals("BDI")) agents[5] = werewolfNum;
 
-            int doctorNum = Integer.parseInt(doctorsNumTF.getText());
-            if (typeDoctors.equals("Random")) agents[9] = doctorNum;
-            if (typeDoctors.equals("Strategic")) agents[10] = doctorNum;
-            if (typeDoctors.equals("BDI")) agents[11] = doctorNum;
+				int villagerNum = Integer.parseInt(villagersNumTF.getText());
+				if (typeVillagers.equals("Random")) agents[0] = villagerNum;
+				if (typeVillagers.equals("Strategic")) agents[1] = villagerNum;
+				if (typeVillagers.equals("BDI")) agents[2] = villagerNum;
 
-		    String literal = "createAgents(" + agents[0];
-		    for (int i = 1; i < agents.length; i++) literal += "," + agents[i];
-		    env.addPercept(Literal.parseLiteral(literal + ")"));
-		    frame.getContentPane().removeAll();
-		    frame.getContentPane().invalidate();
-			JPanel newPanel = new MidGamePanel(env);
-			env.setCurrPanel(newPanel);
-			frame.getContentPane().add(newPanel);
-			frame.getContentPane().revalidate();
-		  }
+				int divinerNum = Integer.parseInt(divinersNumTF.getText());
+				if (typeDiviners.equals("Random")) agents[6] = divinerNum;
+				if (typeDiviners.equals("Strategic")) agents[7] = divinerNum;
+				if (typeDiviners.equals("BDI")) agents[8] = divinerNum;
+
+				int doctorNum = Integer.parseInt(doctorsNumTF.getText());
+				if (typeDoctors.equals("Random")) agents[9] = doctorNum;
+				if (typeDoctors.equals("Strategic")) agents[10] = doctorNum;
+				if (typeDoctors.equals("BDI")) agents[11] = doctorNum;
+
+				String literal = "createAgents(" + agents[0];
+				for (int i = 1; i < agents.length; i++) literal += "," + agents[i];
+				env.addPercept(Literal.parseLiteral(literal + ")"));
+
+				frame.getContentPane().removeAll();
+				frame.getContentPane().invalidate();
+				JPanel newPanel = new MidGamePanel(env);
+				env.setCurrPanel(newPanel);
+				frame.getContentPane().add(newPanel);
+				frame.getContentPane().revalidate();
+			}
 		});
         this.add(startBtn);
 
@@ -123,132 +124,81 @@ class InitGamePanel extends JPanel {
 
 		// TITLES
 		int yTitles = 100 + yMainTitle + size.height;
-
-		werewolfTitle = new JLabel("Werewolfs");
-		werewolfTitle.setText("Werewolfs");
-		size = werewolfTitle.getPreferredSize();
-		werewolfTitle.setBounds(w/9, yTitles, size.width, size.height);
-		this.add(werewolfTitle);
-
-		villagerTitle = new JLabel("Villagers");
-		villagerTitle.setText("Villagers");
-		villagerTitle.setBounds(w/9*3, yTitles, size.width, size.height);
-		this.add(villagerTitle);
-
-		divinerTitle = new JLabel("Diviners");
-		divinerTitle.setText("Diviners");
-		divinerTitle.setBounds(w/9*5, yTitles, size.width, size.height);
-		this.add(divinerTitle);
-
-		doctorTitle = new JLabel("Doctors");
-		doctorTitle.setText("Doctors");
-		doctorTitle.setBounds(w/9*7, yTitles, size.width, size.height);
-		this.add(doctorTitle);
+		createAgentTitle("Werewolfs", w/9*1, yTitles);
+		createAgentTitle("Villagers", w/9*3, yTitles);
+		createAgentTitle("Diviners", w/9*5, yTitles);
+		createAgentTitle("Doctors", w/9*7, yTitles);
 
         // COMBO LABELS
         int yComboLabels = yTitles + size.height + 20 + w/9;
-
-        JLabel comboBoxWerewolfLbl = new JLabel();
-        comboBoxWerewolfLbl.setText("Agent type");
-        size = comboBoxWerewolfLbl.getPreferredSize();
-        comboBoxWerewolfLbl.setBounds(w/9, yComboLabels, size.width, size.height);
-        this.add(comboBoxWerewolfLbl);
-
-        JLabel comboBoxVillagerLbl = new JLabel();
-        comboBoxVillagerLbl.setText("Agent type");
-        size = comboBoxVillagerLbl.getPreferredSize();
-        comboBoxVillagerLbl.setBounds(w/9*3, yComboLabels, size.width, size.height);
-        this.add(comboBoxVillagerLbl);
-
-        JLabel comboBoxDivinerfLbl = new JLabel();
-        comboBoxDivinerfLbl.setText("Agent type");
-        size = comboBoxDivinerfLbl.getPreferredSize();
-        comboBoxDivinerfLbl.setBounds(w/9*5, yComboLabels, size.width, size.height);
-        this.add(comboBoxDivinerfLbl);
-
-        JLabel comboBoxDoctorLbl = new JLabel();
-        comboBoxDoctorLbl.setText("Agent type");
-        size = comboBoxDoctorLbl.getPreferredSize();
-        comboBoxDoctorLbl.setBounds(w/9*7, yComboLabels, size.width, size.height);
-        this.add(comboBoxDoctorLbl);
+		createComboTypeAgentLbl(w/9*1, yComboLabels);
+		createComboTypeAgentLbl(w/9*3, yComboLabels);
+		createComboTypeAgentLbl(w/9*5, yComboLabels);
+		size = createComboTypeAgentLbl(w/9*7, yComboLabels);
 
         // COMBOS
-        String[] options = { "Random", "Strategic", "BDI" };
         int yCombos = yComboLabels + size.height + 5;
-
-        comboBoxWerewolf = new JComboBox(options);
-        size = comboBoxWerewolf.getPreferredSize();
-        comboBoxWerewolf.setBounds(w/9, yCombos, size.width, size.height);
-        this.add(comboBoxWerewolf);
-
-        comboBoxVillager = new JComboBox(options);
-        size = comboBoxVillager.getPreferredSize();
-        comboBoxVillager.setBounds(w/9*3, yCombos, size.width, size.height);
-        this.add(comboBoxVillager);
-
-        comboBoxDiviner = new JComboBox(options);
-        size = comboBoxDiviner.getPreferredSize();
-        comboBoxDiviner.setBounds(w/9*5, yCombos, size.width, size.height);
-        this.add(comboBoxDiviner);
-
-        comboBoxDoctor = new JComboBox(options);
-        size = comboBoxDoctor.getPreferredSize();
-        comboBoxDoctor.setBounds(w/9*7, yCombos, size.width, size.height);
-        this.add(comboBoxDoctor);
+		createTypeAgentComboBox(comboBoxWerewolf, w/9*1, yCombos);
+		createTypeAgentComboBox(comboBoxVillager, w/9*3, yCombos);
+		createTypeAgentComboBox(comboBoxDiviner, w/9*5, yCombos);
+		size = createTypeAgentComboBox(comboBoxDoctor, w/9*7, yCombos);
 
         // NUMBER AGENTS LABELS
         int yNumAgents = yCombos + size.height + 10;
-        JLabel numAgentsWerewolfLbl = new JLabel();
-        numAgentsWerewolfLbl.setText("Number");
-        size = numAgentsWerewolfLbl.getPreferredSize();
-        numAgentsWerewolfLbl.setBounds(w/9, yNumAgents, size.width, size.height);
-        this.add(numAgentsWerewolfLbl);
-
-        JLabel numAgentsVillagerLbl = new JLabel();
-        numAgentsVillagerLbl.setText("Number");
-        size = numAgentsVillagerLbl.getPreferredSize();
-        numAgentsVillagerLbl.setBounds(w/9*3, yNumAgents, size.width, size.height);
-        this.add(numAgentsVillagerLbl);
-
-        JLabel numAgentsDivinerfLbl = new JLabel();
-        numAgentsDivinerfLbl.setText("Number");
-        size = numAgentsDivinerfLbl.getPreferredSize();
-        numAgentsDivinerfLbl.setBounds(w/9*5, yNumAgents, size.width, size.height);
-        this.add(numAgentsDivinerfLbl);
-
-        JLabel numAgentsDoctorLbl = new JLabel();
-        numAgentsDoctorLbl.setText("Number");
-        size = numAgentsDoctorLbl.getPreferredSize();
-        numAgentsDoctorLbl.setBounds(w/9*7, yNumAgents, size.width, size.height);
-        this.add(numAgentsDoctorLbl);
+		createNumAgentsLbl(w/9*1, yNumAgents, "Number");
+		createNumAgentsLbl(w/9*3, yNumAgents, "Number");
+		createNumAgentsLbl(w/9*5, yNumAgents, "Number");
+		size = createNumAgentsLbl(w/9*7, yNumAgents, "Number");
 
         // NUMBER AGENTS INPUTS
         int yNumAgentsTF = yNumAgents + size.height + 5;
+		createNumAgentsInput(wereWolfsNumTF, w/9*1, yNumAgentsTF, "2");
+		createNumAgentsInput(villagersNumTF, w/9*3, yNumAgentsTF, "7");
+		createNumAgentsInput(divinersNumTF, w/9*5, yNumAgentsTF, "1");
+		size = createNumAgentsInput(doctorsNumTF, w/9*7, yNumAgentsTF, "1");
+	}
 
-        wereWolfsNumTF = new JTextField(6);
-        wereWolfsNumTF.setText("2");
-        size = wereWolfsNumTF.getPreferredSize();
-        wereWolfsNumTF.setBounds(w/9, yNumAgentsTF, size.width, size.height);
-        this.add(wereWolfsNumTF);
+	private Dimension createAgentTitle(String text, int x, int y) {
+		JLabel agentTitle = new JLabel();
+		agentTitle.setText(text);
+		Dimension size = agentTitle.getPreferredSize();
+		agentTitle.setBounds(x, y, size.width, size.height);
+		this.add(agentTitle);
+		return size;
+	}
 
-        villagersNumTF = new JTextField(6);
-        villagersNumTF.setText("7");
-        size = villagersNumTF.getPreferredSize();
-        villagersNumTF.setBounds(w/9*3, yNumAgentsTF, size.width, size.height);
-        this.add(villagersNumTF);
+	private Dimension createComboTypeAgentLbl(int x, int y) {
+		JLabel comboBoxLbl = new JLabel();
+        comboBoxLbl.setText("Agent type");
+        Dimension size = comboBoxLbl.getPreferredSize();
+        comboBoxLbl.setBounds(x, y, size.width, size.height);
+        this.add(comboBoxLbl);
+		return size;
+	}
 
-        divinersNumTF = new JTextField(6);
-        divinersNumTF.setText("1");
-        size = divinersNumTF.getPreferredSize();
-        divinersNumTF.setBounds(w/9*5, yNumAgentsTF, size.width, size.height);
-        this.add(divinersNumTF);
+	private Dimension createTypeAgentComboBox(JComboBox comboBox, int x, int y) {
+        Dimension size = comboBox.getPreferredSize();
+        comboBox.setBounds(x, y, size.width, size.height);
+        this.add(comboBox);
+		return size;
+	}
 
-        doctorsNumTF = new JTextField(6);
-        doctorsNumTF.setText("1");
-        size = doctorsNumTF.getPreferredSize();
-        doctorsNumTF.setBounds(w/9*7, yNumAgentsTF, size.width, size.height);
-        this.add(doctorsNumTF);
+	private Dimension createNumAgentsLbl(int x, int y, String text) {
+		JLabel numAgentsLbl = new JLabel();
+        numAgentsLbl.setText(text);
+        Dimension size = numAgentsLbl.getPreferredSize();
+        numAgentsLbl.setBounds(x, y, size.width, size.height);
+        this.add(numAgentsLbl);
+		return size;
+	}
 
+	private Dimension createNumAgentsInput(JTextField numAgentsTF, int x, int y, String text) {
+		numAgentsTF.setColumns(6);
+        numAgentsTF.setText(text);
+        Dimension size = numAgentsTF.getPreferredSize();
+        numAgentsTF.setBounds(x, y, size.width, size.height);
+        this.add(numAgentsTF);
+		return size;
 	}
 
 	@Override
