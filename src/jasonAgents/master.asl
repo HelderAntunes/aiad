@@ -3,17 +3,17 @@
 /* Initial beliefs and rules */
 day(0).
 
-/* 
-	Phase 1 
+/*
+	Phase 1
 	Get options about agents types.
 */
 
 /**
  * Agent initials:
- * RV, SV, BV: Random, Strategic, BDI villager 
- * RW, SW, BW: Random, Strategic, BDI werewolf 
- * RDi, SDi, BDi: Random, Strategic, BDI diviner 
- * RDo, SDo, BDo: Random, Strategic, BDI doctor 
+ * RV, SV, BV: Random, Strategic, BDI villager
+ * RW, SW, BW: Random, Strategic, BDI werewolf
+ * RDi, SDi, BDi: Random, Strategic, BDI diviner
+ * RDo, SDo, BDo: Random, Strategic, BDI doctor
  */
 +createAgents(RV, SV, BV, RW, SW, BW, RDi, SDi, BDi, RDo, SDo, BDo) <-
 	.print("Creating agents");
@@ -23,9 +23,9 @@ day(0).
 	+doctors_number(RDo + SDo + BDo);
 	+total_players(RV + SV + BV + RW + SW + BW + RDi + SDi + BDi + RDo + SDo + BDo);
 	!invite_players.
-	
-/* 
-	Phase 2 
+
+/*
+	Phase 2
 	Invite players
 */
 +!invite_players : not players(_)<-
@@ -36,16 +36,16 @@ day(0).
 	!invite_doctors;
 	.wait(1000);
 	!invite_players.
-	
+
 +!invite_players : players(_) & not waiting_players(0) <-
 	.print("Agents failed to connect. Shutting off...");
 	.stopMas.
-	
+
 +!invite_players : players(_) & waiting_players(0) <-
 	.print("All players joined!");
 	.print("Game Start!!!");
 	!start_game.
-	
+
 +!invite_villagers : villagers_number(N) <-
 	?createAgents(RV, SV, BV, _, _, _, _, _, _, _, _, _);
 	+temp(1);
@@ -67,7 +67,7 @@ day(0).
 		-+temp(I+1);
 	}
 	-temp(_).
-	
+
 +!invite_werewolfs : werewolfs_number(N) <-
 	?createAgents(_, _, _, RW, SW, BW, _, _, _, _, _, _);
 	+temp(1);
@@ -93,7 +93,7 @@ day(0).
 		-+temp(I+1);
 	}
 	-temp(_).
-	
+
 +!invite_doctors : doctors_number(N) <-
 	?createAgents(_, _, _, _, _, _, _, _, _, RDo, SDo, BDo);
 	+temp(1);
@@ -103,12 +103,12 @@ day(0).
 		-+temp(I+1);
 	}
 	-temp(_).
-	
+
 +players(List) <-
 	.length(List, L);
 	?total_players(T);
-	-+waiting_players(T-L).	
-	
+	-+waiting_players(T-L).
+
 @processOrder[atomic]
 +join(Id, Role): day(0) & not waiting_players(0) <-
 	-players(OldList);
@@ -117,9 +117,9 @@ day(0).
 	+players(NewList);
 	.print(Name, " has joined the game.");
 	playerJoined(Name, Role).
-	
-	
-/* 
+
+
+/*
 	Phase 3
 	Day Discussion
 */
@@ -132,32 +132,32 @@ day(0).
 	!tellWhoAreWerewolfs;
 	.broadcast(tell, time(day, discussion));
 	-+time(day, discussion).
-	
-	
+
+
 +time(day, discussion) <-
 	?day(D);
 	-+day(D+1);
 	!sayDay;
 	!sayPhase;
 	!endPhase(day, discussion).
-	
-	
+
+
 +!endPhase(day, discussion) <-
 	.wait(5000);
 	.broadcast(untell, time(_,_));
 	.broadcast(tell, time(day, vote));
 	-+time(day, vote).
-	
-/* 
+
+/*
 	Phase 4
 	Day Vote
 */
-	
+
 +time(day, vote) <-
 	!sayPhase;
 	!endVote(day);
 	!endPhase(day, vote).
-	
+
 +!endVote(day) <-
 	.wait(1000);
 	?players_alive(Alive);
@@ -176,7 +176,7 @@ day(0).
 		.findall([Count, Name],voteCount(Name,Count), CountList);
 		.sort(CountList, ReversedSortedCountList);
 		.reverse(ReversedSortedCountList, SortedCountList);
-		
+
 		for(.member([Count,Name],SortedCountList)){
 			.member([Name, TrueName, _], PlayerList);
 			.print("->", TrueName," - ", Count, " vote(s)");
@@ -187,37 +187,37 @@ day(0).
 		} else {
 			.print("First place tie...");
 		}
-		
+
 		//.print(SortedCountList);
 	}else{
 		.print("Not enough votes... needed ", Alive/2);
 	}
 	!clean_votes.
-	
+
 +!endPhase(day, vote) <-
 	.broadcast(untell, time(_,_));
 	.broadcast(tell, time(night,vote));
 	-+time(night, vote).
-	
-/* 
+
+/*
 	Phase 5
 	Night Vote
 */
-	
+
 +time(night, vote) <-
 	!sayNight;
 	!sayPhase;
 	!endVote(night);
 	!endPhase(night, vote).
-	
+
 +!endVote(night) <-
 	.wait(1000);
-	
+
 	// get votes
 	.findall([Voter, Voted], vote(Voted)[source(Voter)], VoteList);
 	.length(VoteList, TotalVotes);
 	.print("Total Votes: ",TotalVotes);
-	
+
 	// count votes
 	for(.member([_,Name],VoteList)) {
 		if(voteCount(Name, W)){
@@ -250,13 +250,13 @@ day(0).
 	}
 	.abolish(cure(_));
 	!clean_votes.
-	
+
 +!endPhase(night, vote) <-
 	.broadcast(untell, time(_,_));
 	.broadcast(tell, time(day,discussion));
 	-+time(day,discussion).
 
-/* 
+/*
 	Other
 */
 
@@ -267,17 +267,17 @@ day(0).
 +!sayNight : day(X) <-
 	.print("-----------------------------");
 	.print("Current night: ", X).
-	
+
 +!sayPhase : time(Time, Event) <-
 	.print("-----------------------------");
 	.print("Starting ", Time, " ", Event).
-	
-		
+
+
 +!clean_votes <-
 	.abolish(vote(_));
 	.abolish(voteCount(_,_)).
-	
-+!kill(ThatGuy) <- 
+
++!kill(ThatGuy) <-
 	?players(PlayerList);
 	.member([ThatGuy, ThatGuyName, Role], PlayerList);
 	//.print(ThatGuyName, " died");
@@ -308,10 +308,10 @@ day(0).
 	.broadcast(tell, role(ThatGuy, Role));
 	!checkWin.
 
-+!tellWhoAreWerewolfs: true <- 
++!tellWhoAreWerewolfs: true <-
 	.findall(Name, join(Name,_,werewolf) , WerewolfList);
 	.send(WerewolfList, tell, werewolf(WerewolfList)).
-	
+
 +!checkWin <-
 	?total_players(T);
 	?werewolfs_number(W);
@@ -328,10 +328,7 @@ day(0).
 		.suspend;
 	}
 	.
-	
+
 +role(Y, Rxy)[source(X)] <-
 	?
 	.print(X, " says that ", Y, " is a ", Rxy).
-
-
-	

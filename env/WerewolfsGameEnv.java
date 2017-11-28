@@ -94,14 +94,9 @@ public class WerewolfsGameEnv extends jason.environment.Environment {
 		if (action.getFunctor().equals("Something")) {
 			return true;
 		}
-		else if (action.getFunctor().equals("agentsCreated")) {
-			if (currPanel instanceof InitGamePanel)
-				((InitGamePanel)currPanel).setInfoTestLbl(action.getTerm(0).toString());
-			return true;
-		}
 		else if (action.getFunctor().equals("playerJoined")) {
 			if (currPanel instanceof MidGamePanel)
-				((MidGamePanel)currPanel).setInfoTestLbl(action.getTerm(0).toString(), action.getTerm(1).toString());
+				((MidGamePanel)currPanel).playerJoined(action.getTerm(0).toString(), action.getTerm(1).toString());
 			return true;
 		}
 		else {

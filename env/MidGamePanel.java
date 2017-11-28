@@ -20,7 +20,7 @@ class MidGamePanel extends JPanel {
 	private ArrayList<String> villagers = new ArrayList<String>();
 	private ArrayList<String> diviners = new ArrayList<String>();
 	private ArrayList<String> doctors = new ArrayList<String>();
-	private JTextArea infoTest;
+	private JTextArea gameEventsTA;
 	private JTextArea werewolfsTA;
 	private JTextArea villagersTA;
 	private JTextArea divinersTA;
@@ -47,12 +47,12 @@ class MidGamePanel extends JPanel {
         this.add(startBtn);
 
 		// MAIN DISCUSSION
-		infoTest = new JTextArea(25, 40);
-		infoTest.setText("sfsdfsdfsdf");
-		size = infoTest.getPreferredSize();
-		infoTest.setBounds(270, 100, size.width, size.height);
-		infoTest.setEditable(false);
-		this.add(infoTest);
+		gameEventsTA = new JTextArea(25, 40);
+		gameEventsTA.setText("sfsdfsdfsdf");
+		size = gameEventsTA.getPreferredSize();
+		gameEventsTA.setBounds(270, 100, size.width, size.height);
+		gameEventsTA.setEditable(false);
+		this.add(gameEventsTA);
 
 		int w = env.WIDTH_FRAME;
 		int h = env.HEIGHT_FRAME;
@@ -68,7 +68,7 @@ class MidGamePanel extends JPanel {
         this.add(wereWolfsLbl);
 
         yAgentsInfo += size.height + 5;
-        werewolfsTA = new JTextArea(12, 15);
+        werewolfsTA = new JTextArea(5, 15);
         size = werewolfsTA.getPreferredSize();
         werewolfsTA.setBounds(xAgentsInfo, yAgentsInfo, size.width, size.height);
         this.add(werewolfsTA);
@@ -81,7 +81,7 @@ class MidGamePanel extends JPanel {
         this.add(villagersLbl);
 
         yAgentsInfo += size.height + 5;
-        villagersTA = new JTextArea(5, 15);
+        villagersTA = new JTextArea(12, 15);
         size = villagersTA.getPreferredSize();
         villagersTA.setBounds(xAgentsInfo, yAgentsInfo, size.width, size.height);
         this.add(villagersTA);
@@ -115,12 +115,25 @@ class MidGamePanel extends JPanel {
 
 	}
 
-	public void setInfoTestLbl(String name, String role) {
+	public void playerJoined(String name, String role) {
 		if (role.equals("werewolf")) werewolfs.add(name);
 		if (role.equals("villager")) villagers.add(name);
 		if (role.equals("diviner")) diviners.add(name);
 		if (role.equals("doctor")) doctors.add(name);
-		infoTest.append("\n" + name + " " + role);
+		gameEventsTA.append("\n" + name + " " + role);
+
+		updatePlayers(werewolfs, werewolfsTA);
+		updatePlayers(villagers, villagersTA);
+		updatePlayers(diviners, divinersTA);
+		updatePlayers(doctors, doctorsTA);
+	}
+
+	private void updatePlayers(ArrayList<String> playerGroup, JTextArea playerTAInfo) {
+		playerTAInfo.setText("");
+		for (int i = 0; i < playerGroup.size(); i++) {
+			if (i > 0) playerTAInfo.append("\n");
+			playerTAInfo.append(playerGroup.get(i));
+		}
 	}
 
 	@Override
