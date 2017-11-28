@@ -22,7 +22,6 @@ day(0).
 	+diviners_number(RDi + SDi + BDi);
 	+doctors_number(RDo + SDo + BDo);
 	+total_players(RV + SV + BV + RW + SW + BW + RDi + SDi + BDi + RDo + SDo + BDo);
-	agentsCreated(['teste1', 'teste2']);
 	!invite_players.
 	
 /* 
@@ -53,6 +52,12 @@ day(0).
 	while(temp(I) & I <= RV) {
 		.concat("villager", I, Name);
 		.create_agent(Name, "villager_random.asl");
+		-+temp(I+1);
+	}
+	-+temp(1);
+	while(temp(I) & I <= SV) {
+		.concat("villager", I, Name);
+		.create_agent(Name, "villager_strategic.asl");
 		-+temp(I+1);
 	}
 	-+temp(1);

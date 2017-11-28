@@ -1,8 +1,6 @@
 // Agent villager in project WereTest.mas2j
 
 /* Initial beliefs and rules */
-suspect(role(werewolf1, werewolf), 0.5).
-
 
 /* Initial goals */
 
@@ -51,6 +49,11 @@ suspect(role(werewolf1, werewolf), 0.5).
 +!discuss(day).
 	
 //TODO: Change for vote selection
++!vote(day) : .setof([FC,A], suspect(role(A,werewolf),FC) & not A == master & not .my_name(A) & not dead(A), L ) 
+		& .length(L, ListSize) & not ListSize == 0 <-
+	.nth(ListSize - 1, L, [_,Chosen]);
+	.broadcast(tell, vote(Chosen)).
+	
 +!vote(day) : .all_names(All) & .findall(A, .member(A, All) & not A == master & not .my_name(A) & not dead(A), L )<-
 	.length(L, ListSize);
 	.nth(math.floor(math.random(ListSize)), L, Chosen);
@@ -65,7 +68,7 @@ suspect(role(werewolf1, werewolf), 0.5).
 	X == master
 */
 +role(Y, Role)[source(master)] <-
-	.findall([X, R], role(Y, R)[source(X)] & .my_name(Self) & not X == Self & not X == master, BeliefList);
+	.findall([X, R], role(Y, R)[source(X)] & not X == self & not X == master, BeliefList);
 	.print(BeliefList);
 	for(.member([N, RR], BeliefList)){
 		?trust(N, Corrects, Wrongs, Tn);
