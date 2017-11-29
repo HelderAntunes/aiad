@@ -64,10 +64,19 @@
 
 /*
 	Change here
-*/
-	
+*/	
 //Change for discussion
-+!discuss(day).
++!discuss(day) : .setof([Num,Player], numVotes(Player,Num) & not .my_name(Player) & not dead(Player),L)<-
+	.nth(0,L,[Min,_]);
+	.findall(P,.member([Min,P], L), Suspects);
+	.length(Suspects, ListSize);
+	.nth(math.floor(math.random(ListSize)), Suspects, Chosen);
+	
+	Rand = math.random(1);
+	if(Rand < 0.3){
+		.broadcast(tell, role(Chosen, werewolf))
+	}.
+
 	
 //Change for vote selection
 +!vote(day) : .setof([Num,Player], numVotes(Player,Num) & not .my_name(Player) & not dead(Player),L)<-

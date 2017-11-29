@@ -21,7 +21,7 @@
 +init(List) <- 
 	for(.member([Name, _,_],List)){
 		+suspect(role(Name,villager),0.0);
-		+trust(Name,0,0,1.0);
+		+trust(Name,0,0,0.5);
 	}
 	-init(List).
 
@@ -46,7 +46,23 @@
 */
 	
 //Change for discussion
-+!discuss(day).
++!discuss(day) : .setof([FC,A], suspect(role(A,werewolf),FC) & not A == master & not .my_name(A) & not dead(A), L ) 
+		& .length(L, ListSize) & not ListSize == 0 <-
+	Rand = math.random(1);
+	.nth(ListSize - 1, L, [MaxFC,Chosen]);
+	if(Rand < MaxFC){
+		.broadcast(tell, role(Chosen, werewolf))
+	}.
+	
++!discuss(day) <-
+	Rand = math.random(1);
+	if(Rand < 0.2){
+		.all_names(All);
+		.findall(A, .member(A, All) & not A == master & not .my_name(A) & not dead(A), L );
+		.length(L, ListSize);
+		.nth(math.floor(math.random(ListSize)), L, Chosen);
+		.broadcast(tell, role(Chosen, werewolf));
+	}.
 	
 //TODO: Change for vote selection
 +!vote(day) : .setof([FC,A], suspect(role(A,werewolf),FC) & not A == master & not .my_name(A) & not dead(A), L ) 
@@ -69,17 +85,14 @@
 */
 +role(Y, Role)[source(master)] <-
 	.findall([X, R], role(Y, R)[source(X)] & not X == self & not X == master, BeliefList);
-	.print(BeliefList);
 	for(.member([N, RR], BeliefList)){
 		?trust(N, Corrects, Wrongs, Tn);
-		.print(N, " ", Tn);
 		if(RR == Role){
 			-+trust(N, Corrects+1, Wrongs, (((Corrects+1)/(Corrects+1+Wrongs))-0.5)*2);
 		}
 		else{
 			-+trust(N, Corrects, Wrongs+1, ((Corrects/(Corrects+1+Wrongs))-0.5)*2);
 		}
-		.print(N, " ", Tn);
 	}.	
 
 /*
