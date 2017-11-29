@@ -57,7 +57,10 @@
 */
 
 //Change for discussion
-+!discuss(day).
++!discuss(day) : .all_names(All) & .findall(A, .member(A, All) & not A == master & not .my_name(A) & not dead(A), L )<-
+	.length(L, ListSize);
+	.nth(math.floor(math.random(ListSize)), L, Chosen);
+	.broadcast(tell, role(Chosen, werewolf)).
 	
 //Change for vote selection
 +!vote(day) : .findall(A, role(A,werewolf) & not dead(A), L ) & not .length(L, 0)<-
