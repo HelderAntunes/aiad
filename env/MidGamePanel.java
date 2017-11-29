@@ -22,6 +22,10 @@ class MidGamePanel extends JPanel {
 	private ArrayList<String> villagers = new ArrayList<String>();
 	private ArrayList<String> diviners = new ArrayList<String>();
 	private ArrayList<String> doctors = new ArrayList<String>();
+	private ArrayList<Boolean> werewolfsLive = new ArrayList<Boolean>();
+	private ArrayList<Boolean> villagersLive = new ArrayList<Boolean>();
+	private ArrayList<Boolean> divinersLive = new ArrayList<Boolean>();
+	private ArrayList<Boolean> doctorsLive = new ArrayList<Boolean>();
 
 	private JScrollPane gameEventsScrollPanel;
 
@@ -65,7 +69,7 @@ class MidGamePanel extends JPanel {
 
 		// MAIN EVENTS
 		gameEventsTA = new JTextPane();
-		gameEventsTA.setText("MAIN EVENTS ");
+		appendTextToEventPane(gameEventsTA, "MAIN EVENTS\n\n", Color.RED);
 		gameEventsTA.setEditable(false);
 		gameEventsTA.setPreferredSize(new Dimension(400, 400));
 
@@ -141,30 +145,74 @@ class MidGamePanel extends JPanel {
 		phaseGameLbl.setBounds(w/2 + w/6, 65, size.width, size.height);
 	}
 
-	public void playerJoined(String name, String role) {
+	public synchronized void playerJoined(String name, String role) {
 		waitForGUI();
 
 		name = formatStrings(name);
-		if (role.equals("werewolf")) werewolfs.add(name);
-		if (role.equals("villager")) villagers.add(name);
-		if (role.equals("diviner")) diviners.add(name);
-		if (role.equals("doctor")) doctors.add(name);
+		if (role.equals("werewolf")) {
+			werewolfs.add(name);
+			werewolfsLive.add(Boolean.TRUE);
+		}
+		if (role.equals("villager")) {
+			villagers.add(name);
+			villagersLive.add(Boolean.TRUE);
+		}
+		if (role.equals("diviner")) {
+			diviners.add(name);
+			divinersLive.add(Boolean.TRUE);
+		}
+		if (role.equals("doctor")) {
+			doctors.add(name);
+			doctorsLive.add(Boolean.TRUE);
+		}
 
-		appendTextToEventPane(gameEventsTA, "\n" + name + " " + role, Color.RED);
-
-		updatePlayers(werewolfs, werewolfsTA);
-		updatePlayers(villagers, villagersTA);
-		updatePlayers(diviners, divinersTA);
-		updatePlayers(doctors, doctorsTA);
+		updatePlayers(werewolfs, werewolfsLive, werewolfsTA);
+		updatePlayers(villagers, villagersLive, villagersTA);
+		updatePlayers(diviners, divinersLive, divinersTA);
+		updatePlayers(doctors, doctorsLive, doctorsTA);
 	}
 
-	private void updatePlayers(ArrayList<String> playerGroup, JTextPane playerTAInfo) {
+	private void updatePlayers(ArrayList<String> playerGroup, ArrayList<Boolean> playersLiveness, JTextPane playerTAInfo) {
 		playerTAInfo.setText("");
 		for (int i = 0; i < playerGroup.size(); i++) {
-			if (i > 0)
-				appendTextToEventPane(playerTAInfo, "\n", Color.BLACK);
-			appendTextToEventPane(playerTAInfo, playerGroup.get(i), Color.BLACK);
+			if (playersLiveness.get(i))
+				appendTextToEventPane(playerTAInfo, playerGroup.get(i), Color.BLACK);
+			else
+				appendTextToEventPane(playerTAInfo, playerGroup.get(i), Color.RED);
+			appendTextToEventPane(playerTAInfo, "\n", Color.BLACK);
 		}
+	}
+
+	public synchronized void updateEventPanelEnv(String message) {
+		appendTextToEventPane(gameEventsTA, formatStrings(message), Color.BLACK);
+		appendTextToEventPane(gameEventsTA, "\n", Color.BLACK);
+	}
+
+	public synchronized void updateEventPanelEnv(String message, String color) {
+		appendTextToEventPane(gameEventsTA, formatStrings(message), Color.ORANGE); // TODO: map: color String -> color Color
+		appendTextToEventPane(gameEventsTA, "\n", Color.BLACK);
+	}
+
+	public synchronized void playerDied(String playerName) {
+		playerName = formatStrings(playerName);
+		
+		for (int i = 0; i < werewolfs.size(); i++)
+			if (werewolfs.get(i).equals(playerName))
+				werewolfsLive.set(i, Boolean.FALSE);
+		for (int i = 0; i < villagers.size(); i++)
+			if (villagers.get(i).equals(playerName))
+				villagersLive.set(i, Boolean.FALSE);
+		for (int i = 0; i < diviners.size(); i++)
+			if (diviners.get(i).equals(playerName))
+				divinersLive.set(i, Boolean.FALSE);
+		for (int i = 0; i < doctors.size(); i++)
+			if (doctors.get(i).equals(playerName))
+				doctorsLive.set(i, Boolean.FALSE);
+
+		updatePlayers(werewolfs, werewolfsLive, werewolfsTA);
+		updatePlayers(villagers, villagersLive, villagersTA);
+		updatePlayers(diviners, divinersLive, divinersTA);
+		updatePlayers(doctors, doctorsLive, doctorsTA);
 	}
 
 	/**

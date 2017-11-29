@@ -44,6 +44,8 @@ day(0).
 +!invite_players : players(_) & waiting_players(0) <-
 	.print("All players joined!");
 	.print("Game Start!!!");
+	updateEventPanelEnv("All players joined!", "ORANGE");
+	updateEventPanelEnv("Game Start!!!\n\n", "ORANGE");
 	!start_game.
 
 +!invite_villagers : villagers_number(N) <-
@@ -143,7 +145,6 @@ day(0).
 	.print(Name, " has joined the game.");
 	playerJoined(Name, Role).
 
-
 /*
 	Phase 3
 	Day Discussion
@@ -189,7 +190,9 @@ day(0).
 	?players(PlayerList);
 	.findall([Voter, Voted], vote(Voted)[source(Voter)], VoteList);
 	.length(VoteList, TotalVotes);
-	.print("Total Votes: ",TotalVotes);
+	.concat("Total Votes: ",TotalVotes, M1);
+	.print(M1);
+	updateEventPanelEnv(M1);
 	if(TotalVotes >= Alive/2){
 		for(.member([_,Name],VoteList)){
 			if(voteCount(Name, W)){
@@ -204,18 +207,23 @@ day(0).
 
 		for(.member([Count,Name],SortedCountList)){
 			.member([Name, TrueName, _], PlayerList);
-			.print("->", TrueName," - ", Count, " vote(s)");
+			.concat("->", TrueName," - ", Count, " vote(s)", M2);
+			.print(M2);
+			updateEventPanelEnv(M2);
 		}
 		.nth(0, SortedCountList, [N0, Chosen]);
 		if((.length(SortedCountList, L) & L == 1) | (.nth(1, SortedCountList, [N1,_]) & N0 > N1)){
 			!kill(Chosen);
 		} else {
 			.print("First place tie...");
+			updateEventPanelEnv("First place tie...");
 		}
 
 		//.print(SortedCountList);
 	}else{
-		.print("Not enough votes... needed ", Alive/2);
+		.concat("Not enough votes... needed ", Alive/2, M3);
+		.print(M3);
+		updateEventPanelEnv(M3);
 	}
 	!clean_votes.
 
@@ -251,7 +259,9 @@ day(0).
 	// get votes
 	.findall([Voter, Voted], vote(Voted)[source(Voter)], VoteList);
 	.length(VoteList, TotalVotes);
-	.print("Total Votes: ",TotalVotes);
+	.concat("Total Votes: ", TotalVotes, M1);
+	.print(M1);
+	updateEventPanelEnv(M1);
 
 	// count votes
 	for(.member([_,Name],VoteList)) {
@@ -269,12 +279,16 @@ day(0).
 	?players(PlayerList);
 	for(.member([Count,Name],SortedCountList)) {
 		.member([Name, TrueName, _], PlayerList);
-		.print("->", TrueName," - ", Count, " vote(s)");
+		.concat("->", TrueName," - ", Count, " vote(s)", M2);
+		.print(M2);
+		updateEventPanelEnv(M2);
 	}
 	.nth(0, SortedCountList, [N0, Chosen]);
 	if((.length(SortedCountList, L) & L == 1) | (.nth(1, SortedCountList, [N1,_]) & N0 > N1)){
 		if(cure(Chosen)){
-			.print(Chosen, " is cured and cannot die");
+			.concat(Chosen, " is cured and cannot die", M3)
+			.print(M3);
+			updateEventPanelEnv(M3);
 		}
 		else{
 			//.print(SortedCountList, " ", N0, " ", N1);
@@ -282,6 +296,7 @@ day(0).
 		}
 	} else {
 		.print("First place tie...");
+		updateEventPanelEnv("First place tie...");
 	}
 	.abolish(cure(_));
 	!clean_votes.
@@ -296,19 +311,22 @@ day(0).
 */
 
 +!sayDay : day(X) <-
-	.print("-----------------------------");
-	.print("Current day: ", X);
-	updateTimeDayEnv("Day", X).
+	.concat("\n-----------------------------\n", "Current day: ", X, "\n", Message);
+	.print(Message);
+	updateTimeDayEnv("Day", X);
+	updateEventPanelEnv(Message).
 
 +!sayNight : day(X) <-
-	.print("-----------------------------");
-	.print("Current night: ", X);
-	updateTimeDayEnv("Night", X).
+	.concat("\n-----------------------------\n", "Current night: ", X, "\n", Message);
+	.print(Message);
+	updateTimeDayEnv("Night", X);
+	updateEventPanelEnv(Message).
 
 +!sayPhase : time(Time, Event) <-
-	.print("-----------------------------");
-	.print("Starting ", Time, " ", Event);
-	updateEventDayEnv(Event).
+	.concat("-----------------------------\n", "Starting ", Time, " ", Event, Message);
+	.print(Message);
+	updateEventDayEnv(Event);
+	updateEventPanelEnv(Message).
 
 +!clean_votes <-
 	.abolish(vote(_));
@@ -318,7 +336,10 @@ day(0).
 	?players(PlayerList);
 	.member([ThatGuy, ThatGuyName, Role], PlayerList);
 	//.print(ThatGuyName, " died");
-	.print(ThatGuy, " died");
+	.concat(ThatGuy, " died", Message);
+	.print(Message);
+	updateEventPanelEnv(Message);
+	playerDied(ThatGuyName);
 	?players_alive(A);
 	-+players_alive(A-1);
 	if (Role == werewolf) {
@@ -367,5 +388,6 @@ day(0).
 	.
 
 +role(Y, Rxy)[source(X)] <-
-	?
-	.print(X, " says that ", Y, " is a ", Rxy).
+	.concat(X, " says that ", Y, " is a ", Rxy, Message);
+	.print(Message);
+	updateEventPanelEnv(Message).

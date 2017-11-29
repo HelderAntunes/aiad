@@ -67,22 +67,35 @@ public class WerewolfsGameEnv extends jason.environment.Environment {
 
 		if (action.getFunctor().equals("playerJoined")) {
 
-			if (currPanel instanceof MidGamePanel)
-				((MidGamePanel)currPanel).playerJoined(action.getTerm(0).toString(), action.getTerm(1).toString());
+            while (!(currPanel instanceof MidGamePanel)) waitForGUI();
+            ((MidGamePanel)currPanel).playerJoined(action.getTerm(0).toString(), action.getTerm(1).toString());
 
 		} else if (action.getFunctor().equals("updateTimeDayEnv")) {
 
             String timeDay = action.getTerm(0).toString();
             String currDay = action.getTerm(1).toString();
-            if (currPanel instanceof MidGamePanel)
-                ((MidGamePanel)currPanel).updateTimeDayEnv(timeDay, currDay);
+            ((MidGamePanel)currPanel).updateTimeDayEnv(timeDay, currDay);
 
         } else if (action.getFunctor().equals("updateEventDayEnv")) {
 
             String event = action.getTerm(0).toString();
-            if (currPanel instanceof MidGamePanel)
-                ((MidGamePanel)currPanel).updateEventDayEnv(event);
+            ((MidGamePanel)currPanel).updateEventDayEnv(event);
 
+        } else if (action.getFunctor().equals("updateEventPanelEnv")) {
+
+            String eventMessage = action.getTerm(0).toString();
+            if (action.getArity() == 1)
+                ((MidGamePanel)currPanel).updateEventPanelEnv(eventMessage);
+            if (action.getArity() == 2) {
+                String color = action.getTerm(1).toString();
+                ((MidGamePanel)currPanel).updateEventPanelEnv(eventMessage, color);
+            }
+
+        } else if (action.getFunctor().equals("playerDied")) {
+
+            String player = action.getTerm(0).toString();
+            ((MidGamePanel)currPanel).playerDied(player);
+            
         } else {
 
 			logger.info("executing: "+action+", but not implemented!");
@@ -92,6 +105,14 @@ public class WerewolfsGameEnv extends jason.environment.Environment {
 
         return true;
     }
+
+    private void waitForGUI() {
+		try {
+			Thread.sleep(400);
+		} catch (Exception e) {
+			System.out.println(e.toString());
+		}
+	}
 
     /** Called before the end of MAS execution */
     @Override
