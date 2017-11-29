@@ -49,9 +49,16 @@
 
 +time(day, vote) : .my_name(Self) & not dead(Self) <-
 	!vote(day).
-	
+
 /* 
 	Phase 5
+	Day Discussion
+*/
+
++time(night, discussion) : .my_name(Self) & not dead(Self) <-
+	!discuss(night).
+/* 
+	Phase 6
 	Night Vote
 */
 
@@ -63,16 +70,19 @@
 */
 	
 //Change for discussion
-+!discuss(day) <- .wait(0).
++!discuss(day) : .all_names(All) & .findall(A, .member(A, All) & not A == master & not .my_name(A) & not dead(A) & not role(A,werewolf)[source(master)], L ) <-
+			.print(L);.length(L, ListSize);
+			.nth(math.floor(math.random(ListSize)), L, Chosen);
+			.broadcast(tell, role(Chosen, werewolf)).
 	
 //Change for vote selection
-+!vote(day) : .all_names(All) & .findall(A, .member(A, All) & not A == master & not .my_name(A) & not dead(A) & not role(A,werewolf), L ) <-
++!vote(day) : .all_names(All) & .findall(A, .member(A, All) & not A == master & not .my_name(A) & not dead(A) & not role(A,werewolf)[source(master)], L ) <-
 			.length(L, ListSize);
 			.nth(math.floor(math.random(ListSize)), L, Chosen);
 			.broadcast(tell, vote(Chosen)).
 	
 //Change for vote selection
-+!vote(night) : .all_names(All) & .findall(A, .member(A, All) & not A == master & not .my_name(A) & not dead(A) & not role(A,werewolf), L ) <-
++!vote(night) : .all_names(All) & .findall(A, .member(A, All) & not A == master & not .my_name(A) & not dead(A) & not role(A,werewolf)[source(master)], L ) <-
 			.length(L, ListSize);
 			.nth(math.floor(math.random(ListSize)), L, Chosen);
 			.broadcast(tell, vote(Chosen)).
