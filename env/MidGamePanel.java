@@ -7,6 +7,7 @@ import java.io.*;
 import java.util.*;
 import java.lang.String;
 import javax.swing.*;
+import javax.swing.text.*;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -22,7 +23,8 @@ class MidGamePanel extends JPanel {
 	private ArrayList<String> diviners = new ArrayList<String>();
 	private ArrayList<String> doctors = new ArrayList<String>();
 
-	private JTextArea gameEventsTA;
+	private JScrollPane gameEventsScrollPanel;
+	private JTextPane gameEventsTA;
 	private JTextArea werewolfsTA = new JTextArea();
 	private JTextArea villagersTA = new JTextArea();
 	private JTextArea divinersTA = new JTextArea();
@@ -59,12 +61,16 @@ class MidGamePanel extends JPanel {
 		this.add(phaseGameLbl);
 
 		// MAIN EVENTS
-		gameEventsTA = new JTextArea(25, 40);
+		gameEventsTA = new JTextPane();
 		gameEventsTA.setText("MAIN EVENTS");
-		size = gameEventsTA.getPreferredSize();
-		gameEventsTA.setBounds(290, 150, size.width, size.height);
 		gameEventsTA.setEditable(false);
-		this.add(gameEventsTA);
+		gameEventsTA.setPreferredSize(new Dimension(400, 400));
+
+		gameEventsScrollPanel = new JScrollPane(gameEventsTA);
+		gameEventsScrollPanel.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+		size = gameEventsScrollPanel.getPreferredSize();
+		gameEventsScrollPanel.setBounds(290, 150, size.width, size.height);
+		this.add(gameEventsScrollPanel);
 
 		// AGENTS INFO LABELS
         int yAgentsInfo = 20;
@@ -92,6 +98,21 @@ class MidGamePanel extends JPanel {
 		guiDone = true;
 	}
 
+	// https://stackoverflow.com/questions/1985021/deleting-and-replacing-selected-text-in-jeditorpane
+	// https://stackoverflow.com/questions/9650992/how-to-change-text-color-in-the-jtextarea 
+	private void appendToPane(JTextPane tp, String msg, Color c) {
+        StyleContext sc = StyleContext.getDefaultStyleContext();
+        AttributeSet aset = sc.addAttribute(SimpleAttributeSet.EMPTY, StyleConstants.Foreground, c);
+
+        aset = sc.addAttribute(aset, StyleConstants.FontFamily, "Lucida Console");
+        aset = sc.addAttribute(aset, StyleConstants.Alignment, StyleConstants.ALIGN_JUSTIFIED);
+
+        int len = tp.getDocument().getLength();
+        tp.setCaretPosition(len);
+        tp.setCharacterAttributes(aset, false);
+        tp.replaceSelection(msg);
+    }
+
 	private Dimension createAgentLbl(int x, int y, String text) {
 		JLabel agentLbl = new JLabel();
         agentLbl.setText(text);
@@ -106,6 +127,7 @@ class MidGamePanel extends JPanel {
 	private Dimension createAgentTA(JTextArea agentTA, int x, int y, int numRows, int numColumns) {
 		agentTA.setRows(numRows);
 		agentTA.setColumns(numColumns);
+		agentTA.setEditable(false);
 
 		Dimension size = agentTA.getPreferredSize();
         agentTA.setBounds(x, y, size.width, size.height);
@@ -143,7 +165,7 @@ class MidGamePanel extends JPanel {
 		if (role.equals("diviner")) diviners.add(name);
 		if (role.equals("doctor")) doctors.add(name);
 
-		gameEventsTA.append("\n" + name + " " + role);
+		//gameEventsTA.append("\n" + name + " " + role);
 
 		updatePlayers(werewolfs, werewolfsTA);
 		updatePlayers(villagers, villagersTA);
