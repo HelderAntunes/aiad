@@ -262,16 +262,18 @@ day(0).
 
 +!sayDay : day(X) <-
 	.print("-----------------------------");
-	.print("Current day: ", X).
+	.print("Current day: ", X);
+	updateTimeDayEnv("Day", X).
 
 +!sayNight : day(X) <-
 	.print("-----------------------------");
-	.print("Current night: ", X).
+	.print("Current night: ", X);
+	updateTimeDayEnv("Night", X).
 
 +!sayPhase : time(Time, Event) <-
 	.print("-----------------------------");
-	.print("Starting ", Time, " ", Event).
-
+	.print("Starting ", Time, " ", Event);
+	updateEventDayEnv(Event).
 
 +!clean_votes <-
 	.abolish(vote(_));
