@@ -3,6 +3,23 @@
 
 
 /* Initial beliefs and rules */
+bestVote([], Best, Best).
+bestVote([X|Xs], CurrBest, Best):-
+	betterVote(X,CurrBest) & bestVote(Xs, X, Best).
+bestVote([X|Xs], CurrBest, Best):-
+	not betterVote(X,CurrBest) & bestVote(Xs, CurrBest, Best).
+bestVote([X|Xs], Best):- bestVote(Xs, X, Best).
+
+betterVote(X,CurrBest):-
+	suspect(role(X, Rpx), SxRpx) &
+	suspect(role(CurrBest, Rpb), SbRpb) &
+	betterVote(Rpx, SxRpx, Rpb, SbRpb).
+
+betterVote(diviner, _, doctor, _).
+betterVote(diviner, _, villager, _).
+betterVote(doctor, _, villager, _).
+betterVote(R, SxRpx, R, SbRpb) :-
+	SxRpx > SbRpb.
 
 /* Initial goals */
 !start.
@@ -29,14 +46,15 @@
 
 +init(List) <- 
 	for(.member([Name, _,_],List)){
-		+suspect(role(Name,villager),0.0);
+		+suspect(role(Name,villager),1.0);
 		+trust(Name,0,0,1.0);
 	}
 	-init(List).
 
 +werewolf(List) <- 
+	.print(List);
 	for(.member(Name,List)){
-		+role(Name,werewolf);
+		+role(Name,werewolf)[source(master)];
 	}
 	-werewolf(List).
 
@@ -63,10 +81,8 @@
 	!vote(day).
 	
 +!vote(day) : 
-	.all_names(All) & .findall(A, .member(A, All) & not A == master & not .my_name(A) & not dead(A) & not role(A,werewolf)[source(master)], L ) <-
-	.length(L, ListSize);
-	.nth(math.floor(math.random(ListSize)), L, Chosen);
-	.broadcast(tell, vote(Chosen)).
+	.all_names(All) & .findall(A, .member(A, All) & not A == master & not .my_name(A) & not dead(A) & not role(A,werewolf), L) & bestVote(L, Best)<-
+	.broadcast(tell, vote(Best)).
 	
 /* 
 	Phase 5
@@ -77,10 +93,9 @@
 	!vote(night).
 	
 +!vote(night) : 
-	.all_names(All) & .findall(A, .member(A, All) & not A == master & not .my_name(A) & not dead(A) & not role(A,werewolf), L ) <-
-	.length(L, ListSize);
-	.nth(math.floor(math.random(ListSize)), L, Chosen);
-	.broadcast(tell, vote(Chosen)).
+	.all_names(All) & .findall(A, .member(A, All) & not A == master & not .my_name(A) & not dead(A) & not role(A,werewolf), L) & bestVote(L, Best)<-
+	.broadcast(tell, vote(Best)).	
+
 	
 /*
 	Observation Model
@@ -90,8 +105,7 @@
 	X == master
 */
 +role(Y, Role)[source(master)] <-
-	.findall([X, R], role(Y, R)[source(X)] & .my_name(Self) & not X == Self & not X == master, BeliefList);
-	.print(BeliefList);
+	.findall([X, R], role(Y, R)[source(X)] & .my_name(Self) & not X == Self & not X == master & not X == self, BeliefList);
 	for(.member([N, RR], BeliefList)){
 		?trust(N, Corrects, Wrongs, Tn);
 		.print(N, " ", Tn);
@@ -110,7 +124,7 @@
 */
 +role(Y, Rpy)[source(X)] : 
 	.my_name(Self) & not X == Self &
-	not X == master &
+	not X == master & not X == self &
 	role(Y, Rpy)[source(master)] &
 	trust(X, Corrects, Wrongs, Tx)
 	<-
@@ -122,7 +136,7 @@
 */
 +role(Y, Rxy)[source(X)] : 
 	.my_name(Self) & not X == Self &
-	not X == master &
+	not X == master & not X == self &
 	role(Y, Rpy)[source(master)] &
 	trust(X, Corrects, Wrongs, Tx)
 	<-
@@ -134,7 +148,7 @@
 */
 +role(Y, Rpy)[source(X)] : 
 	.my_name(Self) & not X == Self &
-	not X == master &
+	not X == master & not X == self &
 	trust(X, _, _, Tx) &
 	suspect(role(Y, Rpy), SyRpy)
 	<-
@@ -147,7 +161,7 @@
 */
 +role(Y, Rxy)[source(X)] : 
 	.my_name(Self) & not X == Self &
-	not X == master &
+	not X == master & not X == self &
 	trust(X, _, _, Tx) &
 	suspect(role(Y, Rpy), SyRpy)
 	<-
@@ -167,5 +181,18 @@
 
 
 	
+
 	
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
 	

@@ -309,7 +309,7 @@ day(0).
 	!checkWin.
 
 +!tellWhoAreWerewolfs: true <-
-	.findall(Name, join(Name,_,werewolf) , WerewolfList);
+	.findall(Name, join(Name,werewolf) , WerewolfList);
 	.send(WerewolfList, tell, werewolf(WerewolfList)).
 
 +!checkWin <-
