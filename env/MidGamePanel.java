@@ -28,38 +28,43 @@ class MidGamePanel extends JPanel {
 	private JTextArea divinersTA = new JTextArea();
 	private JTextArea doctorsTA = new JTextArea();
 
+	private JLabel phaseGameLbl = new JLabel();
+
+	private BufferedImage sunImage;
+	private BufferedImage moonImage;
+
 	private boolean guiDone = false;
+
+	private String timeDay = "Day"; // Day, Night
+	private String currDay = "0"; // 1, 2, 3, ...
+	private String eventDay = "Discussion"; // Discussion, Vote
 
 	public MidGamePanel(WerewolfsGameEnv env) {
 		this.env = env;
 		this.frame = env.getFrame();
 		this.setLayout(null);
 
-		JButton startBtn = new JButton("EXIT");
-        Dimension size = startBtn.getPreferredSize();
-        startBtn.setBounds(700, 520,size.width, size.height);
-        startBtn.addActionListener(new ActionListener() {
-		  public void actionPerformed(ActionEvent e) {
-		    frame.getContentPane().removeAll();
-		    frame.getContentPane().invalidate();
-			JPanel newPanel = new InitGamePanel(env);
-			env.setCurrPanel(newPanel);
-			frame.getContentPane().add(newPanel);
-			frame.getContentPane().revalidate();
-		  }
-		});
-        this.add(startBtn);
+		int w = env.WIDTH_FRAME;
+		int h = env.HEIGHT_FRAME;
+
+		try {
+		  sunImage = ImageIO.read(new File("./assets/sun.png"));
+		  moonImage = ImageIO.read(new File("./assets/moon.png"));
+       	} catch (IOException ex) {}
+
+		// PHASE GAME LABEL
+		phaseGameLbl.setText("PHASE GAME ....");
+		Dimension size = phaseGameLbl.getPreferredSize();
+		phaseGameLbl.setBounds(w/2 + w/6, 65, size.width, size.height);
+		this.add(phaseGameLbl);
 
 		// MAIN EVENTS
 		gameEventsTA = new JTextArea(25, 40);
 		gameEventsTA.setText("MAIN EVENTS");
 		size = gameEventsTA.getPreferredSize();
-		gameEventsTA.setBounds(270, 100, size.width, size.height);
+		gameEventsTA.setBounds(290, 150, size.width, size.height);
 		gameEventsTA.setEditable(false);
 		this.add(gameEventsTA);
-
-		int w = env.WIDTH_FRAME;
-		int h = env.HEIGHT_FRAME;
 
 		// AGENTS INFO LABELS
         int yAgentsInfo = 20;
@@ -109,9 +114,30 @@ class MidGamePanel extends JPanel {
 		return size;
 	}
 
+	public void updateTimeDayEnv(String timeDay, String currDay) {
+		this.timeDay = formatStrings(timeDay);
+		this.currDay = currDay;
+		updatePhaseGameLbl();
+		repaint();
+	}
+
+	public void updateEventDayEnv(String event) {
+		this.eventDay = event;
+		updatePhaseGameLbl();
+	}
+
+	private void updatePhaseGameLbl() {
+		int w = this.env.WIDTH_FRAME;
+		phaseGameLbl.setText(this.timeDay + " " + this.currDay + ": " + this.eventDay);
+		Dimension size = phaseGameLbl.getPreferredSize();
+		phaseGameLbl.setBounds(w/2 + w/6, 65, size.width, size.height);
+		//this.add(phaseGameLbl);
+	}
+
 	public void playerJoined(String name, String role) {
 		waitForGUI();
 
+		name = formatStrings(name);
 		if (role.equals("werewolf")) werewolfs.add(name);
 		if (role.equals("villager")) villagers.add(name);
 		if (role.equals("diviner")) diviners.add(name);
@@ -140,10 +166,25 @@ class MidGamePanel extends JPanel {
 			System.out.println(e.toString());
 		}
 	}
-	
+
+	private String formatStrings(String text) {
+		if (text.length() <= 2)
+			return text;
+		return text.substring(1, text.length()-1);
+	}
+
 	@Override
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
+		int w = this.env.WIDTH_FRAME;
+		int sizeSquare = w/9;
+		int yImages = 35;
+		if (this.timeDay.equals("Day")) {
+			g.drawImage(sunImage, w/2 + w/13 - sizeSquare/2, yImages, sizeSquare, sizeSquare, this);
+		}
+		else {
+			g.drawImage(moonImage, w/2 + w/13 - sizeSquare/2, yImages, sizeSquare, sizeSquare, this);
+		}
 	}
 
 }

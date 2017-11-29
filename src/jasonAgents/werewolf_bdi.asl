@@ -47,16 +47,15 @@ betterVote(R, SxRpx, R, SbRpb) :-
 +init(List) <- 
 	for(.member([Name, _,_],List)){
 		+suspect(role(Name,villager),1.0);
-		+trust(Name,0,0,1.0);
+		+trust(Name,0,0,0.5);
 	}
 	-init(List).
 
 +werewolf(List) <- 
-	.print(List);
 	for(.member(Name,List)){
 		+role(Name,werewolf)[source(master)];
-	}
-	-werewolf(List).
+		-+trust(Name,0,0,1.0);
+	}.
 
 /* 
 	Phase 3
@@ -69,7 +68,8 @@ betterVote(R, SxRpx, R, SbRpb) :-
 +time(day, discussion) : .my_name(Self) & not dead(Self) <-
 	!discuss(day).
 	
-+!discuss(day) <- .wait(0).
++!discuss(day) : .all_names(All) & .findall(A, .member(A, All) & not A == master & not .my_name(A) & not dead(A) & not role(A,werewolf)[source(master)], L) & bestVote(L, Best) & .print(L,Best)<-
+	.broadcast(tell, role(Best, werewolf)).
 	
 	
 /* 
@@ -81,11 +81,24 @@ betterVote(R, SxRpx, R, SbRpb) :-
 	!vote(day).
 	
 +!vote(day) : 
-	.all_names(All) & .findall(A, .member(A, All) & not A == master & not .my_name(A) & not dead(A) & not role(A,werewolf), L) & bestVote(L, Best)<-
+	.all_names(All) & .findall(A, .member(A, All) & not A == master & not .my_name(A) & not dead(A) & not role(A,werewolf)[source(master)], L) & bestVote(L, Best)<-
 	.broadcast(tell, vote(Best)).
-	
+
 /* 
 	Phase 5
+	Day Discussion
+*/
++time(night, discussion) : .my_name(Self) & not dead(Self) <-
+	!discuss(night).
+
++!discuss(night) : .all_names(All) & .findall(A, .member(A, All) & not A == master & not .my_name(A) & not dead(A) & not role(A,werewolf)[source(master)], L) & bestVote(L, Best) & .print(L,Best) & suspect(role(Best, Role), _)<-
+	?werewolf(List);
+	.send(List, tell, role(Best, Role));
+	.send(master, tell, role(Best, Role)).
+		
+
+/* 
+	Phase 6
 	Night Vote
 */
 
@@ -93,7 +106,7 @@ betterVote(R, SxRpx, R, SbRpb) :-
 	!vote(night).
 	
 +!vote(night) : 
-	.all_names(All) & .findall(A, .member(A, All) & not A == master & not .my_name(A) & not dead(A) & not role(A,werewolf), L) & bestVote(L, Best)<-
+	.all_names(All) & .findall(A, .member(A, All) & not A == master & not .my_name(A) & not dead(A) & not role(A,werewolf)[source(master)], L) & bestVote(L, Best)<-
 	.broadcast(tell, vote(Best)).	
 
 	
@@ -108,16 +121,24 @@ betterVote(R, SxRpx, R, SbRpb) :-
 	.findall([X, R], role(Y, R)[source(X)] & .my_name(Self) & not X == Self & not X == master & not X == self, BeliefList);
 	for(.member([N, RR], BeliefList)){
 		?trust(N, Corrects, Wrongs, Tn);
-		.print(N, " ", Tn);
 		if(RR == Role){
 			-+trust(N, Corrects+1, Wrongs, (((Corrects+1)/(Corrects+1+Wrongs))-0.5)*2);
 		}
 		else{
 			-+trust(N, Corrects, Wrongs+1, ((Corrects/(Corrects+1+Wrongs))-0.5)*2);
 		}
-		.print(N, " ", Tn);
 	}.	
 
+/*
+	Day and role(Y, Rxy)[source(werewolf)]
+*/
++role(Y, _)[source(X)] : 
+	.my_name(Self) & not X == Self &
+	not X == master & not X == self &
+	role(X, werewolf)[source(master)]
+	<-
+	-role(Y, Rpy)[source(X)].	
+	
 /*
 	Confirmation role(Y, Rxy)[source(master)]
 	Rxy = Rpy
@@ -179,11 +200,13 @@ betterVote(R, SxRpx, R, SbRpb) :-
 	}.	
 
 
-
++!discuss(day) : .all_names(All) & .findall(A, .member(A, All) & not A == master & not .my_name(A) & not dead(A) & not role(A,werewolf)[source(master)], L) & bestVote(L, Best) & .print(L,Best)<-
+	.broadcast(tell, role(Best, werewolf)).
 	
-
-	
-
++!discuss(night) : .all_names(All) & .findall(A, .member(A, All) & not A == master & not .my_name(A) & not dead(A) & not role(A,werewolf)[source(master)], L) & bestVote(L, Best) & .print(L,Best) & suspect(role(Best, Role), _)<-
+	?werewolf(List);
+	.send(List, tell, role(Best, Role));
+	.send(master, tell, role(Best, Role)).
 	
 	
 	

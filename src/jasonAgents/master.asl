@@ -196,16 +196,26 @@ day(0).
 
 +!endPhase(day, vote) <-
 	.broadcast(untell, time(_,_));
-	.broadcast(tell, time(night,vote));
-	-+time(night, vote).
+	.broadcast(tell, time(night,discussion));
+	-+time(night, discussion).
 
 /*
 	Phase 5
 	Night Vote
 */
++time(night, discussion) <-
+	!sayNight;
+	!sayPhase;
+	!endPhase(night, discussion).
+
+
++!endPhase(night, discussion) <-
+	.wait(5000);
+	.broadcast(untell, time(_,_));
+	.broadcast(tell, time(night, vote));
+	-+time(night, vote).
 
 +time(night, vote) <-
-	!sayNight;
 	!sayPhase;
 	!endVote(night);
 	!endPhase(night, vote).
@@ -262,16 +272,18 @@ day(0).
 
 +!sayDay : day(X) <-
 	.print("-----------------------------");
-	.print("Current day: ", X).
+	.print("Current day: ", X);
+	updateTimeDayEnv("Day", X).
 
 +!sayNight : day(X) <-
 	.print("-----------------------------");
-	.print("Current night: ", X).
+	.print("Current night: ", X);
+	updateTimeDayEnv("Night", X).
 
 +!sayPhase : time(Time, Event) <-
 	.print("-----------------------------");
-	.print("Starting ", Time, " ", Event).
-
+	.print("Starting ", Time, " ", Event);
+	updateEventDayEnv(Event).
 
 +!clean_votes <-
 	.abolish(vote(_));

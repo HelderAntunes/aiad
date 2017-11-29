@@ -60,16 +60,33 @@ public class WerewolfsGameEnv extends jason.environment.Environment {
 
     @Override
     public boolean executeAction(String agName, Structure action) {
-		if (action.getFunctor().equals("Something")) {
-			return true;
-		} else if (action.getFunctor().equals("playerJoined")) {
+        
+		if (action.getFunctor().equals("playerJoined")) {
+
 			if (currPanel instanceof MidGamePanel)
 				((MidGamePanel)currPanel).playerJoined(action.getTerm(0).toString(), action.getTerm(1).toString());
-			return true;
-		} else {
+
+		} else if (action.getFunctor().equals("updateTimeDayEnv")) {
+
+            String timeDay = action.getTerm(0).toString();
+            String currDay = action.getTerm(1).toString();
+            if (currPanel instanceof MidGamePanel)
+                ((MidGamePanel)currPanel).updateTimeDayEnv(timeDay, currDay);
+
+        } else if (action.getFunctor().equals("updateEventDayEnv")) {
+
+            String event = action.getTerm(0).toString();
+            if (currPanel instanceof MidGamePanel)
+                ((MidGamePanel)currPanel).updateEventDayEnv(event);
+
+        } else {
+
 			logger.info("executing: "+action+", but not implemented!");
 			return false;
+
 		}
+
+        return true;
     }
 
     /** Called before the end of MAS execution */
