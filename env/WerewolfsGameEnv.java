@@ -58,9 +58,13 @@ public class WerewolfsGameEnv extends jason.environment.Environment {
     	return frame;
     }
 
+    public Logger getLogger() {
+        return logger;
+    }
+
     @Override
     public boolean executeAction(String agName, Structure action) {
-        
+
 		if (action.getFunctor().equals("playerJoined")) {
 
 			if (currPanel instanceof MidGamePanel)

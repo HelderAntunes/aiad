@@ -38,6 +38,7 @@ class InitGamePanel extends JPanel {
 	private BufferedImage villagerImage;
 	private BufferedImage divinerImage;
 	private BufferedImage doctorImage;
+	private BufferedImage wallpaper;
 
 	public InitGamePanel(WerewolfsGameEnv env) {
 
@@ -50,6 +51,7 @@ class InitGamePanel extends JPanel {
 		  villagerImage = ImageIO.read(new File("./assets/villager.png"));
 		  divinerImage = ImageIO.read(new File("./assets/diviner.png"));
 		  doctorImage = ImageIO.read(new File("./assets/doctor.png"));
+		  wallpaper = ImageIO.read(new File("./assets/wallpaper.jpg"));
        	} catch (IOException ex) {}
 
 		int w = env.WIDTH_FRAME;
@@ -205,6 +207,11 @@ class InitGamePanel extends JPanel {
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		int w = this.env.WIDTH_FRAME;
+		int h = this.env.HEIGHT_FRAME;
+
+		// BACKGROUND
+		g.drawImage(wallpaper, 0, 0, w, h, this);
+		
 		int sizeSquare = w/9;
 		int yImages = 180;
 		g.drawImage(werewolfImage, w/9*1, yImages, sizeSquare, sizeSquare, this);

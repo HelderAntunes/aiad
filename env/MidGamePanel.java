@@ -24,16 +24,18 @@ class MidGamePanel extends JPanel {
 	private ArrayList<String> doctors = new ArrayList<String>();
 
 	private JScrollPane gameEventsScrollPanel;
+
 	private JTextPane gameEventsTA;
-	private JTextArea werewolfsTA = new JTextArea();
-	private JTextArea villagersTA = new JTextArea();
-	private JTextArea divinersTA = new JTextArea();
-	private JTextArea doctorsTA = new JTextArea();
+	private JTextPane werewolfsTA = new JTextPane();
+	private JTextPane villagersTA = new JTextPane();
+	private JTextPane divinersTA = new JTextPane();
+	private JTextPane doctorsTA = new JTextPane();
 
 	private JLabel phaseGameLbl = new JLabel();
 
 	private BufferedImage sunImage;
 	private BufferedImage moonImage;
+	private BufferedImage wallpaper;
 
 	private boolean guiDone = false;
 
@@ -52,6 +54,7 @@ class MidGamePanel extends JPanel {
 		try {
 		  sunImage = ImageIO.read(new File("./assets/sun.png"));
 		  moonImage = ImageIO.read(new File("./assets/moon.png"));
+		  wallpaper = ImageIO.read(new File("./assets/wallpaper.jpg"));
        	} catch (IOException ex) {}
 
 		// PHASE GAME LABEL
@@ -62,7 +65,7 @@ class MidGamePanel extends JPanel {
 
 		// MAIN EVENTS
 		gameEventsTA = new JTextPane();
-		gameEventsTA.setText("MAIN EVENTS");
+		gameEventsTA.setText("MAIN EVENTS ");
 		gameEventsTA.setEditable(false);
 		gameEventsTA.setPreferredSize(new Dimension(400, 400));
 
@@ -98,21 +101,6 @@ class MidGamePanel extends JPanel {
 		guiDone = true;
 	}
 
-	// https://stackoverflow.com/questions/1985021/deleting-and-replacing-selected-text-in-jeditorpane
-	// https://stackoverflow.com/questions/9650992/how-to-change-text-color-in-the-jtextarea 
-	private void appendToPane(JTextPane tp, String msg, Color c) {
-        StyleContext sc = StyleContext.getDefaultStyleContext();
-        AttributeSet aset = sc.addAttribute(SimpleAttributeSet.EMPTY, StyleConstants.Foreground, c);
-
-        aset = sc.addAttribute(aset, StyleConstants.FontFamily, "Lucida Console");
-        aset = sc.addAttribute(aset, StyleConstants.Alignment, StyleConstants.ALIGN_JUSTIFIED);
-
-        int len = tp.getDocument().getLength();
-        tp.setCaretPosition(len);
-        tp.setCharacterAttributes(aset, false);
-        tp.replaceSelection(msg);
-    }
-
 	private Dimension createAgentLbl(int x, int y, String text) {
 		JLabel agentLbl = new JLabel();
         agentLbl.setText(text);
@@ -124,15 +112,13 @@ class MidGamePanel extends JPanel {
 		return size;
 	}
 
-	private Dimension createAgentTA(JTextArea agentTA, int x, int y, int numRows, int numColumns) {
-		agentTA.setRows(numRows);
-		agentTA.setColumns(numColumns);
-		agentTA.setEditable(false);
-
+	private Dimension createAgentTA(JTextPane agentTA, int x, int y, int numRows, int numColumns) {
+		agentTA.setPreferredSize(new Dimension(10*numColumns, 15*numRows));
 		Dimension size = agentTA.getPreferredSize();
         agentTA.setBounds(x, y, size.width, size.height);
 
 		this.add(agentTA);
+		agentTA.setEditable(false);
 		return size;
 	}
 
@@ -153,7 +139,6 @@ class MidGamePanel extends JPanel {
 		phaseGameLbl.setText(this.timeDay + " " + this.currDay + ": " + this.eventDay);
 		Dimension size = phaseGameLbl.getPreferredSize();
 		phaseGameLbl.setBounds(w/2 + w/6, 65, size.width, size.height);
-		//this.add(phaseGameLbl);
 	}
 
 	public void playerJoined(String name, String role) {
@@ -165,7 +150,7 @@ class MidGamePanel extends JPanel {
 		if (role.equals("diviner")) diviners.add(name);
 		if (role.equals("doctor")) doctors.add(name);
 
-		//gameEventsTA.append("\n" + name + " " + role);
+		appendTextToEventPane(gameEventsTA, "\n" + name + " " + role, Color.RED);
 
 		updatePlayers(werewolfs, werewolfsTA);
 		updatePlayers(villagers, villagersTA);
@@ -173,12 +158,35 @@ class MidGamePanel extends JPanel {
 		updatePlayers(doctors, doctorsTA);
 	}
 
-	private void updatePlayers(ArrayList<String> playerGroup, JTextArea playerTAInfo) {
+	private void updatePlayers(ArrayList<String> playerGroup, JTextPane playerTAInfo) {
 		playerTAInfo.setText("");
 		for (int i = 0; i < playerGroup.size(); i++) {
-			if (i > 0) playerTAInfo.append("\n");
-			playerTAInfo.append(playerGroup.get(i));
+			if (i > 0)
+				appendTextToEventPane(playerTAInfo, "\n", Color.BLACK);
+			appendTextToEventPane(playerTAInfo, playerGroup.get(i), Color.BLACK);
 		}
+	}
+
+	/**
+	 *	Based on:
+	 *  - https://stackoverflow.com/questions/1985021/deleting-and-replacing-selected-text-in-jeditorpane
+ 	 *  - https://stackoverflow.com/questions/9650992/how-to-change-text-color-in-the-jtextarea
+	 */
+	private void appendTextToEventPane(JTextPane tp, String msg, Color c) {
+		tp.setEditable(true);
+
+        StyleContext sc = StyleContext.getDefaultStyleContext();
+        AttributeSet aset = sc.addAttribute(SimpleAttributeSet.EMPTY, StyleConstants.Foreground, c);
+
+        aset = sc.addAttribute(aset, StyleConstants.FontFamily, "Lucida Console");
+        aset = sc.addAttribute(aset, StyleConstants.Alignment, StyleConstants.ALIGN_JUSTIFIED);
+
+        int len = tp.getDocument().getLength();
+        tp.setCaretPosition(len);
+        tp.setCharacterAttributes(aset, false);
+        tp.replaceSelection(msg);
+
+		tp.setEditable(false);
 	}
 
 	private void waitForGUI() {
@@ -199,6 +207,11 @@ class MidGamePanel extends JPanel {
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		int w = this.env.WIDTH_FRAME;
+		int h = this.env.HEIGHT_FRAME;
+
+		// BACKGROUND
+		g.drawImage(wallpaper, 0, 0, w, h, this);
+
 		int sizeSquare = w/9;
 		int yImages = 35;
 		if (this.timeDay.equals("Day")) {
