@@ -76,7 +76,12 @@ day(0).
 		.create_agent(Name, "werewolf_random.asl");
 		-+temp(I+1);
 	}
-	while(temp(I) & I <= RW + SW +BW) {
+	while(temp(I) & I <= RW + SW) {
+		.concat("werewolf", I, Name);
+		.create_agent(Name, "werewolf_strategic.asl");
+		-+temp(I+1);
+	}
+	while(temp(I) & I <= RW + SW + BW) {
 		.concat("werewolf", I, Name);
 		.create_agent(Name, "werewolf_bdi.asl");
 		-+temp(I+1);
@@ -92,6 +97,16 @@ day(0).
 		.create_agent(Name, "diviner_random.asl");
 		-+temp(I+1);
 	}
+	while(temp(I) & I <= RDi + SDi) {
+		.concat("diviner", I, Name);
+		.create_agent(Name, "diviner_strategic.asl");
+		-+temp(I+1);
+	}
+	while(temp(I) & I <= RDi + SDi + BDi) {
+		.concat("diviner", I, Name);
+		.create_agent(Name, "diviner_bdi.asl");
+		-+temp(I+1);
+	}
 	-temp(_).
 
 +!invite_doctors : doctors_number(N) <-
@@ -100,6 +115,16 @@ day(0).
 	while(temp(I) & I <= RDo) {
 		.concat("doctor", I, Name);
 		.create_agent(Name, "doctor_random.asl");
+		-+temp(I+1);
+	}
+	while(temp(I) & I <= RDo + SDo) {
+		.concat("doctor", I, Name);
+		.create_agent(Name, "doctor_strategic.asl");
+		-+temp(I+1);
+	}
+	while(temp(I) & I <= RDo + SDo + BDo) {
+		.concat("doctor", I, Name);
+		.create_agent(Name, "doctor_bdi.asl");
 		-+temp(I+1);
 	}
 	-temp(_).
