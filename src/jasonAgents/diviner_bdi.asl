@@ -63,11 +63,10 @@ playersInfo([]).
 +!discuss(day) :
 	playersInfo(PlayersInfo) &
 	.findall(Player, .member([Player,werewolf], PlayersInfo) & not dead(Player), KnownWerewolfs) &
-	not .empty(KnownWerewolfs) & print(KnownWerewolfs)
+	not .empty(KnownWerewolfs)
 	<-
 	.length(KnownWerewolfs, NumKnownWerewolfs);
-	.nth(math.floor(math.random(NumKnownWerewolfs)), KnownWerewolfs, Chosen)
-	print(Chosen);
+	.nth(math.floor(math.random(NumKnownWerewolfs)), KnownWerewolfs, Chosen);
 	.broadcast(tell, role(Chosen, werewolf)).
 
 // accuse the most suspicious agent
@@ -142,7 +141,7 @@ playersInfo([]).
 	.send(master, askOne, join(Chosen, RoleAsked), join(Chosen, RoleReceived));
 	.concat([[Chosen, RoleReceived]], PlayersInfo, NewPlayersInfo);
 	-+playersInfo(NewPlayersInfo).
-
+		
 +!divine.
 
 

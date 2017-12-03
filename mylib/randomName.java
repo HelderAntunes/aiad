@@ -25,19 +25,19 @@ public class randomName extends DefaultInternalAction {
             singleton = new randomName();
         return singleton;
     }
-	
+
 	private ArrayList<String> first_names = new ArrayList<String>(Arrays.asList(
-		"Bob", "Jonathan", "Robert", "Pierre", 
-		"Tim", "Ink", "Arthur", "David", "Henry", 
+		"Bob", "Jonathan", "Robert", "Pierre",
+		"Tim", "Ink", "Arthur", "David", "Henry",
 		"Dallas", "Mike", "Sterling", "Dave",
 		"Anne", "Rossette", "Holly", "Mitty",
-		"Lisbeth", "Elizabeth", "Lilian", "Cynthia", "Alexa", 
+		"Lisbeth", "Elizabeth", "Lilian", "Cynthia", "Alexa",
 		"Ermelinda", "Karyn", "Jacqualine", "Arnette"
 	));
 	private ArrayList<String> last_names = new ArrayList<String>(Arrays.asList(
 		"the Builder", "Joestar", "Nicholas", "Timberwood",
-		"Walker", "Simpsims", "Brown", "Penacova", "Smith", "Jones", "Taylor", "Williams", "Davies", 
-		"Evans"
+		"Walker", "Simpsims", "Brown", "Penacova", "Smith", "Jones", "Taylor", "Williams", "Davies",
+		"Evans", "Hant", "Vintes", "Proença"
 	));
     private Random random = new Random();
 
@@ -57,12 +57,10 @@ public class randomName extends DefaultInternalAction {
     @Override
     public Object execute(final TransitionSystem ts, final Unifier un, final Term[] args) throws Exception {
         checkArguments(args);
-        return un.unifies(args[0], new StringTermImpl(getRandomName()));    
+        return un.unifies(args[0], new StringTermImpl(getRandomName()));
     }
-	
+
 	private String getRandomName(){
 		return first_names.get(random.nextInt(first_names.size())) + " " + last_names.get(random.nextInt(last_names.size()));
 	}
 }
-
-

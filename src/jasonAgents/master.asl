@@ -412,4 +412,5 @@ waitTime(500).
 	.member([Y, TrueY, _], PlayerList);
 	.concat(TrueX, " says that ", TrueY, " is a ", Rxy, Message);
 	.print(Message);
-	updateEventPanelEnv(Message).
+	updateEventPanelEnv(Message);
+	-role(Y, Rxy)[source(X)].
