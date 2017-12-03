@@ -2,6 +2,7 @@
 
 /* Initial beliefs and rules */
 day(0).
+waitTime(500).
 
 /*
 	Phase 1
@@ -34,7 +35,8 @@ day(0).
 	!invite_werewolfs;
 	!invite_diviners;
 	!invite_doctors;
-	.wait(1000);
+	?waitTime(W);
+	.wait(W);
 	!invite_players.
 
 +!invite_players : players(_) & not waiting_players(0) <-
@@ -169,7 +171,8 @@ day(0).
 
 
 +!endPhase(day, discussion) <-
-	.wait(5000);
+	?waitTime(W);
+	.wait(W);
 	.broadcast(untell, time(_,_));
 	.broadcast(tell, time(day, vote));
 	-+time(day, vote).
@@ -185,7 +188,8 @@ day(0).
 	!endPhase(day, vote).
 
 +!endVote(day) <-
-	.wait(1000);
+	?waitTime(W);
+	.wait(W);
 	?players_alive(Alive);
 	?players(PlayerList);
 	.findall([Voter, Voted], vote(Voted)[source(Voter)], VoteList);
@@ -243,7 +247,8 @@ day(0).
 
 
 +!endPhase(night, discussion) <-
-	.wait(5000);
+	?waitTime(W);
+	.wait(W);
 	.broadcast(untell, time(_,_));
 	.broadcast(tell, time(night, vote));
 	-+time(night, vote).
@@ -254,7 +259,8 @@ day(0).
 	!endPhase(night, vote).
 
 +!endVote(night) <-
-	.wait(1000);
+	?waitTime(W);
+	.wait(W);
 
 	// get votes
 	.findall([Voter, Voted], vote(Voted)[source(Voter)], VoteList);
@@ -374,13 +380,14 @@ day(0).
 	?total_players(T);
 	?werewolfs_number(W);
 	?villagers_number(V);
-	?diviners_number(D);
+	?diviners_number(Di);
+	?doctors_number(Do)
 	if (W == 0) {
 		.print("-----------------------------");
 		.print("Villagers win!");
 		.suspend;
 	}
-	if (T-W == 0) {
+	if (V + Di + Do == 0) {
 		.print("-----------------------------");
 		.print("Werewolfs win!");
 		.suspend;

@@ -195,7 +195,7 @@ class MidGamePanel extends JPanel {
 
 	public synchronized void playerDied(String playerName) {
 		playerName = formatStrings(playerName);
-		
+
 		for (int i = 0; i < werewolfs.size(); i++)
 			if (werewolfs.get(i).equals(playerName))
 				werewolfsLive.set(i, Boolean.FALSE);
@@ -254,6 +254,9 @@ class MidGamePanel extends JPanel {
 	@Override
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
+		if (wallpaper == null || sunImage == null || moonImage == null)
+			return;
+			
 		int w = this.env.WIDTH_FRAME;
 		int h = this.env.HEIGHT_FRAME;
 
