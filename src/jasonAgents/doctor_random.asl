@@ -73,7 +73,7 @@
 	.nth(math.floor(math.random(ListSize)), L, Chosen);
 	.broadcast(tell, vote(Chosen)).
 
-//Random divination
+//Random cure
 +!cure:
 	.all_names(All) &
 	.findall(A, .member(A, All) & not A == master & not .my_name(A) & not dead(A), L) &

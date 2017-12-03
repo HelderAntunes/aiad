@@ -1,8 +1,6 @@
-// Agent diviner (BDI) in project WereTest.mas2j
+// Agent diviner in project WereTest.mas2j
 
 /* Initial beliefs and rules */
-
-playersInfo([]).
 
 /* Initial goals */
 
@@ -11,14 +9,22 @@ playersInfo([]).
 /* Plans */
 
 /*
+	Phase 1
+	Generate random distribution of players
+*/
+
+//None
+
+/*
 	Phase 2
 	Invite players
 */
 
+
 +!start <-
 	.my_name(Id);
-	+role(Id, diviner);
-	.send(master, tell, join(Id, diviner)).
+	+role(Id, doctor);
+	.send(master, tell, join(Id, doctor)).
 
 +init(List) <-
 	for(.member([Name, _,_],List)){
@@ -49,7 +55,7 @@ playersInfo([]).
 */
 
 +time(night, vote) : .my_name(Self) & not dead(Self) <-
-	!divine.
+	!cure.
 
 /*
 	Change here
@@ -58,16 +64,6 @@ playersInfo([]).
 ///////////////////////////
 // Change for discussion //
 ///////////////////////////
-
-// accuse a random known werewolf
-+!discuss(day) :
-	playersInfo(PlayersInfo) &
-	.findall(Player, .member([Player,werewolf], PlayersInfo) & not dead(Player), KnownWerewolfs) &
-	not .empty(KnownWerewolfs)
-	<-
-	.length(KnownWerewolfs, NumKnownWerewolfs);
-	.nth(math.floor(math.random(NumKnownWerewolfs)), KnownWerewolfs, Chosen);
-	.broadcast(tell, role(Chosen, werewolf)).
 
 // accuse the most suspicious agent
 +!discuss(day) :
@@ -98,16 +94,6 @@ playersInfo([]).
 // Change for vote selection //
 ///////////////////////////////
 
-// vote a random known werewolf
-+!vote(day):
-	playersInfo(PlayersInfo) &
-	.findall(Player, .member([Player,werewolf], PlayersInfo) & not dead(Player), KnownWerewolfs) &
-	not .empty(KnownWerewolfs)
-	<-
-	.length(KnownWerewolfs, NumKnownWerewolfs);
-	.nth(math.floor(math.random(NumKnownWerewolfs)), KnownWerewolfs, Chosen);
-	.broadcast(tell, vote(Chosen)).
-
 // vote the most suspicious agent
 +!vote(day):
 	.setof([FC,A], suspect(role(A,werewolf),FC) & not A == master & not .my_name(A) & not dead(A), L) &
@@ -125,38 +111,38 @@ playersInfo([]).
 	.nth(math.floor(math.random(ListSize)), L, Chosen);
 	.broadcast(tell, vote(Chosen)).
 
-////////////////
-// divination //
-////////////////
+//////////
+// cure //
+//////////
 
-// ask for most suspicious unkwnown agent.
-+!divine:
-	playersInfo(PlayersInfo) &
-	.all_names(All) &
-	.findall(A, .member(A, All) & not .member([A,_], PlayersInfo) & not A == master & not .my_name(A) & not dead(A), UnknownAgents) &
-	not .empty(UnknownAgents) &
-	.setof([FC,A2], suspect(role(A2,werewolf),FC) & .member(A2, UnknownAgents) & not A2 == master & not .my_name(A2) & not dead(A2), SuspiciousAgents) &
-	.length(SuspiciousAgents, NumSuspiciousAgents) & not NumSuspiciousAgents == 0
+// cure what he thinks is more villager
++!cure(day):
+	.setof([FC,A], suspect(role(A,villager),FC) & not A == master & not .my_name(A) & not dead(A), L) &
+	.setof([FC,A], suspect(role(A,diviner),FC) & not A == master & not .my_name(A) & not dead(A), L2) &
+	.setof([FC,A], suspect(role(A,doctor),FC) & not A == master & not .my_name(A) & not dead(A), L3) &
+	.concat(L, L2, L3, L4) &
+	.length(L4, ListSize) & not ListSize == 0
 	<-
-	.nth(NumSuspiciousAgents - 1, SuspiciousAgents, [_,MostSuspiciousAgent]);
-	.send(master, askOne, join(MostSuspiciousAgent, RoleAsked), join(MostSuspiciousAgent, RoleReceived));
-	.concat([[MostSuspiciousAgent, RoleReceived]], PlayersInfo, NewPlayersInfo);
-	-+playersInfo(NewPlayersInfo).
+	.nth(ListSize-1, L4, [_,Chosen]);
+	.send(master, tell, cure(Chosen)).
 
-// as for an unkwnown agent
-+!divine:
-	playersInfo(PlayersInfo) &
-	.all_names(All) &
-	.findall(A, .member(A, All) & not .member([A,_], PlayersInfo) & not A == master & not .my_name(A) & not dead(A), UnknownAgents) &
-	not .empty(UnknownAgents)
+// cure the less suspicious agent
++!vote(day):
+	.setof([FC,A], suspect(role(A,werewolf),FC) & not A == master & not .my_name(A) & not dead(A), L) &
+	.length(L, ListSize) & not ListSize == 0
 	<-
-	.length(UnknownAgents, NumUnknownAgents);
-	.nth(math.floor(math.random(NumUnknownAgents)), UnknownAgents, Chosen);
-	.send(master, askOne, join(Chosen, RoleAsked), join(Chosen, RoleReceived));
-	.concat([[Chosen, RoleReceived]], PlayersInfo, NewPlayersInfo);
-	-+playersInfo(NewPlayersInfo).
+	.nth(0, L, [_,Chosen]);
+	.send(master, tell, cure(Chosen)).
 
-+!divine.
+// Random cure
++!cure:
+	.all_names(All) &
+	.findall(A, .member(A, All) & not A == master & not .my_name(A) & not dead(A), L) &
+	not empty(L)
+	<-
+	.length(L, ListSize);
+	.nth(math.floor(math.random(ListSize)), L, Chosen);
+	.send(master, tell, cure(Chosen)).
 
 /*
 	Observation Model
