@@ -120,12 +120,8 @@
 	role(Y, Rpy)[source(master)] &
 	trust(X, Corrects, Wrongs, Tx)
 	<-
-<<<<<<< HEAD
-	-+trust(X, Corrects, Wrongs+1, (((Corrects)/(Corrects+1+Wrongs))-0.5)*2).
-=======
 	-trust(N, Corrects, Wrongs, Tn);
-	+trust(X, Corrects, Wrongs+1, (((Corrects)/(Corrects+1+Wrongs))-0.5)*2).		
->>>>>>> cf37aaf903c62e36344661381d4150016ae30d82
+	+trust(X, Corrects, Wrongs+1, (((Corrects)/(Corrects+1+Wrongs))-0.5)*2).
 
 /*
 	No confirmation role(Y, _)[source(master)]
