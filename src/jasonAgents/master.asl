@@ -158,7 +158,6 @@ waitTime(500).
 	?players(List);
 	.broadcast(tell, init(List));
 	!tellWhoAreWerewolfs;
-	.broadcast(tell, time(day, discussion));
 	-+time(day, discussion).
 
 
@@ -167,6 +166,7 @@ waitTime(500).
 	-+day(D+1);
 	!sayDay;
 	!sayPhase;
+	.broadcast(tell, time(day, discussion));
 	!endPhase(day, discussion).
 
 
@@ -198,13 +198,20 @@ waitTime(500).
 	.print(M1);
 	updateEventPanelEnv(M1);
 	if(TotalVotes >= Alive/2){
-		for(.member([_,Name],VoteList)){
-			if(voteCount(Name, W)){
-				-+voteCount(Name,W+1);
-			}else{
-				+voteCount(Name,1);
+
+		+temp(1);
+		while(temp(I) & I <= TotalVotes) {
+			.nth(I-1, VoteList, [_, Name]);
+			if (voteCount(Name, C)) {
+				-+voteCount(Name, C+1)
 			}
+			else {
+				+voteCount(Name, 1)
+			}
+			-+temp(I+1);
 		}
+		-temp(_);
+
 		.findall([Count, Name],voteCount(Name,Count), CountList);
 		.sort(CountList, ReversedSortedCountList);
 		.reverse(ReversedSortedCountList, SortedCountList);
@@ -233,7 +240,6 @@ waitTime(500).
 
 +!endPhase(day, vote) <-
 	.broadcast(untell, time(_,_));
-	.broadcast(tell, time(night,discussion));
 	-+time(night, discussion).
 
 /*
@@ -243,6 +249,7 @@ waitTime(500).
 +time(night, discussion) <-
 	!sayNight;
 	!sayPhase;
+	.broadcast(tell, time(night,discussion));
 	!endPhase(night, discussion).
 
 
@@ -270,13 +277,19 @@ waitTime(500).
 	updateEventPanelEnv(M1);
 
 	// count votes
-	for(.member([_,Name],VoteList)) {
-		if(voteCount(Name, W)){
-			-+voteCount(Name,W+1);
-		}else{
-			+voteCount(Name,1);
+	+temp(1);
+	while(temp(I) & I <= TotalVotes) {
+		.nth(I-1, VoteList, [_, Name]);
+		if (voteCount(Name, C)) {
+			-+voteCount(Name, C+1)
 		}
+		else {
+			+voteCount(Name, 1)
+		}
+		-+temp(I+1);
 	}
+	-temp(_);
+	
 	.findall([Count, Name],voteCount(Name,Count), CountList);
 	.sort(CountList, ReversedSortedCountList);
 	.reverse(ReversedSortedCountList, SortedCountList);
@@ -309,7 +322,6 @@ waitTime(500).
 
 +!endPhase(night, vote) <-
 	.broadcast(untell, time(_,_));
-	.broadcast(tell, time(day,discussion));
 	-+time(day,discussion).
 
 /*
@@ -395,6 +407,9 @@ waitTime(500).
 	.
 
 +role(Y, Rxy)[source(X)] <-
-	.concat(X, " says that ", Y, " is a ", Rxy, Message);
+	?players(PlayerList);
+	.member([X, TrueX, _], PlayerList);
+	.member([Y, TrueY, _], PlayerList);
+	.concat(TrueX, " says that ", TrueY, " is a ", Rxy, Message);
 	.print(Message);
 	updateEventPanelEnv(Message).

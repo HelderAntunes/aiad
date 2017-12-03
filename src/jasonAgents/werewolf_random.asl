@@ -44,7 +44,7 @@
 
 +!discuss(day) :
 	.all_names(All) &
-	.findall(A, .member(A, All) & not A == master & not .my_name(A) & not dead(A) & not role(A,werewolf)[source(master)], L) &
+	.findall(A, .member(A, All) & not A == master & not .my_name(A) & not dead(A) & not role(A,werewolf)[source(self)], L) &
 	not .empty(L)
 	<-
 	.length(L, ListSize);
@@ -61,7 +61,7 @@
 
 +!vote(day) :
 	.all_names(All) &
-	.findall(A, .member(A, All) & not A == master & not .my_name(A) & not dead(A) & not role(A,werewolf)[source(master)], L) &
+	.findall(A, .member(A, All) & not A == master & not .my_name(A) & not dead(A) & not role(A,werewolf)[source(self)], L) &
 	not .empty(L)
 	<-
 	.length(L, ListSize);
@@ -81,7 +81,7 @@
 
 +!discuss(night) :
 	.all_names(All) &
-	.findall(A, .member(A, All) & not A == master & not .my_name(A) & not dead(A) & not role(A,werewolf)[source(master)], L) &
+	.findall(A, .member(A, All) & not A == master & not .my_name(A) & not dead(A) & not role(A,werewolf)[source(self)], L) &
 	not .empty(L)
 	<-
 	.length(L, ListSize);
@@ -101,7 +101,7 @@
 
 +!vote(night) :
 	.all_names(All) &
-	.findall(A, .member(A, All) & not A == master & not .my_name(A) & not dead(A) & not role(A,werewolf)[source(master)], L) &
+	.findall(A, .member(A, All) & not A == master & not .my_name(A) & not dead(A) & not role(A,werewolf)[source(self)], L) &
 	not .empty(L)
 	<-
 	.length(L, ListSize);
