@@ -59,8 +59,9 @@
 		.findall(S,vote(Player)[source(S)],L);
 		.length(L, ListSize);
 		-numVotes(Player,X);
-		+numVotes(Player, ListSize);
-	}.
+		+numVotes(Player, X + ListSize);
+	};
+	.abolish(vote(_)).
 
 /*
 	Change here

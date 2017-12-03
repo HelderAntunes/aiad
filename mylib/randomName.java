@@ -26,16 +26,18 @@ public class randomName extends DefaultInternalAction {
         return singleton;
     }
 	
-	
 	private ArrayList<String> first_names = new ArrayList<String>(Arrays.asList(
 		"Bob", "Jonathan", "Robert", "Pierre", 
-		"Tim", "Ink", "Arthur", "David",
+		"Tim", "Ink", "Arthur", "David", "Henry", 
+		"Dallas", "Mike", "Sterling", "Dave",
 		"Anne", "Rossette", "Holly", "Mitty",
-		"Lisbeth", "Elizabeth", "Lilian", "Cynthia"
+		"Lisbeth", "Elizabeth", "Lilian", "Cynthia", "Alexa", 
+		"Ermelinda", "Karyn", "Jacqualine", "Arnette"
 	));
 	private ArrayList<String> last_names = new ArrayList<String>(Arrays.asList(
 		"the Builder", "Joestar", "Nicholas", "Timberwood",
-		"Walker", "Simpsims", "Brown", "Penacova"
+		"Walker", "Simpsims", "Brown", "Penacova", "Smith", "Jones", "Taylor", "Williams", "Davies", 
+		"Evans"
 	));
     private Random random = new Random();
 

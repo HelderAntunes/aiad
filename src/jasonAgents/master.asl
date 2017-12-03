@@ -354,7 +354,7 @@ waitTime(500).
 	?players(PlayerList);
 	.member([ThatGuy, ThatGuyName, Role], PlayerList);
 	//.print(ThatGuyName, " died");
-	.concat(ThatGuy, " died", Message);
+	.concat(ThatGuyName, " died", Message);
 	.print(Message);
 	updateEventPanelEnv(Message);
 	playerDied(ThatGuyName);
