@@ -1,4 +1,4 @@
-// Agent diviner in project WereTest.mas2j
+// Agent diviner (random) in project WereTest.mas2j
 
 /* Initial beliefs and rules */
 
@@ -57,18 +57,26 @@
 */
 
 //Change for discussion
-+!discuss(day) : .all_names(All) & .findall(A, .member(A, All) & not A == master & not .my_name(A) & not dead(A), L )<-
++!discuss(day) :
+	.all_names(All) &
+	.findall(A, .member(A, All) & not A == master & not .my_name(A) & not dead(A), L)
+	<-
 	.length(L, ListSize);
 	.nth(math.floor(math.random(ListSize)), L, Chosen);
 	.broadcast(tell, role(Chosen, werewolf)).
 
 //Change for vote selection
-+!vote(day) : .findall(A, role(A,werewolf) & not dead(A), L ) & not .length(L, 0)<-
++!vote(day) :
+	.findall(A, role(A,werewolf) & not dead(A), L ) & not .length(L, 0)
+	<-
 	.length(L, ListSize);
 	.nth(math.floor(math.random(ListSize)), L, Chosen);
 	.broadcast(tell, vote(Chosen)).
 
-+!vote(day) : .all_names(All) & .findall(A, .member(A, All) & not A == master & not .my_name(A) & not dead(A), L )<-
++!vote(day) :
+	.all_names(All) &
+	.findall(A, .member(A, All) & not A == master & not .my_name(A) & not dead(A), L)
+	<-
 	.length(L, ListSize);
 	.nth(math.floor(math.random(ListSize)), L, Chosen);
 	.broadcast(tell, vote(Chosen)).
@@ -76,7 +84,8 @@
 //Random divination
 +!divine:
 	.all_names(All) &
-	.findall(A, .member(A, All) & not A == master & not .my_name(A) & not dead(A) & not role(A,_)[source(master)] , L) <-
+	.findall(A, .member(A, All) & not A == master & not .my_name(A) & not dead(A) & not role(A,_)[source(master)] , L)
+	<-
 	.length(L, ListSize);
 	.nth(math.floor(math.random(ListSize)), L, Chosen);
 	.send(master, askOne, join(Chosen,Role)).
