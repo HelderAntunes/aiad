@@ -107,7 +107,7 @@ betterVote(R, SxRpx, R, SbRpb) :-
 	
 +!vote(night) : 
 	.all_names(All) & .findall(A, .member(A, All) & not A == master & not .my_name(A) & not dead(A) & not role(A,werewolf)[source(master)], L) & bestVote(L, Best)<-
-	.broadcast(tell, vote(Best)).	
+	.send(master, tell, vote(Best)).	
 
 	
 /*
@@ -122,10 +122,12 @@ betterVote(R, SxRpx, R, SbRpb) :-
 	for(.member([N, RR], BeliefList)){
 		?trust(N, Corrects, Wrongs, Tn);
 		if(RR == Role){
-			-+trust(N, Corrects+1, Wrongs, (((Corrects+1)/(Corrects+1+Wrongs))-0.5)*2);
+			-trust(N, Corrects, Wrongs, Tn);
+			+trust(N, Corrects+1, Wrongs, (((Corrects+1)/(Corrects+1+Wrongs))-0.5)*2);
 		}
 		else{
-			-+trust(N, Corrects, Wrongs+1, ((Corrects/(Corrects+1+Wrongs))-0.5)*2);
+			-trust(N, Corrects, Wrongs, Tn);
+			+trust(N, Corrects, Wrongs+1, ((Corrects/(Corrects+1+Wrongs))-0.5)*2);
 		}
 	}.	
 
@@ -149,7 +151,8 @@ betterVote(R, SxRpx, R, SbRpb) :-
 	role(Y, Rpy)[source(master)] &
 	trust(X, Corrects, Wrongs, Tx)
 	<-
-	-+trust(X, Corrects+1, Wrongs, (((Corrects+1)/(Corrects+1+Wrongs))-0.5)*2).
+	-trust(X, Corrects, Wrongs, Tx);
+	+trust(X, Corrects+1, Wrongs, (((Corrects+1)/(Corrects+1+Wrongs))-0.5)*2).
 
 /*
 	Confirmation role(Y, Rpy)[source(master)]
@@ -161,7 +164,8 @@ betterVote(R, SxRpx, R, SbRpb) :-
 	role(Y, Rpy)[source(master)] &
 	trust(X, Corrects, Wrongs, Tx)
 	<-
-	-+trust(X, Corrects, Wrongs+1, (((Corrects)/(Corrects+1+Wrongs))-0.5)*2).		
+	-trust(X, Corrects, Wrongs, Tx);
+	+trust(X, Corrects, Wrongs+1, (((Corrects)/(Corrects+1+Wrongs))-0.5)*2).		
 
 /*
 	No confirmation role(Y, _)[source(master)]
@@ -207,6 +211,8 @@ betterVote(R, SxRpx, R, SbRpb) :-
 	?werewolf(List);
 	.send(List, tell, role(Best, Role));
 	.send(master, tell, role(Best, Role)).
+	
++!discuss(night).
 	
 	
 	

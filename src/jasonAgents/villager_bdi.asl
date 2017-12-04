@@ -107,7 +107,7 @@
 	role(Y, Rpy)[source(master)] &
 	trust(X, Corrects, Wrongs, Tx)
 	<-
-	-trust(N, Corrects, Wrongs, Tn);
+	-trust(X, Corrects, Wrongs, Tx);
 	+trust(X, Corrects+1, Wrongs, (((Corrects+1)/(Corrects+1+Wrongs))-0.5)*2).
 
 /*
