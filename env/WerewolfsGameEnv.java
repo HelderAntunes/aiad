@@ -96,6 +96,8 @@ public class WerewolfsGameEnv extends jason.environment.Environment {
             String player = action.getTerm(0).toString();
             ((MidGamePanel)currPanel).playerDied(player);
 
+        } else if (action.getFunctor().equals("gameFinished")) {
+          
         } else {
 
 			logger.info("executing: "+action+", but not implemented!");

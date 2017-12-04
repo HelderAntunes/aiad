@@ -148,6 +148,9 @@ public class WerewolfsGameEnvTest extends jason.environment.Environment {
 
         } else if (action.getFunctor().equals("playerDied")) {
 
+        } else if (action.getFunctor().equals("gameFinished")) {
+          String winner = action.getTerm(0).toString();
+          logger.info("THE WINNNNER IS: " + winner);
         } else {
 			       logger.info("executing: "+action+", but not implemented!");
 			       return false;
