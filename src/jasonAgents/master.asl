@@ -2,7 +2,12 @@
 
 /* Initial beliefs and rules */
 day(0).
-waitTime(500).
+waitTime(1000).
+
++changeWaitTime(X) <-
+	.print("change time: ", X);
+	-+waitTime(X);
+	-changeWaitTime(X).
 
 /*
 	Phase 1
@@ -48,6 +53,8 @@ waitTime(500).
 	.print("Game Start!!!");
 	updateEventPanelEnv("All players joined!", "ORANGE");
 	updateEventPanelEnv("Game Start!!!\n\n", "ORANGE");
+	?waitTime(W);
+	.wait(W);
 	!start_game.
 
 +!invite_villagers : villagers_number(N) <-
@@ -166,6 +173,8 @@ waitTime(500).
 	-+day(D+1);
 	!sayDay;
 	!sayPhase;
+	?waitTime(W);
+	.wait(W);
 	.broadcast(tell, time(day, discussion));
 	!endPhase(day, discussion).
 
@@ -173,8 +182,6 @@ waitTime(500).
 +!endPhase(day, discussion) <-
 	?waitTime(W);
 	.wait(W);
-	.broadcast(untell, time(_,_));
-	.broadcast(tell, time(day, vote));
 	-+time(day, vote).
 
 /*
@@ -184,6 +191,10 @@ waitTime(500).
 
 +time(day, vote) <-
 	!sayPhase;
+	?waitTime(W);
+	.wait(W);
+	.broadcast(untell, time(_,_));
+	.broadcast(tell, time(day, vote));
 	!endVote(day);
 	!endPhase(day, vote).
 
@@ -239,6 +250,8 @@ waitTime(500).
 	!clean_votes.
 
 +!endPhase(day, vote) <-
+	?waitTime(W);
+	.wait(W);
 	.broadcast(untell, time(_,_));
 	-+time(night, discussion).
 
@@ -249,6 +262,8 @@ waitTime(500).
 +time(night, discussion) <-
 	!sayNight;
 	!sayPhase;
+	?waitTime(W);
+	.wait(W);
 	.broadcast(tell, time(night,discussion));
 	!endPhase(night, discussion).
 
@@ -262,12 +277,12 @@ waitTime(500).
 
 +time(night, vote) <-
 	!sayPhase;
+	?waitTime(W);
+	.wait(W);
 	!endVote(night);
 	!endPhase(night, vote).
 
 +!endVote(night) <-
-	?waitTime(W);
-	.wait(W);
 
 	// get votes
 	.findall([Voter, Voted], vote(Voted)[source(Voter)], VoteList);
@@ -321,6 +336,8 @@ waitTime(500).
 	!clean_votes.
 
 +!endPhase(night, vote) <-
+	?waitTime(W);
+	.wait(W);
 	.broadcast(untell, time(_,_));
 	-+time(day,discussion).
 

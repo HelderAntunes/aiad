@@ -11,6 +11,7 @@ import javax.swing.text.*;
 
 import java.awt.*;
 import java.awt.event.*;
+import javax.swing.event.*;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 
@@ -41,7 +42,7 @@ class MidGamePanel extends JPanel {
 	private BufferedImage moonImage;
 	private BufferedImage wallpaper;
 
-	private boolean guiDone = false;
+	private volatile boolean guiDone = false;
 
 	private String timeDay = "Day"; // Day, Night
 	private String currDay = "0"; // 1, 2, 3, ...
@@ -76,12 +77,12 @@ class MidGamePanel extends JPanel {
 		gameEventsScrollPanel = new JScrollPane(gameEventsTA);
 		gameEventsScrollPanel.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		size = gameEventsScrollPanel.getPreferredSize();
-		gameEventsScrollPanel.setBounds(290, 150, size.width, size.height);
+		gameEventsScrollPanel.setBounds(270, 150, size.width, size.height);
 		this.add(gameEventsScrollPanel);
 
 		// AGENTS INFO LABELS
-        int yAgentsInfo = 20;
-        int xAgentsInfo = w/9-50;
+    int yAgentsInfo = 20;
+    int xAgentsInfo = w/9-50;
 
 		size = createAgentLbl(xAgentsInfo, yAgentsInfo, "Werewolfs");
         yAgentsInfo += size.height + 5;
@@ -101,6 +102,35 @@ class MidGamePanel extends JPanel {
 		size = createAgentLbl(xAgentsInfo, yAgentsInfo, "Doctors");
         yAgentsInfo += size.height + 5;
 		size = createAgentTA(doctorsTA, xAgentsInfo, yAgentsInfo, 5, 15);
+
+		// SLIDER
+		int FPS_MIN = 500, FPS_MAX = 3500, FPS_INIT = 1500;
+		JSlider speedSlider = new JSlider(JSlider.VERTICAL, FPS_MIN, FPS_MAX, FPS_INIT);
+		speedSlider.addChangeListener(new ChangeListener() {
+      public void stateChanged(ChangeEvent event) {
+				int value = 10 + (FPS_MAX - speedSlider.getValue());
+				env.addPercept(Literal.parseLiteral("changeWaitTime(" + value + ")"));
+      }
+    });
+		int value = 100 + (FPS_MAX - FPS_INIT);
+		env.addPercept(Literal.parseLiteral("changeWaitTime(" + value + ")"));
+
+		speedSlider.setMajorTickSpacing((FPS_MAX-FPS_MIN)/5);
+		speedSlider.setMinorTickSpacing((FPS_MAX-FPS_MIN)/10);
+		speedSlider.setPaintTicks(true);
+
+		Hashtable labelTable = new Hashtable();
+		labelTable.put(new Integer(FPS_MIN), new JLabel("Slow"));
+		labelTable.put(new Integer(FPS_MAX), new JLabel("Fast"));
+
+		speedSlider.setLabelTable(labelTable);
+		speedSlider.setPaintLabels(true);
+
+		size = speedSlider.getPreferredSize();
+		speedSlider.setBounds(w/2 + w/6 + 180, 240, size.width, size.height);
+		this.add(speedSlider);
+
+		setBackground(new java.awt.Color(204, 166, 166));
 
 		guiDone = true;
 	}
@@ -127,6 +157,7 @@ class MidGamePanel extends JPanel {
 	}
 
 	public void updateTimeDayEnv(String timeDay, String currDay) {
+		waitForGUI();
 		this.timeDay = formatStrings(timeDay);
 		this.currDay = currDay;
 		updatePhaseGameLbl();
@@ -134,6 +165,7 @@ class MidGamePanel extends JPanel {
 	}
 
 	public void updateEventDayEnv(String event) {
+		waitForGUI();
 		this.eventDay = event;
 		updatePhaseGameLbl();
 	}
@@ -194,6 +226,7 @@ class MidGamePanel extends JPanel {
 	}
 
 	public synchronized void playerDied(String playerName) {
+		waitForGUI();
 		playerName = formatStrings(playerName);
 
 		for (int i = 0; i < werewolfs.size(); i++)
@@ -221,6 +254,7 @@ class MidGamePanel extends JPanel {
  	 *  - https://stackoverflow.com/questions/9650992/how-to-change-text-color-in-the-jtextarea
 	 */
 	private void appendTextToEventPane(JTextPane tp, String msg, Color c) {
+		waitForGUI();
 		tp.setEditable(true);
 
         StyleContext sc = StyleContext.getDefaultStyleContext();
@@ -233,13 +267,15 @@ class MidGamePanel extends JPanel {
         tp.setCaretPosition(len);
         tp.setCharacterAttributes(aset, false);
         tp.replaceSelection(msg);
+				len = tp.getDocument().getLength();
+        tp.setCaretPosition(len);
 
 		tp.setEditable(false);
 	}
 
 	private void waitForGUI() {
 		try {
-			while (!guiDone) Thread.sleep(400);
+			if (!guiDone) Thread.sleep(800);
 		} catch (Exception e) {
 			System.out.println(e.toString());
 		}
@@ -254,19 +290,18 @@ class MidGamePanel extends JPanel {
 	@Override
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		if (wallpaper == null || sunImage == null || moonImage == null)
-			return;
-			
+		waitForGUI();
+
 		int w = this.env.WIDTH_FRAME;
 		int h = this.env.HEIGHT_FRAME;
 
 		// BACKGROUND
-		g.drawImage(wallpaper, 0, 0, w, h, this);
+		// g.drawImage(wallpaper, 0, 0, w, h, this);
 
 		int sizeSquare = w/9;
 		int yImages = 35;
 		if (this.timeDay.equals("Day")) {
-			g.drawImage(sunImage, w/2 + w/13 - sizeSquare/2, yImages, sizeSquare, sizeSquare, this);
+			g.drawImage(sunImage, w/2 + w/13 - sizeSquare/2, yImages, (int)(sizeSquare*1.1), (int)(sizeSquare*1.1), this);
 		}
 		else {
 			g.drawImage(moonImage, w/2 + w/13 - sizeSquare/2, yImages, sizeSquare, sizeSquare, this);

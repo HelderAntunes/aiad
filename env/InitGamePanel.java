@@ -158,6 +158,8 @@ class InitGamePanel extends JPanel {
 		createNumAgentsInput(villagersNumTF, w/9*3, yNumAgentsTF, "7");
 		createNumAgentsInput(divinersNumTF, w/9*5, yNumAgentsTF, "1");
 		size = createNumAgentsInput(doctorsNumTF, w/9*7, yNumAgentsTF, "1");
+
+		setBackground(new java.awt.Color(204, 166, 166));
 	}
 
 	private Dimension createAgentTitle(String text, int x, int y) {
@@ -210,8 +212,8 @@ class InitGamePanel extends JPanel {
 		int h = this.env.HEIGHT_FRAME;
 
 		// BACKGROUND
-		g.drawImage(wallpaper, 0, 0, w, h, this);
-		
+		// g.drawImage(wallpaper, 0, 0, w, h, this);
+
 		int sizeSquare = w/9;
 		int yImages = 180;
 		g.drawImage(werewolfImage, w/9*1, yImages, sizeSquare, sizeSquare, this);
