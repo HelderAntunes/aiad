@@ -34,9 +34,14 @@ public class WerewolfsGameEnvTest extends jason.environment.Environment {
 
 		javax.swing.SwingUtilities.invokeLater(new Runnable() {
             public void run() {
+
               try { readTestInfoFile(); }
 		          catch (Exception e) {}
               initGUI();
+
+              addPercept(Literal.parseLiteral("changeWaitTime(" + 10 + ")")); // wait time = 10 ms
+
+
               startTesting();
             }
         });
