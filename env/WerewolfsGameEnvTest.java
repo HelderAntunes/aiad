@@ -17,9 +17,13 @@ import java.awt.image.BufferedImage;
 public class WerewolfsGameEnvTest extends jason.environment.Environment {
 
     private Logger logger = Logger.getLogger("WerewolfsGame.mas2j." + WerewolfsGameEnv.class.getName());
+
+    private int MAX_TESTS = 50;
+    private int[][] tests = new int[50][12];
+    private int numTests = 0;
+
     public static int WIDTH_FRAME = 800;
     public static int HEIGHT_FRAME = 600;
-
     JFrame frame;
 	  JPanel currPanel;
 
@@ -33,6 +37,7 @@ public class WerewolfsGameEnvTest extends jason.environment.Environment {
               try { readTestInfoFile(); }
 		          catch (Exception e) {}
               initGUI();
+              startTesting();
             }
         });
 
@@ -53,11 +58,19 @@ public class WerewolfsGameEnvTest extends jason.environment.Environment {
     	Scanner scanner = new Scanner(file);
 
     	while (scanner.hasNext()) {
-        startNewGame(scanner);
+        readATest(scanner);
+        numTests++;
     	}
+
+      for (int i = 0; i < numTests; i++) {
+        String literal = "createAgents(" + tests[i][0];
+      	for (int j = 1; j < 12; j++) literal += "," + tests[i][j];
+        literal += ")";
+        logger.info(literal);
+      }
     }
 
-    private void startNewGame(Scanner scanner) {
+    private void readATest(Scanner scanner) {
       int[] agents = new int[12];
       int numTypeAgents = 4; // werewolfs, villagers, doctors, diviners
 
@@ -77,15 +90,9 @@ public class WerewolfsGameEnvTest extends jason.environment.Environment {
         else if (type.equals("doctor_random")) agents[9] = num;
         else if (type.equals("doctor_strategic")) agents[10] = num;
         else if (type.equals("doctor_bdi")) agents[11] = num;
-        
       }
 
-      String literal = "createAgents(" + agents[0];
-    	for (int i = 1; i < agents.length; i++) literal += "," + agents[i];
-      literal += ")";
-
-    	// addPercept(Literal.parseLiteral(literal + ")"));
-      logger.info(literal);
+      tests[numTests] = agents;
     }
 
     private void initGUI() {
@@ -97,6 +104,14 @@ public class WerewolfsGameEnvTest extends jason.environment.Environment {
 
         // currPanel = new InitGamePanel(this);
         // frame.getContentPane().add(currPanel);
+    }
+
+    private void startTesting() {
+      int[] firstTest = tests[0]; // TODO: check size... mas não há tempo :(
+
+      String literal = "createAgents(" + firstTest[0];
+      for (int i = 1; i < firstTest.length; i++) literal += "," + firstTest[i];
+      addPercept(Literal.parseLiteral(literal + ")"));
     }
 
 	public JPanel getCurrPanel() {
