@@ -88,11 +88,11 @@
 	for(.member([N, RR], BeliefList)){
 		?trust(N, Corrects, Wrongs, Tn);
 		if(RR == Role){
-			-trust(N, Corrects, Wrongs, Tn);
+			-trust(N,_,_,_);
 			+trust(N, Corrects+1, Wrongs, (((Corrects+1)/(Corrects+1+Wrongs))-0.5)*2);
 		}
 		else{
-			-trust(N, Corrects, Wrongs, Tn);
+			-trust(N,_,_,_);
 			+trust(N, Corrects, Wrongs+1, ((Corrects/(Corrects+1+Wrongs))-0.5)*2);
 		}
 	}.
@@ -107,7 +107,7 @@
 	role(Y, Rpy)[source(master)] &
 	trust(X, Corrects, Wrongs, Tx)
 	<-
-	-trust(X, Corrects, Wrongs, Tx);
+	-trust(X,_,_,_);
 	+trust(X, Corrects+1, Wrongs, (((Corrects+1)/(Corrects+1+Wrongs))-0.5)*2).
 
 /*
@@ -120,7 +120,7 @@
 	role(Y, Rpy)[source(master)] &
 	trust(X, Corrects, Wrongs, Tx)
 	<-
-	-trust(N, Corrects, Wrongs, Tn);
+	-trust(N,_,_,_);
 	+trust(X, Corrects, Wrongs+1, (((Corrects)/(Corrects+1+Wrongs))-0.5)*2).
 
 /*
