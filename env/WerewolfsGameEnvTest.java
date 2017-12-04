@@ -14,7 +14,7 @@ import java.awt.event.*;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 
-public class WerewolfsGameEnv extends jason.environment.Environment {
+public class WerewolfsGameEnvTest extends jason.environment.Environment {
 
     private Logger logger = Logger.getLogger("WerewolfsGame.mas2j." + WerewolfsGameEnv.class.getName());
     public static int WIDTH_FRAME = 800;
@@ -42,8 +42,8 @@ public class WerewolfsGameEnv extends jason.environment.Environment {
         frame.setResizable(false);
         frame.setVisible(true);
 
-        currPanel = new InitGamePanel(this);
-        frame.getContentPane().add(currPanel);
+        // currPanel = new InitGamePanel(this);
+        // frame.getContentPane().add(currPanel);
     }
 
 	public JPanel getCurrPanel() {
@@ -65,43 +65,21 @@ public class WerewolfsGameEnv extends jason.environment.Environment {
     @Override
     public boolean executeAction(String agName, Structure action) {
 
-		if (action.getFunctor().equals("playerJoined")) {
+		    if (action.getFunctor().equals("playerJoined")) {
 
-            while (!(currPanel instanceof MidGamePanel)) waitForGUI();
-            ((MidGamePanel)currPanel).playerJoined(action.getTerm(0).toString(), action.getTerm(1).toString());
-
-		} else if (action.getFunctor().equals("updateTimeDayEnv")) {
-
-            String timeDay = action.getTerm(0).toString();
-            String currDay = action.getTerm(1).toString();
-            ((MidGamePanel)currPanel).updateTimeDayEnv(timeDay, currDay);
+		    } else if (action.getFunctor().equals("updateTimeDayEnv")) {
 
         } else if (action.getFunctor().equals("updateEventDayEnv")) {
 
-            String event = action.getTerm(0).toString();
-            ((MidGamePanel)currPanel).updateEventDayEnv(event);
-
         } else if (action.getFunctor().equals("updateEventPanelEnv")) {
-
-            String eventMessage = action.getTerm(0).toString();
-            if (action.getArity() == 1)
-                ((MidGamePanel)currPanel).updateEventPanelEnv(eventMessage);
-            if (action.getArity() == 2) {
-                String color = action.getTerm(1).toString();
-                ((MidGamePanel)currPanel).updateEventPanelEnv(eventMessage, color);
-            }
 
         } else if (action.getFunctor().equals("playerDied")) {
 
-            String player = action.getTerm(0).toString();
-            ((MidGamePanel)currPanel).playerDied(player);
-
         } else {
 
-			logger.info("executing: "+action+", but not implemented!");
-			return false;
-
-		}
+			       logger.info("executing: "+action+", but not implemented!");
+			       return false;
+		    }
 
         return true;
     }

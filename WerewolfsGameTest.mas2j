@@ -1,0 +1,11 @@
+/* Jason Project */
+MAS werewolfsGame {
+    infrastructure: Centralised
+
+    environment: env.WerewolfsGameEnvTest
+
+    agents:
+		master;
+	aslSourcePath:
+        "src/jasonAgents";
+}
