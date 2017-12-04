@@ -30,11 +30,64 @@ public class WerewolfsGameEnvTest extends jason.environment.Environment {
 
 		javax.swing.SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                initGUI();
+              try { readTestInfoFile(); }
+		          catch (Exception e) {}
+              initGUI();
             }
         });
 
     }
+
+    /**
+    * Agent initials:
+    * RV, SV, BV: Random, Strategic, BDI villager
+    * RW, SW, BW: Random, Strategic, BDI werewolf
+    * RDi, SDi, BDi: Random, Strategic, BDI diviner
+    * RDo, SDo, BDo: Random, Strategic, BDI doctor
+    *
+    * agents array = [RV, SV, BV, RW, SW, BW, RDi, SDi, BDi, RDo, SDo, BDo]
+    *
+    */
+    public void readTestInfoFile() throws Exception {
+    	File file = new File("test_werewolfs.txt");
+    	Scanner scanner = new Scanner(file);
+
+    	while (scanner.hasNext()) {
+        startNewGame(scanner);
+    	}
+    }
+
+    private void startNewGame(Scanner scanner) {
+      int[] agents = new int[12];
+      int numTypeAgents = 4; // werewolfs, villagers, doctors, diviners
+
+      for (int i = 0; i < numTypeAgents; i++) {
+        String type = scanner.next();
+        int num = scanner.nextInt();
+
+        if (type.equals("villager_random")) agents[0] = num;
+        else if (type.equals("villager_strategic")) agents[1] = num;
+        else if (type.equals("villager_bdi")) agents[2] = num;
+        else if (type.equals("werewolf_random")) agents[3] = num;
+        else if (type.equals("werewolf_strategic")) agents[4] = num;
+        else if (type.equals("werewolf_bdi")) agents[5] = num;
+        else if (type.equals("diviner_random")) agents[6] = num;
+        else if (type.equals("diviner_strategic")) agents[7] = num;
+        else if (type.equals("diviner_bdi")) agents[8] = num;
+        else if (type.equals("doctor_random")) agents[9] = num;
+        else if (type.equals("doctor_strategic")) agents[10] = num;
+        else if (type.equals("doctor_bdi")) agents[11] = num;
+        
+      }
+
+      String literal = "createAgents(" + agents[0];
+    	for (int i = 1; i < agents.length; i++) literal += "," + agents[i];
+      literal += ")";
+
+    	// addPercept(Literal.parseLiteral(literal + ")"));
+      logger.info(literal);
+    }
+
     private void initGUI() {
 		frame = new JFrame("The Werewolves of Millers Hollow");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -76,21 +129,12 @@ public class WerewolfsGameEnvTest extends jason.environment.Environment {
         } else if (action.getFunctor().equals("playerDied")) {
 
         } else {
-
 			       logger.info("executing: "+action+", but not implemented!");
 			       return false;
 		    }
 
         return true;
     }
-
-    private void waitForGUI() {
-		try {
-			Thread.sleep(400);
-		} catch (Exception e) {
-			System.out.println(e.toString());
-		}
-	}
 
     /** Called before the end of MAS execution */
     @Override

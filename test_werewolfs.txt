@@ -1,0 +1,3 @@
+werewolf_random 2 villager_random 7 diviner_random 1 doctor_random 1
+werewolf_random 2 villager_random 8 diviner_random 1 doctor_random 1
+werewolf_random 2 villager_random 9 diviner_random 1 doctor_random 1
