@@ -12,6 +12,7 @@ public class Tester {
     private int [][] tests;
     private int numTests;
     private int currTest;
+    private Handler handler;
 
 
     public static void main(String[] args) {
@@ -25,7 +26,7 @@ public class Tester {
           Tester tester = new Tester();
           tester.readTestInfoFile("test_werewolfs.txt");
           tester.initServer();
-
+          tester.startTesting();
       }
       catch (Exception e) {}
     }
@@ -79,7 +80,7 @@ public class Tester {
     }
 
     private void initServer() throws Exception {
-      Handler handler = new Handler(tests, numTests, currTest);
+      handler = new Handler(tests, numTests, currTest);
       HttpServer httpServer = HttpServer.create(new InetSocketAddress("127.0.0.1",8000), 0);
       httpServer.createContext("/getTest", handler);
       httpServer.createContext("/postTest", handler);
@@ -88,5 +89,12 @@ public class Tester {
       httpServer.start();
 
       System.out.println("Listening at localhost:8000 ...");
+    }
+
+    private void startTesting() throws Exception {
+        for (int i = 0; i < numTests; i++) {
+            Process proc = Runtime.getRuntime().exec("java -jar werewolfsGameTest.jar");
+            Thread.sleep(100);
+        }
     }
 }

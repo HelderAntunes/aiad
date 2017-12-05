@@ -7,17 +7,20 @@ import com.sun.net.httpserver.HttpHandler;
 import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Handler implements HttpHandler {
     int[][]tests = new int[50][12];
-    int numTests = 0;
-    int currTest = 0;
+    AtomicInteger numTests;
+    AtomicInteger currTest;
+    AtomicInteger testsDone;
     String[] winners;
 
     Handler(int[][] tests, int numTests, int currTest) {
         this.tests = tests;
-        this.numTests = numTests;
-        this.currTest = currTest;
+        this.numTests = new AtomicInteger(numTests);
+        this.currTest = new AtomicInteger(0);
+        this.testsDone = new AtomicInteger(0);
         winners = new String[numTests];
     }
 
@@ -38,7 +41,7 @@ public class Handler implements HttpHandler {
     }
 
     private void handleGetTest(HttpExchange httpExchange) throws IOException {
-        if (currTest >= numTests)
+        if (currTest.get() >= numTests.get())
             writeResponse(httpExchange, "error");
 
         String query = getQueryOfPostRequest(httpExchange);
@@ -46,8 +49,9 @@ public class Handler implements HttpHandler {
         // String username = params.get("username");
         // String password = params.get("password");
 
-        String response = "test " + currTest + " ";
-        int[] test = tests[currTest++];
+        String response = "test " + currTest.get() + " ";
+        int[] test = tests[currTest.get()];
+        currTest.addAndGet(1);
         for (int i = 0; i < test.length; i++) {
             response += test[i];
             if (i < test.length-1)
@@ -57,14 +61,19 @@ public class Handler implements HttpHandler {
         writeResponse(httpExchange, response);
     }
 
-    private void handlePostTest(HttpExchange httpExchange) throws IOException {
+    private synchronized void handlePostTest(HttpExchange httpExchange) throws IOException {
         String query = getQueryOfPostRequest(httpExchange);
         Map<String,String> params = queryToMap(query);
         String idTest = params.get("idTest");
         String winner = params.get("winner");
         winners[Integer.parseInt(idTest)] = winner;
-        System.out.println(idTest + " -> " + winner);
+
         writeResponse(httpExchange, "test successfully created");
+        if (testsDone.addAndGet(1) == numTests.get()) {
+            for (int i = 0; i < winners.length; i++) {
+                System.out.println("Game " + i + " winner: " + winners[i]);
+            }
+        }
     }
 
     private String getQueryOfPostRequest(HttpExchange httpExchange) throws IOException {
