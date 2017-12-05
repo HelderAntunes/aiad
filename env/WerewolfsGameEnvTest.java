@@ -25,6 +25,7 @@ public class WerewolfsGameEnvTest extends jason.environment.Environment {
     public static int HEIGHT_FRAME = 600;
     JFrame frame;
     JPanel currPanel;
+    private int testIndex;
 
     private String base_url = "http://localhost:8000";
 
@@ -40,7 +41,14 @@ public class WerewolfsGameEnvTest extends jason.environment.Environment {
                 logger.info("fsefsdfsdfsdfsdf");
                 logger.info(response);
 
-                String literal = readTestInfoFile();
+                // test 1 8 0 0 2 0 0 1 0 0 1 0 0
+                int[] test = readATest(response);
+
+                String literal = "createAgents(" + test[0];
+                for (int j = 1; j < test.length; j++) literal += "," + test[j];
+                literal += ")";
+                logger.info(literal);
+
                 addPercept(Literal.parseLiteral("changeWaitTime(" + 10 + ")")); // wait time = 10 ms
                 addPercept(Literal.parseLiteral(literal));
                 initGUI();
@@ -79,49 +87,15 @@ public class WerewolfsGameEnvTest extends jason.environment.Environment {
         return response.toString();
     }
 
-    /**
-    * Agent initials:
-    * RV, SV, BV: Random, Strategic, BDI villager
-    * RW, SW, BW: Random, Strategic, BDI werewolf
-    * RDi, SDi, BDi: Random, Strategic, BDI diviner
-    * RDo, SDo, BDo: Random, Strategic, BDI doctor
-    *
-    * agents array = [RV, SV, BV, RW, SW, BW, RDi, SDi, BDi, RDo, SDo, BDo]
-    *
-    */
-    public String readTestInfoFile() throws Exception {
-    	File file = new File("test_werewolfs.txt");
-    	Scanner scanner = new Scanner(file);
-      int[] test = readATest(scanner);
-
-      String literal = "createAgents(" + test[0];
-    	for (int j = 1; j < test.length; j++) literal += "," + test[j];
-      literal += ")";
-      logger.info(literal);
-
-      return literal;
-    }
-
-    private int[] readATest(Scanner scanner) {
+    private int[] readATest(String response) {
+      Scanner scanner = new Scanner(response);
       int[] agents = new int[12];
-      int numTypeAgents = 4; // werewolfs, villagers, doctors, diviners
+      scanner.next();
+      testIndex = scanner.nextInt();
 
-      for (int i = 0; i < numTypeAgents; i++) {
-        String type = scanner.next();
+      for (int i = 0; i < 12; i++) {
         int num = scanner.nextInt();
-
-        if (type.equals("villager_random")) agents[0] = num;
-        else if (type.equals("villager_strategic")) agents[1] = num;
-        else if (type.equals("villager_bdi")) agents[2] = num;
-        else if (type.equals("werewolf_random")) agents[3] = num;
-        else if (type.equals("werewolf_strategic")) agents[4] = num;
-        else if (type.equals("werewolf_bdi")) agents[5] = num;
-        else if (type.equals("diviner_random")) agents[6] = num;
-        else if (type.equals("diviner_strategic")) agents[7] = num;
-        else if (type.equals("diviner_bdi")) agents[8] = num;
-        else if (type.equals("doctor_random")) agents[9] = num;
-        else if (type.equals("doctor_strategic")) agents[10] = num;
-        else if (type.equals("doctor_bdi")) agents[11] = num;
+        agents[i] = num;
       }
 
       return agents;

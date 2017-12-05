@@ -85,5 +85,7 @@ public class Tester {
 
       httpServer.setExecutor(java.util.concurrent.Executors.newCachedThreadPool());
       httpServer.start();
+
+      System.out.println("Listening at localhost:8000 ...");
     }
 }
