@@ -9,8 +9,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Handler implements HttpHandler {
+    int[][]tests = new int[50][12];
+    int numTests = 0;
+    int currTest = 0;
 
-    Handler() {
+    Handler(int[][] tests, int numTests, int currTest) {
+        this.tests = tests;
+        this.numTests = numTests;
+        this.currTest = currTest;
     }
 
     @Override
@@ -27,12 +33,23 @@ public class Handler implements HttpHandler {
     }
 
     private void handleGetTest(HttpExchange httpExchange) throws IOException {
+        if (currTest >= numTests)
+            writeResponse(httpExchange, "error");
+
         String query = getQueryOfPostRequest(httpExchange);
         Map<String,String> params = queryToMap(query);
-        String username = params.get("username");
-        String password = params.get("password");
+        // String username = params.get("username");
+        // String password = params.get("password");
 
-        writeResponse(httpExchange, "ola");
+        String response = "test " + currTest + " ";
+        int[] test = tests[currTest++];
+        for (int i = 0; i < test.length; i++) {
+            response += test[i];
+            if (i < test.length-1)
+                response += " ";
+        }
+
+        writeResponse(httpExchange, response);
     }
 
     private String getQueryOfPostRequest(HttpExchange httpExchange) throws IOException {

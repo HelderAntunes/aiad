@@ -9,7 +9,12 @@ import com.sun.net.httpserver.*;
 
 public class Tester {
 
-  public static void main(String[] args) {
+    private int [][] tests;
+    private int numTests;
+    private int currTest;
+
+
+    public static void main(String[] args) {
       /*if (args.length != 1) {
         System.out.println("Error: invalid arguments.");
         System.out.println("Use: java -jar Tester testFileName");
@@ -17,21 +22,15 @@ public class Tester {
 
       // String fileName = args[0];
       try {
-        int [][] tests = readTestInfoFile("test_werewolfs.txt");
-        for (int i = 0; i < tests.length; i++) {
-            int [] test = tests[i];
-            for (int j = 0; j < test.length; j++) {
-                System.out.print(test[j] + " ");
-            }
-            System.out.println();
-        }
+          Tester tester = new Tester();
+          tester.readTestInfoFile("test_werewolfs.txt");
+          tester.initServer();
 
-        initServer(tests);
       }
       catch (Exception e) {}
-  }
+    }
 
-  /**
+    /**
     * Agent initials:
     * RV, SV, BV: Random, Strategic, BDI villager
     * RW, SW, BW: Random, Strategic, BDI werewolf
@@ -41,13 +40,14 @@ public class Tester {
     * agents array = [RV, SV, BV, RW, SW, BW, RDi, SDi, BDi, RDo, SDo, BDo]
     *
     */
-    public static int[][] readTestInfoFile(String fileName) throws Exception {
-    	File file = new File(fileName);
-    	Scanner scanner = new Scanner(file);
-      int[][] tests = new int[50][12];
-      int numTests = 0;
+    public int[][] readTestInfoFile(String fileName) throws Exception {
+        File file = new File(fileName);
+        Scanner scanner = new Scanner(file);
+      tests = new int[50][12];
+      numTests = 0;
+      currTest = 0;
 
-    	while (scanner.hasNext())
+        while (scanner.hasNext())
         tests[numTests++] = readATest(scanner);
 
       return tests;
@@ -76,14 +76,14 @@ public class Tester {
       }
 
       return agents;
-  }
+    }
 
-  private static void initServer(int[][] tests) throws Exception {
-      Handler handler = new Handler();
+    private void initServer() throws Exception {
+      Handler handler = new Handler(tests, numTests, currTest);
       HttpServer httpServer = HttpServer.create(new InetSocketAddress("127.0.0.1",8000), 0);
       httpServer.createContext("/getTest", handler);
 
       httpServer.setExecutor(java.util.concurrent.Executors.newCachedThreadPool());
       httpServer.start();
-  }
+    }
 }

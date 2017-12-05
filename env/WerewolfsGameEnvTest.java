@@ -32,13 +32,12 @@ public class WerewolfsGameEnvTest extends jason.environment.Environment {
     @Override
     public void init(String[] args) {
         super.init(args);
-        logger.info("fdsfsdf");
 
         javax.swing.SwingUtilities.invokeLater(new Runnable() {
             public void run() {
               try {
-                  logger.info("fdsfsdf");
-                String response = sendGet("/getTest", "void");
+                String response = sendGet("/getTest", "null");
+                logger.info("fsefsdfsdfsdfsdf");
                 logger.info(response);
 
                 String literal = readTestInfoFile();
