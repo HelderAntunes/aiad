@@ -1,5 +1,5 @@
 /* Jason Project */
-MAS werewolfsGame {
+MAS werewolfsGameTest {
     infrastructure: Centralised
 
     environment: env.WerewolfsGameEnvTest

@@ -14,38 +14,70 @@ import java.awt.event.*;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 
+import java.net.HttpURLConnection;
+import java.net.URL;
+
 public class WerewolfsGameEnvTest extends jason.environment.Environment {
 
     private Logger logger = Logger.getLogger("WerewolfsGame.mas2j." + WerewolfsGameEnv.class.getName());
 
-    private int MAX_TESTS = 50;
-    private int[][] tests = new int[50][12];
-    private int numTests = 0;
-
     public static int WIDTH_FRAME = 800;
     public static int HEIGHT_FRAME = 600;
     JFrame frame;
-	  JPanel currPanel;
+    JPanel currPanel;
+
+    private String base_url = "http://localhost:8000";
 
     /** Called before the MAS execution with the args informed in .mas2j */
     @Override
     public void init(String[] args) {
         super.init(args);
+        logger.info("fdsfsdf");
 
-		javax.swing.SwingUtilities.invokeLater(new Runnable() {
+        javax.swing.SwingUtilities.invokeLater(new Runnable() {
             public void run() {
+              try {
+                  logger.info("fdsfsdf");
+                String response = sendGet("/getTest", "void");
+                logger.info(response);
 
-              try { readTestInfoFile(); }
+                String literal = readTestInfoFile();
+                addPercept(Literal.parseLiteral("changeWaitTime(" + 10 + ")")); // wait time = 10 ms
+                addPercept(Literal.parseLiteral(literal));
+                initGUI();
+              }
 		          catch (Exception e) {}
-              initGUI();
 
-              addPercept(Literal.parseLiteral("changeWaitTime(" + 10 + ")")); // wait time = 10 ms
-
-
-              startTesting();
             }
         });
 
+    }
+
+    public String sendGet(String path, String urlParameters) throws Exception {
+        String url = base_url + path + "?" + urlParameters;
+        URL obj = new URL(url);
+        HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+        con.setRequestMethod("GET");
+
+        int responseCode = con.getResponseCode();
+        if (responseCode != 200)
+            return "Error: code " + responseCode + ".";
+
+        return readResponse(con);
+    }
+
+    private String readResponse(HttpURLConnection con) throws IOException {
+        BufferedReader in = new BufferedReader(
+                new InputStreamReader(con.getInputStream()));
+        String inputLine;
+        StringBuilder response = new StringBuilder();
+
+        while ((inputLine = in.readLine()) != null) {
+            response.append(inputLine);
+        }
+        in.close();
+        return response.toString();
     }
 
     /**
@@ -58,24 +90,20 @@ public class WerewolfsGameEnvTest extends jason.environment.Environment {
     * agents array = [RV, SV, BV, RW, SW, BW, RDi, SDi, BDi, RDo, SDo, BDo]
     *
     */
-    public void readTestInfoFile() throws Exception {
+    public String readTestInfoFile() throws Exception {
     	File file = new File("test_werewolfs.txt");
     	Scanner scanner = new Scanner(file);
+      int[] test = readATest(scanner);
 
-    	while (scanner.hasNext()) {
-        readATest(scanner);
-        numTests++;
-    	}
+      String literal = "createAgents(" + test[0];
+    	for (int j = 1; j < test.length; j++) literal += "," + test[j];
+      literal += ")";
+      logger.info(literal);
 
-      for (int i = 0; i < numTests; i++) {
-        String literal = "createAgents(" + tests[i][0];
-      	for (int j = 1; j < 12; j++) literal += "," + tests[i][j];
-        literal += ")";
-        logger.info(literal);
-      }
+      return literal;
     }
 
-    private void readATest(Scanner scanner) {
+    private int[] readATest(Scanner scanner) {
       int[] agents = new int[12];
       int numTypeAgents = 4; // werewolfs, villagers, doctors, diviners
 
@@ -97,7 +125,7 @@ public class WerewolfsGameEnvTest extends jason.environment.Environment {
         else if (type.equals("doctor_bdi")) agents[11] = num;
       }
 
-      tests[numTests] = agents;
+      return agents;
     }
 
     private void initGUI() {
@@ -109,14 +137,6 @@ public class WerewolfsGameEnvTest extends jason.environment.Environment {
 
         // currPanel = new InitGamePanel(this);
         // frame.getContentPane().add(currPanel);
-    }
-
-    private void startTesting() {
-      int[] firstTest = tests[0]; // TODO: check size... mas não há tempo :(
-
-      String literal = "createAgents(" + firstTest[0];
-      for (int i = 1; i < firstTest.length; i++) literal += "," + firstTest[i];
-      addPercept(Literal.parseLiteral(literal + ")"));
     }
 
 	public JPanel getCurrPanel() {
@@ -151,6 +171,8 @@ public class WerewolfsGameEnvTest extends jason.environment.Environment {
         } else if (action.getFunctor().equals("gameFinished")) {
           String winner = action.getTerm(0).toString();
           logger.info("THE WINNNNER IS: " + winner);
+          //addPercept(Literal.parseLiteral("restart"));
+          // TODO: add to file the result
         } else {
 			       logger.info("executing: "+action+", but not implemented!");
 			       return false;

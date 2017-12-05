@@ -66,38 +66,30 @@ public class WerewolfsGameEnv extends jason.environment.Environment {
     public boolean executeAction(String agName, Structure action) {
 
 		if (action.getFunctor().equals("playerJoined")) {
-
             while (!(currPanel instanceof MidGamePanel)) waitForGUI();
             ((MidGamePanel)currPanel).playerJoined(action.getTerm(0).toString(), action.getTerm(1).toString());
-
 		} else if (action.getFunctor().equals("updateTimeDayEnv")) {
-
             String timeDay = action.getTerm(0).toString();
             String currDay = action.getTerm(1).toString();
             ((MidGamePanel)currPanel).updateTimeDayEnv(timeDay, currDay);
-
         } else if (action.getFunctor().equals("updateEventDayEnv")) {
-
             String event = action.getTerm(0).toString();
             ((MidGamePanel)currPanel).updateEventDayEnv(event);
-
         } else if (action.getFunctor().equals("updateEventPanelEnv")) {
-
             String eventMessage = action.getTerm(0).toString();
+
             if (action.getArity() == 1)
                 ((MidGamePanel)currPanel).updateEventPanelEnv(eventMessage);
             if (action.getArity() == 2) {
                 String color = action.getTerm(1).toString();
                 ((MidGamePanel)currPanel).updateEventPanelEnv(eventMessage, color);
             }
-
         } else if (action.getFunctor().equals("playerDied")) {
-
             String player = action.getTerm(0).toString();
             ((MidGamePanel)currPanel).playerDied(player);
-
         } else if (action.getFunctor().equals("gameFinished")) {
-          
+            String eventMessage = action.getTerm(0).toString();
+            ((MidGamePanel)currPanel).updateEventPanelEnv(eventMessage);
         } else {
 
 			logger.info("executing: "+action+", but not implemented!");

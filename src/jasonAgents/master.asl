@@ -28,6 +28,7 @@ waitTime(1000).
 	+diviners_number(RDi + SDi + BDi);
 	+doctors_number(RDo + SDo + BDo);
 	+total_players(RV + SV + BV + RW + SW + BW + RDi + SDi + BDi + RDo + SDo + BDo);
+	+waiting_players(RV + SV + BV + RW + SW + BW + RDi + SDi + BDi + RDo + SDo + BDo);
 	!invite_players.
 
 /*
@@ -182,7 +183,8 @@ waitTime(1000).
 +!endPhase(day, discussion) <-
 	?waitTime(W);
 	.wait(W);
-	-+time(day, vote).
+	-+time(day, vote)
+	.
 
 /*
 	Phase 4
@@ -414,53 +416,16 @@ waitTime(1000).
 	if (W == 0) {
 		.print("-----------------------------");
 		.print("Villagers win!");
-		gameFinished(villagers);
-		!dropAllStatus;
+		gameFinished("Villagers win!");
+		.suspend;
 	}
 	if (V + Di + Do == 0) {
 		.print("-----------------------------");
 		.print("Werewolfs win!");
-		gameFinished(werewolfs);
-		!dropAllStatus;
+		gameFinished("Werewolfs win!");
+		.suspend;
 	}
 	.
-
-+!dropAllStatus <-
-	.all_names(Agents);
-	for(.member(A,Agents)){
-		if (not A == master) {
-			.kill_agent(A);
-		}
-	};
-	.wait(100);
-
-	.abolish(changeWaitTime(_));
-	.abolish(day(_));
-	.abolish(diviners_number(_));
-	.abolish(doctors_number(_));
-	.abolish(players(_));
-	.abolish(players_alive(_));
-	.abolish(total_players(_));
-	.abolish(villagers_number(_));
-	.abolish(waitTime(_));
-	.abolish(waiting_players(_));
-	.abolish(werewolfs_number(_));
-	.abolish(join(_,_));
-	.abolish(time(_,_));
-	.abolish(createAgents(_,_,_,_,_,_,_,_,_,_,_,_));
-	.abolish(vote(_));
-	.abolish(voteCount(_,_));
-	.abolish(cure(_));
-
-	.drop_all_intentions;
-	.drop_all_events;
-	.drop_all_desires;
-
-	-+day(0);
-	-+waitTime(1000);
-
-	.succeed_goal(invite_players). // finish current plan, because finish origin plan (invite_players).
-
 
 +role(Y, Rxy)[source(X)] <-
 	?players(PlayerList);
