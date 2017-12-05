@@ -74,6 +74,30 @@ public class WerewolfsGameEnvTest extends jason.environment.Environment {
         return readResponse(con);
     }
 
+    public String sendPost(String path, String urlParameters) throws Exception {
+      String url = base_url + path;
+      URL obj = new URL(url);
+      HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+      con.setRequestMethod("POST");
+      con.setDoOutput(true);
+      con.setDoInput(true);
+      setPostParameters(con, urlParameters);
+
+      int responseCode = con.getResponseCode();
+      if (responseCode != 200)
+        return "Error: code " + responseCode + ".";
+
+      return readResponse(con);
+    }
+
+    private void setPostParameters(HttpURLConnection con, String postParameters) throws IOException {
+        DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+        wr.writeBytes(postParameters);
+        wr.flush();
+        wr.close();
+    }
+
     private String readResponse(HttpURLConnection con) throws IOException {
         BufferedReader in = new BufferedReader(
                 new InputStreamReader(con.getInputStream()));
@@ -144,8 +168,13 @@ public class WerewolfsGameEnvTest extends jason.environment.Environment {
         } else if (action.getFunctor().equals("gameFinished")) {
           String winner = action.getTerm(0).toString();
           logger.info("THE WINNNNER IS: " + winner);
-          //addPercept(Literal.parseLiteral("restart"));
-          // TODO: add to file the result
+          try {
+            sendPost("/postTest", "idTest=" + testIndex + "&winner=" + winner);
+          }
+          catch (Exception e) {
+            logger.info(":(");
+          }
+
         } else {
 			       logger.info("executing: "+action+", but not implemented!");
 			       return false;

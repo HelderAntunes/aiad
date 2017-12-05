@@ -82,6 +82,7 @@ public class Tester {
       Handler handler = new Handler(tests, numTests, currTest);
       HttpServer httpServer = HttpServer.create(new InetSocketAddress("127.0.0.1",8000), 0);
       httpServer.createContext("/getTest", handler);
+      httpServer.createContext("/postTest", handler);
 
       httpServer.setExecutor(java.util.concurrent.Executors.newCachedThreadPool());
       httpServer.start();

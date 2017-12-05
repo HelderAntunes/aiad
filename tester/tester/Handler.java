@@ -12,11 +12,13 @@ public class Handler implements HttpHandler {
     int[][]tests = new int[50][12];
     int numTests = 0;
     int currTest = 0;
+    String[] winners;
 
     Handler(int[][] tests, int numTests, int currTest) {
         this.tests = tests;
         this.numTests = numTests;
         this.currTest = currTest;
+        winners = new String[numTests];
     }
 
     @Override
@@ -26,6 +28,9 @@ public class Handler implements HttpHandler {
         switch (path) {
             case "/getTest":
                 handleGetTest(httpExchange);
+                break;
+            case "/postTest":
+                handlePostTest(httpExchange);
                 break;
             default:
                 break;
@@ -50,6 +55,16 @@ public class Handler implements HttpHandler {
         }
 
         writeResponse(httpExchange, response);
+    }
+
+    private void handlePostTest(HttpExchange httpExchange) throws IOException {
+        String query = getQueryOfPostRequest(httpExchange);
+        Map<String,String> params = queryToMap(query);
+        String idTest = params.get("idTest");
+        String winner = params.get("winner");
+        winners[Integer.parseInt(idTest)] = winner;
+        System.out.println(idTest + " -> " + winner);
+        writeResponse(httpExchange, "test successfully created");
     }
 
     private String getQueryOfPostRequest(HttpExchange httpExchange) throws IOException {
