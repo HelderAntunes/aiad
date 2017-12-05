@@ -9,10 +9,6 @@ import java.util.Scanner;
 import java.lang.String;
 import javax.swing.*;
 
-import java.awt.*;
-import java.awt.event.*;
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -20,11 +16,7 @@ import java.net.URL;
 public class WerewolfsGameEnvTest extends jason.environment.Environment {
 
     private Logger logger = Logger.getLogger("WerewolfsGame.mas2j." + WerewolfsGameEnv.class.getName());
-
-    public static int WIDTH_FRAME = 800;
-    public static int HEIGHT_FRAME = 600;
-    JFrame frame;
-    JPanel currPanel;
+    
     private int testIndex;
 
     private String base_url = "http://localhost:8000";
@@ -38,10 +30,6 @@ public class WerewolfsGameEnvTest extends jason.environment.Environment {
             public void run() {
               try {
                 String response = sendGet("/getTest", "null");
-                logger.info("fsefsdfsdfsdfsdf");
-                logger.info(response);
-
-                // test 1 8 0 0 2 0 0 1 0 0 1 0 0
                 int[] test = readATest(response);
 
                 String literal = "createAgents(" + test[0];
@@ -51,7 +39,6 @@ public class WerewolfsGameEnvTest extends jason.environment.Environment {
 
                 addPercept(Literal.parseLiteral("changeWaitTime(" + 10 + ")")); // wait time = 10 ms
                 addPercept(Literal.parseLiteral(literal));
-                initGUI();
               }
 		          catch (Exception e) {}
 
@@ -123,29 +110,6 @@ public class WerewolfsGameEnvTest extends jason.environment.Environment {
       }
 
       return agents;
-    }
-
-    private void initGUI() {
-		frame = new JFrame("The Werewolves of Millers Hollow");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(WIDTH_FRAME, HEIGHT_FRAME);
-        frame.setResizable(false);
-        frame.setVisible(true);
-
-        // currPanel = new InitGamePanel(this);
-        // frame.getContentPane().add(currPanel);
-    }
-
-	public JPanel getCurrPanel() {
-		return currPanel;
-	}
-
-	public void setCurrPanel(JPanel newPanel) {
-		currPanel = newPanel;
-	}
-
-    public JFrame getFrame() {
-    	return frame;
     }
 
     public Logger getLogger() {
