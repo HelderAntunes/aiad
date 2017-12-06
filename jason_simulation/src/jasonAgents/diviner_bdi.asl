@@ -2,8 +2,6 @@
 
 /* Initial beliefs and rules */
 
-playersInfo([]).
-
 /* Initial goals */
 
 !start.
@@ -61,8 +59,7 @@ playersInfo([]).
 
 // accuse a random known werewolf
 +!discuss(day) :
-	playersInfo(PlayersInfo) &
-	.findall(Player, .member([Player,werewolf], PlayersInfo) & not dead(Player), KnownWerewolfs) &
+	.findall(Player, join(Player,werewolf) & not dead(Player), KnownWerewolfs) &
 	not .empty(KnownWerewolfs)
 	<-
 	.length(KnownWerewolfs, NumKnownWerewolfs);
@@ -100,8 +97,7 @@ playersInfo([]).
 
 // vote a random known werewolf
 +!vote(day):
-	playersInfo(PlayersInfo) &
-	.findall(Player, .member([Player,werewolf], PlayersInfo) & not dead(Player), KnownWerewolfs) &
+	.findall(Player, join(Player,werewolf) & not dead(Player), KnownWerewolfs) &
 	not .empty(KnownWerewolfs)
 	<-
 	.length(KnownWerewolfs, NumKnownWerewolfs);
@@ -131,30 +127,21 @@ playersInfo([]).
 
 // ask for most suspicious unkwnown agent.
 +!divine:
-	playersInfo(PlayersInfo) &
-	.all_names(All) &
-	.findall(A, .member(A, All) & not .member([A,_], PlayersInfo) & not A == master & not .my_name(A) & not dead(A), UnknownAgents) &
-	not .empty(UnknownAgents) &
-	.setof([FC,A2], suspect(role(A2,werewolf),FC) & .member(A2, UnknownAgents) & not A2 == master & not .my_name(A2) & not dead(A2), SuspiciousAgents) &
+	.setof([FC,A], suspect(role(A,werewolf),FC) & not join(A,_) & not A == master & not .my_name(A) & not dead(A), SuspiciousAgents) &
 	.length(SuspiciousAgents, NumSuspiciousAgents) & not NumSuspiciousAgents == 0
 	<-
 	.nth(NumSuspiciousAgents - 1, SuspiciousAgents, [_,MostSuspiciousAgent]);
-	.send(master, askOne, join(MostSuspiciousAgent, RoleAsked), join(MostSuspiciousAgent, RoleReceived));
-	.concat([[MostSuspiciousAgent, RoleReceived]], PlayersInfo, NewPlayersInfo);
-	-+playersInfo(NewPlayersInfo).
+	.send(master, askOne, join(MostSuspiciousAgent, Role)).
 
 // as for an unkwnown agent
 +!divine:
-	playersInfo(PlayersInfo) &
 	.all_names(All) &
-	.findall(A, .member(A, All) & not .member([A,_], PlayersInfo) & not A == master & not .my_name(A) & not dead(A), UnknownAgents) &
+	.findall(A, .member(A, All) & not join(A,_) & not A == master & not .my_name(A) & not dead(A), UnknownAgents) &
 	not .empty(UnknownAgents)
 	<-
 	.length(UnknownAgents, NumUnknownAgents);
 	.nth(math.floor(math.random(NumUnknownAgents)), UnknownAgents, Chosen);
-	.send(master, askOne, join(Chosen, RoleAsked), join(Chosen, RoleReceived));
-	.concat([[Chosen, RoleReceived]], PlayersInfo, NewPlayersInfo);
-	-+playersInfo(NewPlayersInfo).
+	.send(master, askOne, join(Chosen, Role)).
 
 +!divine.
 

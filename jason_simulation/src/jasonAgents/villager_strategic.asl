@@ -52,7 +52,7 @@
 	Phase 5
 	Night Discussion
 */
-
+//Count votes cast during the day
 +time(night, vote) : .my_name(Self) & not dead(Self) <-
 	.findall(P,vote(P), VotedList);
 	for(.member(Player,VotedList)){
