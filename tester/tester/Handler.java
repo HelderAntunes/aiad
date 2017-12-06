@@ -50,17 +50,32 @@ public class Handler implements HttpHandler {
     }
 
     private void handleGetTests(HttpExchange httpExchange) throws IOException {
-        /* String response = "test " + currTest.get() + " ";
-        Test test = tests.get(currTest.get());
-        currTest.addAndGet(1);
+        String response = "[";
+        for (int i = 0; i < tests.size(); i++) {
+            String testResult = "{\n";
+            testResult += "id: " + tests.get(i).id + ",\n";
+            testResult += "configuration: {\n";
+            testResult += "villager_random: " + tests.get(i).agents[0] + ",\n";
+            testResult += "villager_strategic: " + tests.get(i).agents[1] + ",\n";
+            testResult += "villager_bdi: " + tests.get(i).agents[2] + ",\n";
+            testResult += "villager_random: " + tests.get(i).agents[3] + ",\n";
+            testResult += "villager_strategic: " + tests.get(i).agents[4] + ",\n";
+            testResult += "villager_bdi: " + tests.get(i).agents[5] + ",\n";
+            testResult += "villager_random: " + tests.get(i).agents[6] + ",\n";
+            testResult += "villager_strategic: " + tests.get(i).agents[7] + ",\n";
+            testResult += "villager_bdi: " + tests.get(i).agents[8] + ",\n";
+            testResult += "villager_random: " + tests.get(i).agents[9] + ",\n";
+            testResult += "villager_strategic: " + tests.get(i).agents[10] + ",\n";
+            testResult += "villager_bdi: " + tests.get(i).agents[11] + ",\n";
+            testResult += "},\n";
+            testResult += "results: " + tests.get(i).winner + ",\n";
+            testResult += "},\n";
 
-        for (int i = 0; i < test.agents.length; i++) {
-            response += test.agents[i];
-            if (i < test.agents.length-1)
-                response += " ";
+            response += testResult;
         }
+        response += "]";
 
-        writeResponse(httpExchange, response);*/
+        writeResponse(httpExchange, response);
     }
 
     private void handleGetTest(HttpExchange httpExchange) throws IOException {
