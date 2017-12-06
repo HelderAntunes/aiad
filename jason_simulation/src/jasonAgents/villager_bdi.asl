@@ -45,7 +45,7 @@
 	Change here
 */
 
-//Change for discussion
+//Accuse most suspicious of if not enough knowledge random
 +!discuss(day) : .setof([FC,A], suspect(role(A,werewolf),FC) & not A == master & not .my_name(A) & not dead(A), L )
 		& .length(L, ListSize) & not ListSize == 0 <-
 	Rand = math.random(1);
@@ -64,7 +64,7 @@
 		.broadcast(tell, role(Chosen, werewolf));
 	}.
 
-//TODO: Change for vote selection
+//Vote most suspicious of if not enough knowledge random
 +!vote(day) : .setof([FC,A], suspect(role(A,werewolf),FC) & not A == master & not .my_name(A) & not dead(A), L )
 		& .length(L, ListSize) & not ListSize == 0 <-
 	.nth(ListSize - 1, L, [_,Chosen]);

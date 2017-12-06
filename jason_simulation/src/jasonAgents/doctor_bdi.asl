@@ -60,11 +60,6 @@
 /*
 	Change here
 */
-
-///////////////////////////
-// Change for discussion //
-///////////////////////////
-
 // accuse the most suspicious agent
 +!discuss(day) :
 	.setof([FC,A], suspect(role(A,werewolf),FC) & not A == master & not .my_name(A) & not dead(A), L ) &
@@ -90,10 +85,6 @@
 	}
 	.
 
-///////////////////////////////
-// Change for vote selection //
-///////////////////////////////
-
 // vote the most suspicious agent
 +!vote(day):
 	.setof([FC,A], suspect(role(A,werewolf),FC) & not A == master & not .my_name(A) & not dead(A), L) &
@@ -117,17 +108,14 @@
 
 // cure what he thinks is more villager
 +!cure(day):
-	.setof([FC,A], suspect(role(A,villager),FC) & not A == master & not .my_name(A) & not dead(A), L) &
-	.setof([FC,A], suspect(role(A,diviner),FC) & not A == master & not .my_name(A) & not dead(A), L2) &
-	.setof([FC,A], suspect(role(A,doctor),FC) & not A == master & not .my_name(A) & not dead(A), L3) &
-	.concat(L, L2, L3, L4) &
-	.length(L4, ListSize) & not ListSize == 0
+	.setof([FC,A], suspect(role(A,Role),FC) & not Role == werewolf & not A == master & not .my_name(A) & not dead(A), L) &
+	.length(L, ListSize) & not ListSize == 0
 	<-
-	.nth(ListSize-1, L4, [_,Chosen]);
+	.nth(ListSize-1, L, [_,Chosen]);
 	.send(master, tell, cure(Chosen)).
 
 // cure the less suspicious agent
-+!vote(day):
++!cure(day):
 	.setof([FC,A], suspect(role(A,werewolf),FC) & not A == master & not .my_name(A) & not dead(A), L) &
 	.length(L, ListSize) & not ListSize == 0
 	<-
