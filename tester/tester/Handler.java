@@ -6,24 +6,21 @@ import com.sun.net.httpserver.HttpHandler;
 
 import java.io.*;
 import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Handler implements HttpHandler {
-    int[][]tests = new int[50][12];
-    AtomicInteger numTests;
     AtomicInteger currTest;
     AtomicInteger testsDone;
-    String[] winners;
     Process currProc;
+    private ArrayList<Test> tests;
 
-    Handler(int[][] tests, int numTests, int currTest, Process currProc) {
+    Handler(ArrayList<Test> tests, Process currProc) {
         this.tests = tests;
-        this.numTests = new AtomicInteger(numTests);
         this.currTest = new AtomicInteger(0);
         this.testsDone = new AtomicInteger(0);
-        this.winners = new String[numTests];
         this.currProc = currProc;
     }
 
@@ -46,33 +43,34 @@ public class Handler implements HttpHandler {
                     break;
             }
         }
-        catch (Exception e) {}
+        catch (Exception e) {
+            System.out.println(e.toString());
+        }
 
     }
 
     private void handleGetTests(HttpExchange httpExchange) throws IOException {
-        String response = "test " + currTest.get() + " ";
-        int[] test = tests[currTest.get()];
+        /* String response = "test " + currTest.get() + " ";
+        Test test = tests.get(currTest.get());
         currTest.addAndGet(1);
-        for (int i = 0; i < test.length; i++) {
-            response += test[i];
-            if (i < test.length-1)
+
+        for (int i = 0; i < test.agents.length; i++) {
+            response += test.agents[i];
+            if (i < test.agents.length-1)
                 response += " ";
         }
 
-        writeResponse(httpExchange, response);
+        writeResponse(httpExchange, response);*/
     }
 
     private void handleGetTest(HttpExchange httpExchange) throws IOException {
-        if (currTest.get() >= numTests.get())
-            writeResponse(httpExchange, "error");
-
         String response = "test " + currTest.get() + " ";
-        int[] test = tests[currTest.get()];
+        Test test = tests.get(currTest.get());
         currTest.addAndGet(1);
-        for (int i = 0; i < test.length; i++) {
-            response += test[i];
-            if (i < test.length-1)
+
+        for (int i = 0; i < test.agents.length; i++) {
+            response += test.agents[i];
+            if (i < test.agents.length-1)
                 response += " ";
         }
 
@@ -84,13 +82,12 @@ public class Handler implements HttpHandler {
         Map<String,String> params = queryToMap(query);
 
         String idTest = params.get("idTest");
-        String winner = params.get("winner");
-        winners[Integer.parseInt(idTest)] = winner;
+        tests.get(Integer.parseInt(idTest)).winner = params.get("winner");
 
         writeResponse(httpExchange, "test successfully created");
-        if (testsDone.addAndGet(1) == numTests.get()) {
-            for (int i = 0; i < winners.length; i++) {
-                System.out.println("Game " + i + " winner: " + winners[i]);
+        if (testsDone.addAndGet(1) == tests.size()) {
+            for (int i = 0; i < tests.size(); i++) {
+                System.out.println("Game " + i + " winner: " + tests.get(i).winner);
             }
             currProc.destroy();
         }
