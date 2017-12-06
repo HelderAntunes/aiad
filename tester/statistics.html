@@ -1,27 +1,113 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <title>Sales Dashboard </title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <meta charset="UTF-8">
+  <title>Sales Dashboard </title>
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+
 </head>
-<body>
-<div class="row">
-  ola
-</div>
-<footer>
-    <h5 style="color: #FFFFFF">AIAD FEUP, 2017</h5>
-</footer>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-<script src="https://code.highcharts.com/highcharts.js"></script>
-<script src="https://code.highcharts.com/modules/exporting.js"></script>
+
+<body ng-app="myApp" ng-controller="myCtrl">
+  <div class="container-fluid">
+    <div class="row">
+      <div ng-repeat="test in tests">
+        <table>
+          <tr>
+            <th></th>
+            <th>Random</th> 
+            <th>Strategic</th>
+            <th>Beliefs</th>
+          </tr>
+          <tr>
+            <td>Werewolf</td>
+            <td>{{test.configuration.werewolf_random}}</td> 
+            <td>{{test.configuration.werewolf_strategic}}</td> 
+            <td>{{test.configuration.werewolf_bdi}}</td> 
+          </tr>
+          <tr>
+            <td>Villager</td>
+            <td>{{test.configuration.villager_random}}</td> 
+            <td>{{test.configuration.villager_strategic}}</td> 
+            <td>{{test.configuration.villager_bdi}}</td> 
+          </tr>
+          <tr>
+            <td>Doctor</td>
+            <td>{{test.configuration.doctor_random}}</td> 
+            <td>{{test.configuration.doctor_strategic}}</td> 
+            <td>{{test.configuration.doctor_bdi}}</td> 
+          </tr>
+          <tr>
+            <td>Diviner</td>
+            <td>{{test.configuration.diviner_random}}</td> 
+            <td>{{test.configuration.diviner_strategic}}</td> 
+            <td>{{test.configuration.diviner_bdi}}</td> 
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+
+</body>
+
 <script>
-  console.log('oi');
+  var app = angular.module('myApp', []);
+  app.controller('myCtrl', function ($scope) {
+    $scope.tests = [
+      {
+        id: 0,
+        configuration: {
+          villager_random: 5,
+          villager_strategic: 0,
+          villager_bdi: 0,
+          werewolf_random: 1,
+          werewolf_strategic: 1,
+          werewolf_bdi: 0,
+          diviner_random: 1,
+          diviner_strategic: 0,
+          diviner_bdi: 0,
+          doctor_random: 0,
+          doctor_strategic: 1,
+          doctor_bdi: 0,
+        },
+        results: [
+          "Werewolf_Win"
+          // or Tree
+        ]
+      },
+
+      {
+        id: 0,
+        configuration: {
+          villager_random: 5,
+          villager_strategic: 0,
+          villager_bdi: 0,
+          werewolf_random: 0,
+          werewolf_strategic: 0,
+          werewolf_bdi: 2,
+          diviner_random: 0,
+          diviner_strategic: 0,
+          diviner_bdi: 1,
+          doctor_random: 1,
+          doctor_strategic: 0,
+          doctor_bdi: 0,
+        },
+        results: [
+          "Werewolf_Win"
+          // or Tree
+        ]
+      }
+    ]
+  });
 
 
 
 
 </script>
-</body>
 </html>
