@@ -80,10 +80,12 @@ public class Tester {
     }
 
     private void initServer() throws Exception {
-      handler = new Handler(tests, numTests, currTest);
+      Process proc = Runtime.getRuntime().exec("java -jar werewolfsGameTest.jar");
+      handler = new Handler(tests, numTests, currTest, proc);
       HttpServer httpServer = HttpServer.create(new InetSocketAddress("127.0.0.1",8000), 0);
       httpServer.createContext("/getTest", handler);
       httpServer.createContext("/postTest", handler);
+      httpServer.createContext("/getTests", handler);
 
       httpServer.setExecutor(java.util.concurrent.Executors.newCachedThreadPool());
       httpServer.start();
@@ -92,9 +94,6 @@ public class Tester {
     }
 
     private void startTesting() throws Exception {
-        for (int i = 0; i < numTests; i++) {
-            Process proc = Runtime.getRuntime().exec("java -jar werewolfsGameTest.jar");
-            Thread.sleep(100);
-        }
+
     }
 }

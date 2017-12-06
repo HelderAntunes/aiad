@@ -16,7 +16,7 @@ import java.net.URL;
 public class WerewolfsGameEnvTest extends jason.environment.Environment {
 
     private Logger logger = Logger.getLogger("WerewolfsGame.mas2j." + WerewolfsGameEnv.class.getName());
-    
+
     private int testIndex;
 
     private String base_url = "http://localhost:8000";
@@ -29,22 +29,32 @@ public class WerewolfsGameEnvTest extends jason.environment.Environment {
         javax.swing.SwingUtilities.invokeLater(new Runnable() {
             public void run() {
               try {
-                String response = sendGet("/getTest", "null");
-                int[] test = readATest(response);
-
-                String literal = "createAgents(" + test[0];
-                for (int j = 1; j < test.length; j++) literal += "," + test[j];
-                literal += ")";
-                logger.info(literal);
-
-                addPercept(Literal.parseLiteral("changeWaitTime(" + 10 + ")")); // wait time = 10 ms
-                addPercept(Literal.parseLiteral(literal));
+                startCalling();
               }
-		          catch (Exception e) {}
+		          catch (Exception e) {
+                try {
+                  Thread.sleep(1000);
+                  startCalling();
+                }
+                catch (Exception e2) {}
+              }
 
             }
         });
 
+    }
+
+    public void startCalling() throws Exception {
+        String response = sendGet("/getTest", "null");
+        int[] test = readATest(response);
+
+        String literal = "createAgents(" + test[0];
+        for (int j = 1; j < test.length; j++) literal += "," + test[j];
+        literal += ")";
+        logger.info(literal);
+
+        addPercept(Literal.parseLiteral("changeWaitTime(" + 20 + ")")); // wait time = 10 ms
+        addPercept(Literal.parseLiteral(literal));
     }
 
     public String sendGet(String path, String urlParameters) throws Exception {
@@ -134,6 +144,7 @@ public class WerewolfsGameEnvTest extends jason.environment.Environment {
           logger.info("THE WINNNNER IS: " + winner);
           try {
             sendPost("/postTest", "idTest=" + testIndex + "&winner=" + winner);
+            stop();
           }
           catch (Exception e) {
             logger.info(":(");

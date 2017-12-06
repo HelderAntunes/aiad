@@ -202,7 +202,7 @@ waitTime(1000).
 
 +!endVote(day) <-
 	?waitTime(W);
-	.wait(W);
+	.wait(W+15);
 	?players_alive(Alive);
 	?players(PlayerList);
 	.findall([Voter, Voted], vote(Voted)[source(Voter)], VoteList);
@@ -280,7 +280,7 @@ waitTime(1000).
 +time(night, vote) <-
 	!sayPhase;
 	?waitTime(W);
-	.wait(W);
+	.wait(W+15);
 	!endVote(night);
 	!endPhase(night, vote).
 
