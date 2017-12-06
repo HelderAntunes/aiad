@@ -1,3 +1,4 @@
-werewolf_random 2 villager_random 7 diviner_random 1 doctor_random 1
-werewolf_random 2 villager_random 8 diviner_random 1 doctor_random 1
-werewolf_random 2 villager_random 9 diviner_random 1 doctor_random 1
+1 wr 2 vr 7 dir 1 dor 1 ws 0 vs 0 dis 0 dos 0 wb 0 vb 0 dib 0 dob 0
+1 wr 2 vr 7 dir 1 dor 1 ws 0 vs 0 dis 0 dos 0 wb 0 vb 0 dib 0 dob 0
+1 wr 2 vr 7 dir 1 dor 1 ws 0 vs 0 dis 0 dos 0 wb 0 vb 0 dib 0 dob 0
+1 wr 2 vr 7 dir 1 dor 1 ws 0 vs 0 dis 0 dos 0 wb 0 vb 0 dib 0 dob 0
