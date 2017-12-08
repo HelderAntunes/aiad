@@ -62,18 +62,21 @@ waitTime(1000).
 	?createAgents(RV, SV, BV, _, _, _, _, _, _, _, _, _);
 	+temp(1);
 	while(temp(I) & I <= RV) {
+		+typeAgent(Name, random);
 		.concat("villager", I, Name);
 		.create_agent(Name, "villager_random.asl");
 		-+temp(I+1);
 	}
 	-+temp(1);
 	while(temp(I) & I <= SV) {
+		+typeAgent(Name, strategic);
 		.concat("villager", I, Name);
 		.create_agent(Name, "villager_strategic.asl");
 		-+temp(I+1);
 	}
 	-+temp(1);
 	while(temp(I) & I <= BV) {
+		+typeAgent(Name, bdi);
 		.concat("villager", I, Name);
 		.create_agent(Name, "villager_bdi.asl");
 		-+temp(I+1);
@@ -84,16 +87,19 @@ waitTime(1000).
 	?createAgents(_, _, _, RW, SW, BW, _, _, _, _, _, _);
 	+temp(1);
 	while(temp(I) & I <= RW) {
+		+typeAgent(Name, random);
 		.concat("werewolf", I, Name);
 		.create_agent(Name, "werewolf_random.asl");
 		-+temp(I+1);
 	}
 	while(temp(I) & I <= RW + SW) {
+		+typeAgent(Name, strategic);
 		.concat("werewolf", I, Name);
 		.create_agent(Name, "werewolf_strategic.asl");
 		-+temp(I+1);
 	}
 	while(temp(I) & I <= RW + SW + BW) {
+		+typeAgent(Name, bdi);
 		.concat("werewolf", I, Name);
 		.create_agent(Name, "werewolf_bdi.asl");
 		-+temp(I+1);
@@ -105,16 +111,19 @@ waitTime(1000).
 	?createAgents(_, _, _, _, _, _, RDi, SDi, BDi, _, _, _);
 	+temp(1);
 	while(temp(I) & I <= RDi) {
+		+typeAgent(Name, random);
 		.concat("diviner", I, Name);
 		.create_agent(Name, "diviner_random.asl");
 		-+temp(I+1);
 	}
 	while(temp(I) & I <= RDi + SDi) {
+		+typeAgent(Name, strategic);
 		.concat("diviner", I, Name);
 		.create_agent(Name, "diviner_strategic.asl");
 		-+temp(I+1);
 	}
 	while(temp(I) & I <= RDi + SDi + BDi) {
+		+typeAgent(Name, bdi);
 		.concat("diviner", I, Name);
 		.create_agent(Name, "diviner_bdi.asl");
 		-+temp(I+1);
@@ -125,16 +134,19 @@ waitTime(1000).
 	?createAgents(_, _, _, _, _, _, _, _, _, RDo, SDo, BDo);
 	+temp(1);
 	while(temp(I) & I <= RDo) {
+		+typeAgent(Name, random);
 		.concat("doctor", I, Name);
 		.create_agent(Name, "doctor_random.asl");
 		-+temp(I+1);
 	}
 	while(temp(I) & I <= RDo + SDo) {
+		+typeAgent(Name, strategic);
 		.concat("doctor", I, Name);
 		.create_agent(Name, "doctor_strategic.asl");
 		-+temp(I+1);
 	}
 	while(temp(I) & I <= RDo + SDo + BDo) {
+		+typeAgent(Name, bdi);
 		.concat("doctor", I, Name);
 		.create_agent(Name, "doctor_bdi.asl");
 		-+temp(I+1);
@@ -153,7 +165,8 @@ waitTime(1000).
 	.concat(OldList, [[Id, Name, Role]], NewList);
 	+players(NewList);
 	.print(Name, " has joined the game.");
-	playerJoined(Name, Role).
+	?typeAgent(Id, Type);
+	playerJoined(Name, Role, Type).
 
 /*
 	Phase 3
@@ -165,6 +178,8 @@ waitTime(1000).
 	+players_alive(N);
 	?players(List);
 	.broadcast(tell, init(List));
+	?waitTime(W);
+	.wait(W+30);
 	!tellWhoAreWerewolfs;
 	-+time(day, discussion).
 

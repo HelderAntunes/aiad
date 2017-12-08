@@ -17,7 +17,7 @@ import java.awt.image.BufferedImage;
 public class WerewolfsGameEnv extends jason.environment.Environment {
 
     private Logger logger = Logger.getLogger("WerewolfsGame.mas2j." + WerewolfsGameEnv.class.getName());
-    public static int WIDTH_FRAME = 800;
+    public static int WIDTH_FRAME = 1000;
     public static int HEIGHT_FRAME = 600;
 
     JFrame frame;
@@ -67,7 +67,10 @@ public class WerewolfsGameEnv extends jason.environment.Environment {
 
 		if (action.getFunctor().equals("playerJoined")) {
             while (!(currPanel instanceof MidGamePanel)) waitForGUI();
-            ((MidGamePanel)currPanel).playerJoined(action.getTerm(0).toString(), action.getTerm(1).toString());
+            String name = action.getTerm(0).toString();
+            String role = action.getTerm(1).toString();
+            String type = action.getTerm(2).toString();
+            ((MidGamePanel)currPanel).playerJoined(name, role, type);
 		} else if (action.getFunctor().equals("updateTimeDayEnv")) {
             String timeDay = action.getTerm(0).toString();
             String currDay = action.getTerm(1).toString();
@@ -90,12 +93,33 @@ public class WerewolfsGameEnv extends jason.environment.Environment {
         } else if (action.getFunctor().equals("gameFinished")) {
             String eventMessage = action.getTerm(0).toString();
             ((MidGamePanel)currPanel).updateEventPanelEnv(eventMessage);
+        } else if (action.getFunctor().equals("addTrust")) {
+            String believer = action.getTerm(0).toString();
+            String victimOfTrust = action.getTerm(1).toString();
+            String value = action.getTerm(2).toString();
+            logger.info(believer + " trust " + value + " to " + victimOfTrust);
+            ((MidGamePanel)currPanel).addTrust(believer, victimOfTrust, value);
+        } else if (action.getFunctor().equals("addSuspect")) {
+            String believer = action.getTerm(0).toString();
+            String victimOfTrust = action.getTerm(1).toString();
+            String role = action.getTerm(2).toString();
+            String value = action.getTerm(3).toString();
+            ((MidGamePanel)currPanel).addSuspect(believer, victimOfTrust, role, value);
+        } else if (action.getFunctor().equals("remTrust")) {
+            String believer = action.getTerm(0).toString();
+            String victimOfTrust = action.getTerm(1).toString();
+            String value = action.getTerm(2).toString();
+            ((MidGamePanel)currPanel).remTrust(believer, victimOfTrust, value);
+        } else if (action.getFunctor().equals("remSuspect")) {
+            String believer = action.getTerm(0).toString();
+            String victimOfTrust = action.getTerm(1).toString();
+            String role = action.getTerm(2).toString();
+            String value = action.getTerm(3).toString();
+            ((MidGamePanel)currPanel).remSuspect(believer, victimOfTrust, role, value);
         } else {
-
-			logger.info("executing: "+action+", but not implemented!");
-			return false;
-
-		}
+    			logger.info("executing: "+action+", but not implemented!");
+    			return false;
+    		}
 
         return true;
     }

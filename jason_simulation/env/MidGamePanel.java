@@ -19,18 +19,13 @@ class MidGamePanel extends JPanel {
 	private JFrame frame;
 	private WerewolfsGameEnv env;
 
-	private ArrayList<String> werewolfs = new ArrayList<String>();
-	private ArrayList<String> villagers = new ArrayList<String>();
-	private ArrayList<String> diviners = new ArrayList<String>();
-	private ArrayList<String> doctors = new ArrayList<String>();
-	private ArrayList<Boolean> werewolfsLive = new ArrayList<Boolean>();
-	private ArrayList<Boolean> villagersLive = new ArrayList<Boolean>();
-	private ArrayList<Boolean> divinersLive = new ArrayList<Boolean>();
-	private ArrayList<Boolean> doctorsLive = new ArrayList<Boolean>();
+	private ArrayList<Agent> agents = new ArrayList<Agent>();
 
 	private JScrollPane gameEventsScrollPanel;
+	private JScrollPane beliefsScrollPanel;
 
 	private JTextPane gameEventsTA;
+	private JTextPane beliefsTA;
 	private JTextPane werewolfsTA = new JTextPane();
 	private JTextPane villagersTA = new JTextPane();
 	private JTextPane divinersTA = new JTextPane();
@@ -47,6 +42,8 @@ class MidGamePanel extends JPanel {
 	private String timeDay = "Day"; // Day, Night
 	private String currDay = "0"; // 1, 2, 3, ...
 	private String eventDay = "Discussion"; // Discussion, Vote
+
+	private JComboBox agentSelection;
 
 	public MidGamePanel(WerewolfsGameEnv env) {
 		this.env = env;
@@ -65,7 +62,7 @@ class MidGamePanel extends JPanel {
 		// PHASE GAME LABEL
 		phaseGameLbl.setText("PHASE GAME ....");
 		Dimension size = phaseGameLbl.getPreferredSize();
-		phaseGameLbl.setBounds(w/2 + w/6, 65, size.width, size.height);
+		phaseGameLbl.setBounds(w/4 + w/5, 65, size.width, size.height);
 		this.add(phaseGameLbl);
 
 		// MAIN EVENTS
@@ -80,9 +77,21 @@ class MidGamePanel extends JPanel {
 		gameEventsScrollPanel.setBounds(270, 150, size.width, size.height);
 		this.add(gameEventsScrollPanel);
 
+		// BELIEFS
+		beliefsTA = new JTextPane();
+		appendTextToEventPane(beliefsTA, "BELIEFS\n\n", Color.BLUE);
+		beliefsTA.setEditable(false);
+		beliefsTA.setPreferredSize(new Dimension(275, 400));
+
+		beliefsScrollPanel = new JScrollPane(beliefsTA);
+		beliefsScrollPanel.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+		size = beliefsScrollPanel.getPreferredSize();
+		beliefsScrollPanel.setBounds(700, 150, size.width, size.height);
+		this.add(beliefsScrollPanel);
+
 		// AGENTS INFO LABELS
-    int yAgentsInfo = 20;
-    int xAgentsInfo = w/9-50;
+    int yAgentsInfo = 38;
+    int xAgentsInfo = w/9 - 80;
 
 		size = createAgentLbl(xAgentsInfo, yAgentsInfo, "Werewolfs");
         yAgentsInfo += size.height + 5;
@@ -105,7 +114,7 @@ class MidGamePanel extends JPanel {
 
 		// SLIDER
 		int FPS_MIN = 500, FPS_MAX = 3500, FPS_INIT = 1500;
-		JSlider speedSlider = new JSlider(JSlider.VERTICAL, FPS_MIN, FPS_MAX, FPS_INIT);
+		JSlider speedSlider = new JSlider(JSlider.HORIZONTAL, FPS_MIN, FPS_MAX, FPS_INIT);
 		speedSlider.addChangeListener(new ChangeListener() {
       public void stateChanged(ChangeEvent event) {
 				int value = 10 + (FPS_MAX - speedSlider.getValue());
@@ -127,12 +136,39 @@ class MidGamePanel extends JPanel {
 		speedSlider.setPaintLabels(true);
 
 		size = speedSlider.getPreferredSize();
-		speedSlider.setBounds(w/2 + w/6 + 180, 240, size.width, size.height);
+		speedSlider.setBounds(w/2 + w/6 + 80, 30, size.width, size.height);
 		this.add(speedSlider);
+
+		// AGENT SELECTION
+		agentSelection = new JComboBox();
+		size = agentSelection.getPreferredSize();
+		agentSelection.setBounds(w/2 + w/6 + 30, 100, 300, size.height);
+		this.add(agentSelection);
+		agentSelection.addItem(makeObj("Select an agent"));
+
+		agentSelection.addActionListener (new ActionListener () {
+	    public void actionPerformed(ActionEvent e) {
+				updateBeliefsTextArea();
+			}
+		});
 
 		setBackground(new java.awt.Color(204, 166, 166));
 
 		guiDone = true;
+	}
+
+	private void updateBeliefsTextArea() {
+		String agentSelected = agentSelection.getSelectedItem().toString();
+		if (agentSelected.equals("Select an agent")) {
+			beliefsTA.setText("");
+			return;
+		}
+
+		for (int i = 0; i < agents.size(); i++) {
+			if (agentSelected.equals(agents.get(i).toString())) {
+				beliefsTA.setText(agents.get(i).getAgentInfo());
+			}
+		}
 	}
 
 	private Dimension createAgentLbl(int x, int y, String text) {
@@ -147,13 +183,55 @@ class MidGamePanel extends JPanel {
 	}
 
 	private Dimension createAgentTA(JTextPane agentTA, int x, int y, int numRows, int numColumns) {
-		agentTA.setPreferredSize(new Dimension(10*numColumns, 15*numRows));
+		agentTA.setPreferredSize(new Dimension(15*numColumns, 15*numRows));
 		Dimension size = agentTA.getPreferredSize();
         agentTA.setBounds(x, y, size.width, size.height);
 
 		this.add(agentTA);
 		agentTA.setEditable(false);
 		return size;
+	}
+
+	public void addTrust(String believer, String victimOfTrust, String value) {
+		for (int i = 0; i < agents.size(); i++)
+			if (agents.get(i).name.equals(formatStrings(believer)))
+				agents.get(i).trusts.add(victimOfTrust + ": " + value);
+		updateBeliefsTextArea();
+	}
+
+	public void remTrust(String believer, String victimOfTrust, String value) {
+		for (int i = 0; i < agents.size(); i++)
+			if (agents.get(i).name.equals(formatStrings(believer)))  {
+				ArrayList<String> trusts = agents.get(i).trusts;
+				for (int j = 0; j < trusts.size(); j++) {
+					if (trusts.get(j).equals(victimOfTrust + ": " + value)) {
+						trusts.remove(j);
+						break;
+					}
+				}
+			}
+		updateBeliefsTextArea();
+	}
+
+	public void addSuspect(String believer, String victimOfTrust, String role, String value) {
+		for (int i = 0; i < agents.size(); i++)
+			if (agents.get(i).name.equals(formatStrings(believer)))
+				agents.get(i).suspects.add(victimOfTrust + ": " + value + " (" + role + ")");
+		updateBeliefsTextArea();
+	}
+
+	public void remSuspect(String believer, String victimOfTrust, String role, String value) {
+		for (int i = 0; i < agents.size(); i++)
+			if (agents.get(i).name.equals(formatStrings(believer)))  {
+				ArrayList<String> suspects = agents.get(i).suspects;
+				for (int j = 0; j < suspects.size(); j++) {
+					if (suspects.get(j).equals(victimOfTrust + " is a " + role + " (" + value + ")")) {
+						suspects.remove(j);
+						break;
+					}
+				}
+			}
+		updateBeliefsTextArea();
 	}
 
 	public void updateTimeDayEnv(String timeDay, String currDay) {
@@ -174,44 +252,38 @@ class MidGamePanel extends JPanel {
 		int w = this.env.WIDTH_FRAME;
 		phaseGameLbl.setText(this.timeDay + " " + this.currDay + ": " + this.eventDay);
 		Dimension size = phaseGameLbl.getPreferredSize();
-		phaseGameLbl.setBounds(w/2 + w/6, 65, size.width, size.height);
+		phaseGameLbl.setBounds(w/4 + w/5, 65, size.width, size.height);
 	}
 
-	public synchronized void playerJoined(String name, String role) {
+	public synchronized void playerJoined(String name, String role, String type) {
 		waitForGUI();
-
-		name = formatStrings(name);
-		if (role.equals("werewolf")) {
-			werewolfs.add(name);
-			werewolfsLive.add(Boolean.TRUE);
-		}
-		if (role.equals("villager")) {
-			villagers.add(name);
-			villagersLive.add(Boolean.TRUE);
-		}
-		if (role.equals("diviner")) {
-			diviners.add(name);
-			divinersLive.add(Boolean.TRUE);
-		}
-		if (role.equals("doctor")) {
-			doctors.add(name);
-			doctorsLive.add(Boolean.TRUE);
-		}
-
-		updatePlayers(werewolfs, werewolfsLive, werewolfsTA);
-		updatePlayers(villagers, villagersLive, villagersTA);
-		updatePlayers(diviners, divinersLive, divinersTA);
-		updatePlayers(doctors, doctorsLive, doctorsTA);
+		Agent newAgent = new Agent(formatStrings(name), role, type);
+		agents.add(newAgent);
+		updatePlayers();
+		agentSelection.addItem(makeObj(formatStrings(name) + " (" + role + ", " + type + ")"));
 	}
 
-	private void updatePlayers(ArrayList<String> playerGroup, ArrayList<Boolean> playersLiveness, JTextPane playerTAInfo) {
-		playerTAInfo.setText("");
-		for (int i = 0; i < playerGroup.size(); i++) {
-			if (playersLiveness.get(i))
-				appendTextToEventPane(playerTAInfo, playerGroup.get(i), Color.BLACK);
-			else
-				appendTextToEventPane(playerTAInfo, playerGroup.get(i), Color.RED);
-			appendTextToEventPane(playerTAInfo, "\n", Color.BLACK);
+	private Object makeObj(final String item)  {
+     return new Object() { public String toString() { return item; } };
+  }
+
+	private void updatePlayers() {
+		werewolfsTA.setText("");
+		villagersTA.setText("");
+		divinersTA.setText("");
+		doctorsTA.setText("");
+
+		for (int i = 0; i < agents.size(); i++) {
+			String role = agents.get(i).role;
+			String nameToShow = agents.get(i).name + " (" + agents.get(i).type + ")\n";
+			Color color = null;
+
+			if (agents.get(i).live) color = Color.BLACK;
+			else color = Color.RED;
+			if (role.equals("werewolf")) appendTextToEventPane(werewolfsTA, nameToShow, color);
+			if (role.equals("villager")) appendTextToEventPane(villagersTA, nameToShow, color);
+			if (role.equals("diviner")) appendTextToEventPane(divinersTA, nameToShow, color);
+			if (role.equals("doctor")) appendTextToEventPane(doctorsTA, nameToShow, color);
 		}
 	}
 
@@ -228,24 +300,12 @@ class MidGamePanel extends JPanel {
 	public synchronized void playerDied(String playerName) {
 		waitForGUI();
 		playerName = formatStrings(playerName);
+		for (int i = 0; i < agents.size(); i++)
+			if (agents.get(i).name.equals(playerName))
+				agents.get(i).live = false;
 
-		for (int i = 0; i < werewolfs.size(); i++)
-			if (werewolfs.get(i).equals(playerName))
-				werewolfsLive.set(i, Boolean.FALSE);
-		for (int i = 0; i < villagers.size(); i++)
-			if (villagers.get(i).equals(playerName))
-				villagersLive.set(i, Boolean.FALSE);
-		for (int i = 0; i < diviners.size(); i++)
-			if (diviners.get(i).equals(playerName))
-				divinersLive.set(i, Boolean.FALSE);
-		for (int i = 0; i < doctors.size(); i++)
-			if (doctors.get(i).equals(playerName))
-				doctorsLive.set(i, Boolean.FALSE);
-
-		updatePlayers(werewolfs, werewolfsLive, werewolfsTA);
-		updatePlayers(villagers, villagersLive, villagersTA);
-		updatePlayers(diviners, divinersLive, divinersTA);
-		updatePlayers(doctors, doctorsLive, doctorsTA);
+		updatePlayers();
+		updateBeliefsTextArea();
 	}
 
 	/**
@@ -299,12 +359,12 @@ class MidGamePanel extends JPanel {
 		// g.drawImage(wallpaper, 0, 0, w, h, this);
 
 		int sizeSquare = w/9;
-		int yImages = 35;
+		int yImages = 25;
 		if (this.timeDay.equals("Day")) {
-			g.drawImage(sunImage, w/2 + w/13 - sizeSquare/2, yImages, (int)(sizeSquare*1.1), (int)(sizeSquare*1.1), this);
+			g.drawImage(sunImage, w/4 + w/8 - sizeSquare/2, yImages, (int)(sizeSquare*1.1), (int)(sizeSquare*1.1), this);
 		}
 		else {
-			g.drawImage(moonImage, w/2 + w/13 - sizeSquare/2, yImages, sizeSquare, sizeSquare, this);
+			g.drawImage(moonImage, w/4 + w/8 - sizeSquare/2, yImages, sizeSquare, sizeSquare, this);
 		}
 	}
 

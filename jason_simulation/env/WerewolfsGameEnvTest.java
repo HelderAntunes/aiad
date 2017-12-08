@@ -150,10 +150,7 @@ public class WerewolfsGameEnvTest extends jason.environment.Environment {
             logger.info(":(");
           }
 
-        } else {
-			       logger.info("executing: "+action+", but not implemented!");
-			       return false;
-		    }
+        }
 
         return true;
     }

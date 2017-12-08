@@ -19,9 +19,15 @@
 	.send(master, tell, join(Id, diviner)).
 
 +init(List) <-
-	for(.member([Name, _,_],List)){
-		+suspect(role(Name,villager),0.0);
-		+trust(Name,0,0,0.5);
+	.my_name(Self);
+	for(.member([Id, Name,_],List)){
+		+idToName(Id, Name);
+	}
+	for(.member([Id, Name,_],List)){
+		if (not Self == Id) {
+			+suspect(role(Id,villager),0.0);
+			+trust(Id,0,0,0.5);
+		}
 	}
 	-init(List).
 
@@ -227,3 +233,39 @@
 			-+suspect(role(Y, Rpy), SyRpy - Tx)
 		}
 	}.
+
+/*
+	Value between [-1, 1]
+*/
++trust(Id, Corrects, Wrongs, Value) <-
+	.my_name(IdSelf);
+	?idToName(IdSelf, MyName);
+	?idToName(Id, Name);
+	addTrust(MyName, Name, Value).
+
+/*
+	Value between [-1, 1]
+*/
+-trust(Id, Corrects, Wrongs, Value) <-
+	.my_name(IdSelf);
+	?idToName(IdSelf, MyName);
+	?idToName(Id, Name);
+	remTrust(MyName, Name, Value).
+
+/*
+	Value between [0, 1]
+*/
++suspect(role(Id,Role), Value) <-
+	.my_name(IdSelf);
+	?idToName(IdSelf, MyName);
+	?idToName(Id, Name);
+	addSuspect(MyName, Name, Role, Value).
+
+/*
+	Value between [0, 1]
+*/
+-suspect(role(Id,Role), Value) <-
+	.my_name(IdSelf);
+	?idToName(IdSelf, MyName);
+	?idToName(Id, Name);
+	remSuspect(MyName, Name, Role, Value).
