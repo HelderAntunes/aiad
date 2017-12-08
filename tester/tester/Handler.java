@@ -51,25 +51,41 @@ public class Handler implements HttpHandler {
 
     private void handleGetTests(HttpExchange httpExchange) throws IOException {
         String response = "[";
-        for (int i = 0; i < tests.size(); i++) {
+        for (int i = 0; i < tests.size();) {
+            int id = tests.get(i).id;
+            int[] configuration = tests.get(i).agents;
+            int villagers_wins = 0;
+            int werewolfs_wins = 0;
+            for (; i < tests.size(); i++) {
+                if (tests.get(i).id != id) {
+                    break;
+                }
+                String winner = formatStrings(tests.get(i).winner);
+                if (winner.equals("Werewolfs win!"))
+                    werewolfs_wins++;
+                else
+                    villagers_wins++;
+            }
             String testResult = "{\n";
-            testResult += "id: " + tests.get(i).id + ",\n";
+            testResult += "id: " + id + ",\n";
             testResult += "configuration: {\n";
-            testResult += "villager_random: " + tests.get(i).agents[0] + ",\n";
-            testResult += "villager_strategic: " + tests.get(i).agents[1] + ",\n";
-            testResult += "villager_bdi: " + tests.get(i).agents[2] + ",\n";
-            testResult += "villager_random: " + tests.get(i).agents[3] + ",\n";
-            testResult += "villager_strategic: " + tests.get(i).agents[4] + ",\n";
-            testResult += "villager_bdi: " + tests.get(i).agents[5] + ",\n";
-            testResult += "villager_random: " + tests.get(i).agents[6] + ",\n";
-            testResult += "villager_strategic: " + tests.get(i).agents[7] + ",\n";
-            testResult += "villager_bdi: " + tests.get(i).agents[8] + ",\n";
-            testResult += "villager_random: " + tests.get(i).agents[9] + ",\n";
-            testResult += "villager_strategic: " + tests.get(i).agents[10] + ",\n";
-            testResult += "villager_bdi: " + tests.get(i).agents[11] + ",\n";
+            testResult += "villager_random: " + configuration[0] + ",\n";
+            testResult += "villager_strategic: " + configuration[1] + ",\n";
+            testResult += "villager_bdi: " + configuration[2] + ",\n";
+            testResult += "villager_random: " + configuration[3] + ",\n";
+            testResult += "villager_strategic: " + configuration[4] + ",\n";
+            testResult += "villager_bdi: " + configuration[5] + ",\n";
+            testResult += "villager_random: " + configuration[6] + ",\n";
+            testResult += "villager_strategic: " + configuration[7] + ",\n";
+            testResult += "villager_bdi: " + configuration[8] + ",\n";
+            testResult += "villager_random: " + configuration[9] + ",\n";
+            testResult += "villager_strategic: " + configuration[10] + ",\n";
+            testResult += "villager_bdi: " + configuration[11] + ",\n";
             testResult += "},\n";
-            testResult += "results: " + tests.get(i).winner + ",\n";
-            testResult += "},\n";
+            testResult += "results: {\n";
+            testResult += "villager_wins: " + villagers_wins + ",\n";
+            testResult += "werewolfs_wins: " + werewolfs_wins + "\n";
+            testResult += "},\n},\n";
 
             response += testResult;
         }
@@ -101,9 +117,11 @@ public class Handler implements HttpHandler {
 
         writeResponse(httpExchange, "test successfully created");
         if (testsDone.addAndGet(1) == tests.size()) {
+            System.out.println("\nTests done. Results:");
             for (int i = 0; i < tests.size(); i++) {
                 System.out.println("Game " + i + " winner: " + tests.get(i).winner);
             }
+            System.out.println("\nOpen statistics.html for more details.");
             currProc.destroy();
         }
         else {
@@ -149,5 +167,11 @@ public class Handler implements HttpHandler {
             }
         }
         return result;
+    }
+
+    private String formatStrings(String text) {
+        if (text.length() <= 2)
+            return text;
+        return text.substring(1, text.length()-1);
     }
 }
