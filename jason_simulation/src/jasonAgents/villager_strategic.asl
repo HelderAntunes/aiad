@@ -29,8 +29,8 @@
 +init(List) <- 
 	for(.member([Name, _,_],List)){
 		+numVotes(Name, 0);
-	}
-	-init(List).
+	};
+	.abolish(init(_)).
 
 /* 
 	Phase 3

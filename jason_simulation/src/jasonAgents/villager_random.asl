@@ -25,6 +25,9 @@
 	.my_name(Id);
 	+role(Id, villager);
 	.send(master, tell, join(Id, villager)).
+	
++init(_) <-
+	.abolish(init(_)).
 
 /* 
 	Phase 3
