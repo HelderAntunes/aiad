@@ -62,22 +62,22 @@ waitTime(1000).
 	?createAgents(RV, SV, BV, _, _, _, _, _, _, _, _, _);
 	+temp(1);
 	while(temp(I) & I <= RV) {
+		.concat("villagerR", I, Name);
 		+typeAgent(Name, random);
-		.concat("villager", I, Name);
 		.create_agent(Name, "villager_random.asl");
 		-+temp(I+1);
 	}
 	-+temp(1);
 	while(temp(I) & I <= SV) {
+		.concat("villagerS", I, Name);
 		+typeAgent(Name, strategic);
-		.concat("villager", I, Name);
 		.create_agent(Name, "villager_strategic.asl");
 		-+temp(I+1);
 	}
 	-+temp(1);
 	while(temp(I) & I <= BV) {
+		.concat("villagerB", I, Name);
 		+typeAgent(Name, bdi);
-		.concat("villager", I, Name);
 		.create_agent(Name, "villager_bdi.asl");
 		-+temp(I+1);
 	}
@@ -87,20 +87,20 @@ waitTime(1000).
 	?createAgents(_, _, _, RW, SW, BW, _, _, _, _, _, _);
 	+temp(1);
 	while(temp(I) & I <= RW) {
+		.concat("werewolfR", I, Name);
 		+typeAgent(Name, random);
-		.concat("werewolf", I, Name);
 		.create_agent(Name, "werewolf_random.asl");
 		-+temp(I+1);
 	}
 	while(temp(I) & I <= RW + SW) {
+		.concat("werewolfS", I, Name);
 		+typeAgent(Name, strategic);
-		.concat("werewolf", I, Name);
 		.create_agent(Name, "werewolf_strategic.asl");
 		-+temp(I+1);
 	}
 	while(temp(I) & I <= RW + SW + BW) {
+		.concat("werewolfB", I, Name);
 		+typeAgent(Name, bdi);
-		.concat("werewolf", I, Name);
 		.create_agent(Name, "werewolf_bdi.asl");
 		-+temp(I+1);
 	}
@@ -111,20 +111,20 @@ waitTime(1000).
 	?createAgents(_, _, _, _, _, _, RDi, SDi, BDi, _, _, _);
 	+temp(1);
 	while(temp(I) & I <= RDi) {
+		.concat("divinerR", I, Name);
 		+typeAgent(Name, random);
-		.concat("diviner", I, Name);
 		.create_agent(Name, "diviner_random.asl");
 		-+temp(I+1);
 	}
 	while(temp(I) & I <= RDi + SDi) {
+		.concat("divinerS", I, Name);
 		+typeAgent(Name, strategic);
-		.concat("diviner", I, Name);
 		.create_agent(Name, "diviner_strategic.asl");
 		-+temp(I+1);
 	}
 	while(temp(I) & I <= RDi + SDi + BDi) {
+		.concat("divinerB", I, Name);
 		+typeAgent(Name, bdi);
-		.concat("diviner", I, Name);
 		.create_agent(Name, "diviner_bdi.asl");
 		-+temp(I+1);
 	}
@@ -134,20 +134,20 @@ waitTime(1000).
 	?createAgents(_, _, _, _, _, _, _, _, _, RDo, SDo, BDo);
 	+temp(1);
 	while(temp(I) & I <= RDo) {
+		.concat("doctorR", I, Name);
 		+typeAgent(Name, random);
-		.concat("doctor", I, Name);
 		.create_agent(Name, "doctor_random.asl");
 		-+temp(I+1);
 	}
 	while(temp(I) & I <= RDo + SDo) {
+		.concat("doctorS", I, Name);
 		+typeAgent(Name, strategic);
-		.concat("doctor", I, Name);
 		.create_agent(Name, "doctor_strategic.asl");
 		-+temp(I+1);
 	}
 	while(temp(I) & I <= RDo + SDo + BDo) {
+		.concat("doctorB", I, Name);
 		+typeAgent(Name, bdi);
-		.concat("doctor", I, Name);
 		.create_agent(Name, "doctor_bdi.asl");
 		-+temp(I+1);
 	}
@@ -165,7 +165,8 @@ waitTime(1000).
 	.concat(OldList, [[Id, Name, Role]], NewList);
 	+players(NewList);
 	.print(Name, " has joined the game.");
-	?typeAgent(Id, Type);
+	.concat(Id, "", IdString);
+	?typeAgent(IdString, Type);
 	playerJoined(Name, Role, Type).
 
 /*

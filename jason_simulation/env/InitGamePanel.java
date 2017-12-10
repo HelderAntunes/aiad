@@ -23,16 +23,20 @@ class InitGamePanel extends JPanel {
 	private JLabel divinerTitle;
 	private JLabel doctorTitle;
 
-	private String[] options = { "Random", "Strategic", "BDI" };
-	private JComboBox comboBoxWerewolf = new JComboBox(options);
-	private JComboBox comboBoxVillager = new JComboBox(options);
-	private JComboBox comboBoxDiviner = new JComboBox(options);
-	private JComboBox comboBoxDoctor = new JComboBox(options);
+	private JTextField werewolfsNumTF_random = new JTextField();
+  	private JTextField villagersNumTF_random = new JTextField();
+	private JTextField divinersNumTF_random = new JTextField();
+	private JTextField doctorsNumTF_random = new JTextField();
 
-	private JTextField wereWolfsNumTF = new JTextField();
-  	private JTextField villagersNumTF = new JTextField();
-	private JTextField divinersNumTF = new JTextField();
-	private JTextField doctorsNumTF = new JTextField();
+	private JTextField werewolfsNumTF_strategic = new JTextField();
+  	private JTextField villagersNumTF_strategic = new JTextField();
+	private JTextField divinersNumTF_strategic = new JTextField();
+	private JTextField doctorsNumTF_strategic = new JTextField();
+
+	private JTextField werewolfsNumTF_bdi = new JTextField();
+  	private JTextField villagersNumTF_bdi = new JTextField();
+	private JTextField divinersNumTF_bdi = new JTextField();
+	private JTextField doctorsNumTF_bdi = new JTextField();
 
 	private BufferedImage werewolfImage;
 	private BufferedImage villagerImage;
@@ -74,32 +78,20 @@ class InitGamePanel extends JPanel {
 			*/
 			public void actionPerformed(ActionEvent e) {
 
-				String typeWerewolfs = comboBoxWerewolf.getSelectedItem().toString();
-				String typeVillagers = comboBoxVillager.getSelectedItem().toString();
-				String typeDiviners = comboBoxDiviner.getSelectedItem().toString();
-				String typeDoctors = comboBoxDoctor.getSelectedItem().toString();
+				int RV = Integer.parseInt(villagersNumTF_random.getText());
+				int SV = Integer.parseInt(villagersNumTF_strategic.getText());
+				int BV = Integer.parseInt(villagersNumTF_bdi.getText());
+				int RW = Integer.parseInt(werewolfsNumTF_random.getText());
+				int SW = Integer.parseInt(werewolfsNumTF_strategic.getText());
+				int BW = Integer.parseInt(werewolfsNumTF_bdi.getText());
+				int RDi = Integer.parseInt(divinersNumTF_random.getText());
+				int SDi = Integer.parseInt(divinersNumTF_strategic.getText());
+				int BDi = Integer.parseInt(divinersNumTF_bdi.getText());
+				int RDo = Integer.parseInt(doctorsNumTF_random.getText());
+				int SDo = Integer.parseInt(doctorsNumTF_strategic.getText());
+				int BDo = Integer.parseInt(doctorsNumTF_bdi.getText());
 
-				int[] agents = new int[12];
-
-				int werewolfNum = Integer.parseInt(wereWolfsNumTF.getText());
-				if (typeWerewolfs.equals("Random")) agents[3] = werewolfNum;
-				if (typeWerewolfs.equals("Strategic")) agents[4] = werewolfNum;
-				if (typeWerewolfs.equals("BDI")) agents[5] = werewolfNum;
-
-				int villagerNum = Integer.parseInt(villagersNumTF.getText());
-				if (typeVillagers.equals("Random")) agents[0] = villagerNum;
-				if (typeVillagers.equals("Strategic")) agents[1] = villagerNum;
-				if (typeVillagers.equals("BDI")) agents[2] = villagerNum;
-
-				int divinerNum = Integer.parseInt(divinersNumTF.getText());
-				if (typeDiviners.equals("Random")) agents[6] = divinerNum;
-				if (typeDiviners.equals("Strategic")) agents[7] = divinerNum;
-				if (typeDiviners.equals("BDI")) agents[8] = divinerNum;
-
-				int doctorNum = Integer.parseInt(doctorsNumTF.getText());
-				if (typeDoctors.equals("Random")) agents[9] = doctorNum;
-				if (typeDoctors.equals("Strategic")) agents[10] = doctorNum;
-				if (typeDoctors.equals("BDI")) agents[11] = doctorNum;
+				int[] agents = {RV, SV, BV, RW, SW, BW, RDi, SDi, BDi, RDo, SDo, BDo};
 
 				String literal = "createAgents(" + agents[0];
 				for (int i = 1; i < agents.length; i++) literal += "," + agents[i];
@@ -131,33 +123,47 @@ class InitGamePanel extends JPanel {
 		createAgentTitle("Diviners", w/9*5, yTitles);
 		createAgentTitle("Doctors", w/9*7, yTitles);
 
-        // COMBO LABELS
-        int yComboLabels = yTitles + size.height + 20 + w/9;
-		createComboTypeAgentLbl(w/9*1, yComboLabels);
-		createComboTypeAgentLbl(w/9*3, yComboLabels);
-		createComboTypeAgentLbl(w/9*5, yComboLabels);
-		size = createComboTypeAgentLbl(w/9*7, yComboLabels);
-
-        // COMBOS
-        int yCombos = yComboLabels + size.height + 5;
-		createTypeAgentComboBox(comboBoxWerewolf, w/9*1, yCombos);
-		createTypeAgentComboBox(comboBoxVillager, w/9*3, yCombos);
-		createTypeAgentComboBox(comboBoxDiviner, w/9*5, yCombos);
-		size = createTypeAgentComboBox(comboBoxDoctor, w/9*7, yCombos);
-
         // NUMBER AGENTS LABELS
-        int yNumAgents = yCombos + size.height + 10;
-		createNumAgentsLbl(w/9*1, yNumAgents, "Number");
-		createNumAgentsLbl(w/9*3, yNumAgents, "Number");
-		createNumAgentsLbl(w/9*5, yNumAgents, "Number");
-		size = createNumAgentsLbl(w/9*7, yNumAgents, "Number");
+        int yNumAgents = yTitles + size.height + 20 + w/9;
+		createNumAgentsLbl(w/9*1, yNumAgents, "Number random");
+		createNumAgentsLbl(w/9*3, yNumAgents, "Number random");
+		createNumAgentsLbl(w/9*5, yNumAgents, "Number random");
+		size = createNumAgentsLbl(w/9*7, yNumAgents, "Number random");
 
         // NUMBER AGENTS INPUTS
         int yNumAgentsTF = yNumAgents + size.height + 5;
-		createNumAgentsInput(wereWolfsNumTF, w/9*1, yNumAgentsTF, "2");
-		createNumAgentsInput(villagersNumTF, w/9*3, yNumAgentsTF, "7");
-		createNumAgentsInput(divinersNumTF, w/9*5, yNumAgentsTF, "1");
-		size = createNumAgentsInput(doctorsNumTF, w/9*7, yNumAgentsTF, "1");
+		createNumAgentsInput(werewolfsNumTF_random, w/9*1, yNumAgentsTF, "2");
+		createNumAgentsInput(villagersNumTF_random, w/9*3, yNumAgentsTF, "7");
+		createNumAgentsInput(divinersNumTF_random, w/9*5, yNumAgentsTF, "1");
+		size = createNumAgentsInput(doctorsNumTF_random, w/9*7, yNumAgentsTF, "1");
+
+		// NUMBER AGENTS LABELS
+		yNumAgents = yNumAgentsTF + size.height + 10;
+		createNumAgentsLbl(w/9*1, yNumAgents, "Number strategic");
+		createNumAgentsLbl(w/9*3, yNumAgents, "Number strategic");
+		createNumAgentsLbl(w/9*5, yNumAgents, "Number strategic");
+		size = createNumAgentsLbl(w/9*7, yNumAgents, "Number strategic");
+
+		// NUMBER AGENTS INPUTS
+		yNumAgentsTF = yNumAgents + size.height + 5;
+		createNumAgentsInput(werewolfsNumTF_strategic, w/9*1, yNumAgentsTF, "0");
+		createNumAgentsInput(villagersNumTF_strategic, w/9*3, yNumAgentsTF, "0");
+		createNumAgentsInput(divinersNumTF_strategic, w/9*5, yNumAgentsTF, "0");
+		size = createNumAgentsInput(doctorsNumTF_strategic, w/9*7, yNumAgentsTF, "0");
+
+		// NUMBER AGENTS LABELS
+		yNumAgents = yNumAgentsTF + size.height + 10;
+		createNumAgentsLbl(w/9*1, yNumAgents, "Number BDI");
+		createNumAgentsLbl(w/9*3, yNumAgents, "Number BDI");
+		createNumAgentsLbl(w/9*5, yNumAgents, "Number BDI");
+		size = createNumAgentsLbl(w/9*7, yNumAgents, "Number BDI");
+
+		// NUMBER AGENTS INPUTS
+		yNumAgentsTF = yNumAgents + size.height + 5;
+		createNumAgentsInput(werewolfsNumTF_bdi, w/9*1, yNumAgentsTF, "0");
+		createNumAgentsInput(villagersNumTF_bdi, w/9*3, yNumAgentsTF, "0");
+		createNumAgentsInput(divinersNumTF_bdi, w/9*5, yNumAgentsTF, "0");
+		size = createNumAgentsInput(doctorsNumTF_bdi, w/9*7, yNumAgentsTF, "0");
 
 		setBackground(new java.awt.Color(204, 166, 166));
 	}
