@@ -118,11 +118,11 @@ class MidGamePanel extends JPanel {
 		speedSlider.addChangeListener(new ChangeListener() {
       public void stateChanged(ChangeEvent event) {
 				int value = 10 + (FPS_MAX - speedSlider.getValue());
-				env.addPercept(Literal.parseLiteral("changeWaitTime(" + value + ")"));
+				env.addPercept("master", Literal.parseLiteral("changeWaitTime(" + value + ")"));
       }
     });
 		int value = 100 + (FPS_MAX - FPS_INIT);
-		env.addPercept(Literal.parseLiteral("changeWaitTime(" + value + ")"));
+		env.addPercept("master", Literal.parseLiteral("changeWaitTime(" + value + ")"));
 
 		speedSlider.setMajorTickSpacing((FPS_MAX-FPS_MIN)/5);
 		speedSlider.setMinorTickSpacing((FPS_MAX-FPS_MIN)/10);

@@ -22,14 +22,14 @@
 	.my_name(Self);
 	for(.member([Id, Name,_],List)){
 		+idToName(Id, Name);
-	}
+	};
 	for(.member([Id, Name,_],List)){
 		if (not Self == Id) {
 			+suspect(role(Id,villager),0.0);
 			+trust(Id,0,0,0.5);
 		}
-	}
-	-init(List).
+	};
+	.abolish(init(_)).
 
 /*
 	Phase 3

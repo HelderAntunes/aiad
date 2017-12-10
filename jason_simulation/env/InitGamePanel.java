@@ -103,7 +103,7 @@ class InitGamePanel extends JPanel {
 
 				String literal = "createAgents(" + agents[0];
 				for (int i = 1; i < agents.length; i++) literal += "," + agents[i];
-				env.addPercept(Literal.parseLiteral(literal + ")"));
+				env.addPercept("master",Literal.parseLiteral(literal + ")"));
 
 				frame.getContentPane().removeAll();
 				frame.getContentPane().invalidate();
