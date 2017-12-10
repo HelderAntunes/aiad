@@ -14,7 +14,7 @@ In addition to the implementation of the game itself, the job is to develop play
 
 ## User manual
 
-You can see the user manual in last chapter of our [final report](https://github.com/HelderAntunes/aiad/blob/master/doc/AIAD1718_INT_T08_2.pdf).
+You can see the user manual in last chapter of our [final report](https://github.com/HelderAntunes/aiad/blob/master/doc/AIAD1718_FIN_T08_2.pdf).
 
 ## Screen shots
 
