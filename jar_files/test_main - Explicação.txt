@@ -1,0 +1,7 @@
+Test 0 - All random
+Test 1 - Random werewolf vs Strategic Town
+Test 2 - Random werewolf vs Bdi Town
+Test 3 - Strategic werewolf vs Random Town
+Test 4 - Bdi werewolf vs Random Town
+Test 5 - Strategic werewolf vs Bdi Town
+Test 6 - Bdi werewolf vs Strategic Town
