@@ -208,7 +208,8 @@
 	trust(X, _, _, Tx) &
 	suspect(role(Y, Rpy), SyRpy)
 	<-
-	-+suspect(role(Y, Rpy), SyRpy + (1.0 - SyRpy) * Tx).
+	-suspect(role(Y,_),_);
+	+suspect(role(Y, Rpy), SyRpy + (1.0 - SyRpy) * Tx).
 
 /*
 	No confirmation role(Y, _)[source(master)]
@@ -227,10 +228,12 @@
 	}
 	else {
 		if(Tx < 0){
-			-+suspect(role(Y, Rpy), SyRpy - (1.0 - SyRpy) * Tx)
+			-suspect(role(Y,_),_);
+			+suspect(role(Y, Rpy), SyRpy - (1.0 - SyRpy) * Tx)
 		}
 		else{
-			-+suspect(role(Y, Rpy), SyRpy - Tx)
+			-suspect(role(Y,_),_);
+			+suspect(role(Y, Rpy), SyRpy - Tx)
 		}
 	}.
 
