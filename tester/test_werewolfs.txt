@@ -1,2 +1,2 @@
-2 wr 2 vr 7 dir 1 dor 1 ws 0 vs 0 dis 0 dos 0 wb 0 vb 0 dib 0 dob 0
-2 wr 2 vr 7 dir 1 dor 1 ws 0 vs 0 dis 0 dos 0 wb 0 vb 0 dib 0 dob 0
+2 wr 2 vr 7 dir 1 dor 1 ws 0 vs 0 dis 0 dos 0 wb 0 vb 0 dib 1 dob 0
+4 wr 2 vr 7 dir 1 dor 1 ws 0 vs 0 dis 0 dos 0 wb 0 vb 3 dib 1 dob 0

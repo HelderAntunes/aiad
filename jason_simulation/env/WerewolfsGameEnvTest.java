@@ -53,7 +53,7 @@ public class WerewolfsGameEnvTest extends jason.environment.Environment {
         literal += ")";
         logger.info(literal);
 
-        addPercept(Literal.parseLiteral("changeWaitTime(" + 20 + ")")); // wait time = 10 ms
+        addPercept(Literal.parseLiteral("changeWaitTime(" + 20 + ")")); 
         addPercept(Literal.parseLiteral(literal));
     }
 

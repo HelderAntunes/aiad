@@ -15,18 +15,22 @@ public class Tester {
     private ArrayList<Test> tests = new ArrayList<Test>();
 
     public static void main(String[] args) {
-      /*if (args.length != 1) {
+      if (args.length != 2) {
         System.out.println("Error: invalid arguments.");
-        System.out.println("Use: java -jar Tester testFileName");
-      }*/
+        System.out.println("Use: java -jar Tester.jar <test_file> <werewolfs_game.jar>");
+        return;
+      }
 
-      // String fileName = args[0];
+      String testFile = args[0];
+      String werewolfs_game_jar = args[1];
       try {
           Tester tester = new Tester();
-          tester.readTestInfoFile("test_werewolfs.txt");
-          tester.initServer();
+          tester.readTestInfoFile(testFile);
+          tester.initServer(werewolfs_game_jar);
       }
-      catch (Exception e) {}
+      catch (Exception e) {
+          System.out.println(e.toString());
+      }
     }
 
     /**
@@ -76,8 +80,8 @@ public class Tester {
       currID++;
     }
 
-    private void initServer() throws Exception {
-      Process proc = Runtime.getRuntime().exec("java -jar werewolfsGameTest.jar");
+    private void initServer(String werewolfs_game_jar) throws Exception {
+      Process proc = Runtime.getRuntime().exec("java -jar " + werewolfs_game_jar);
 
       handler = new Handler(tests, proc);
       HttpServer httpServer = HttpServer.create(new InetSocketAddress("127.0.0.1",8000), 0);
