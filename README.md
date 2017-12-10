@@ -1,12 +1,8 @@
 # Werewolves of Miller's Hollow - Agents and Distributed AI
 
-Repository to host AIAD project.
-
 ## Overview
 
-Werewolves of Miller's Hollow is a board-free game. Its action revolves around negotiation and trust. Players secretly take on the roles of villagers or werewolves, and have to try to survive until the opposing team dies. The werewolves know the identity of the other werewolves, and have to play as a team to kill the villagers.
-
-The game is divided into two phases, a daytime phase and a night phase. During the day players argue about who they believe are werewolves and why. In this sense, the negotiation consists of exchanging information, which may be true or false. At the end of this phase, players can vote for someone they believe to be a werewolf to be killed, revealing their true role. After the daytime phase comes the night phase, where werewolves can secretly choose one of the villagers to be killed. During this phase, villagers with special roles can activate their special abilities in order to try to collect any information about the werewolf identities, or kill or save other players. These special roles depend on which version of the game is being played; the most common role is that of Seer who can see the true role of another player each night.
+[Werewolves of Miller's Hollow](https://en.wikipedia.org/wiki/The_Werewolves_of_Millers_Hollow) is a board-free game. Its action revolves around negotiation and trust. Players secretly take on the roles of villagers or werewolves, and have to try to survive until the opposing team dies. The werewolves know the identity of the other werewolves, and have to play as a team to kill the villagers.
 
 ## Objectives
 
@@ -15,3 +11,18 @@ In addition to the implementation of the game itself, the job is to develop play
 ## Tools
 
 * [Jason](http://jason.sourceforge.net/wp/)
+
+## User manual
+
+You can see the user manual in last chapter of our [final report](https://github.com/HelderAntunes/aiad/blob/master/doc/AIAD1718_INT_T08_2.pdf).
+
+## Screen shots
+
+![alt Game configuration](https://github.com/HelderAntunes/aiad/blob/master/jar_files/assets/game_configuration.png)
+![alt Game simulation](https://github.com/HelderAntunes/aiad/blob/master/jar_files/assets/game_simulation.png)
+![alt Tests results](https://github.com/HelderAntunes/aiad/blob/master/jar_files/assets/test_results.png)
+
+## Authors
+* [Hélder Antunes - hant](https://github.com/HelderAntunes)
+* [Inês Proença - inesfproenca](https://github.com/inesfproenca)
+* [Filipe Costa - vinte](https://github.com/filpez)
